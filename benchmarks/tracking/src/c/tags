@@ -1,0 +1,14 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+_SCRIPT_TRACK_	tracking.h	6;"	d
+calcAreaSum	calcAreaSum.c	/^F2D* calcAreaSum(F2D* src, int cols, int rows, int winSize)$/;"	f
+calcGoodFeature	calcGoodFeature.c	/^F2D* calcGoodFeature(F2D* verticalEdgeImage, F2D* horizontalEdgeImage, int cols, int rows, int winSize)$/;"	f
+calcPyrLKTrack	calcPyrLKTrack.c	/^I2D* calcPyrLKTrack(F2D* previousImageBlur_level1, F2D* previousImageBlur_level2, F2D* vertEdge_level1, F2D* vertEdge_level2, F2D* horzEdge_level1, F2D* horzEdge_level2, F2D* currentImageBlur_level1, F2D* currentImageBlur_level2, F2D* previousFrameFeatures, int nFeatures, int winSize, float accuracy, int max_iter, F2D* currentFrameFeatures)$/;"	f
+fillFeatures	fillFeatures.c	/^F2D* fillFeatures(F2D* lambda, int N_FEA, int win)$/;"	f
+getANMS	getANMS.c	/^F2D *getANMS (F2D *points, float r)$/;"	f
+getInterpolatePatch	getInterpolatePatch.c	/^F2D* getInterpolatePatch(F2D* src, int cols, float centerX, float centerY, int winSize)$/;"	f
+main	script_tracking.c	/^int main(int argc, char* argv[])$/;"	f

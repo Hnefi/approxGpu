@@ -1,0 +1,625 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+BMARK	benchmarks/tracking/data/cif/Makefile	/^BMARK=tracking$/;"	m
+BMARK	benchmarks/tracking/data/fullhd/Makefile	/^BMARK=tracking$/;"	m
+BMARK	benchmarks/tracking/data/qcif/Makefile	/^BMARK=tracking$/;"	m
+BMARK	benchmarks/tracking/data/sim/Makefile	/^BMARK=tracking$/;"	m
+BMARK	benchmarks/tracking/data/sim_fast/Makefile	/^BMARK=tracking$/;"	m
+BMARK	benchmarks/tracking/data/sqcif/Makefile	/^BMARK=tracking$/;"	m
+BMARK	benchmarks/tracking/data/test/Makefile	/^BMARK=tracking$/;"	m
+BMARK	benchmarks/tracking/data/vga/Makefile	/^BMARK=tracking$/;"	m
+Bfilter	common/toolbox/toolbox_basic/filter_hist/Bfilter.m	/^function output = Bfilter(img,H)$/;"	f
+Bfilters	common/toolbox/toolbox_basic/filter_hist/BfilterS.m	/^function output = Bfilters(img,H,w)$/;"	f
+BinomialField	common/toolbox/toolbox_basic/filter_hist/binomialfield.m	/^function [x,y,success] = BinomialField(n,sx,sy,ir,numtri);$/;"	f
+CENTER	common/kernels/imageBlur_kernel.cu	4;"	d	file:
+CSC_CmplxVecMult_CAB_double	common/toolbox/MultiNcut/a_times_b_cmplx.c	/^void CSC_CmplxVecMult_CAB_double($/;"	f
+CSC_MatMult_CAB_double	common/toolbox/MultiNcut/a_times_b_cmplx.c	/^void CSC_MatMult_CAB_double($/;"	f
+CSC_VecMult_CAB_double	common/toolbox/MultiNcut/a_times_b_cmplx.c	/^void CSC_VecMult_CAB_double($/;"	f
+CSC_VecMult_CaABC_double	common/toolbox/MultiNcut/a_times_b_cmplx.c	/^void CSC_VecMult_CaABC_double($/;"	f
+CSC_VecTriangSlvLD_CAB_double	common/toolbox/MultiNcut/a_times_b_cmplx.c	/^void CSC_VecTriangSlvLD_CAB_double( $/;"	f
+CSC_VecTriangSlvUD_CAB_double	common/toolbox/MultiNcut/a_times_b_cmplx.c	/^void CSC_VecTriangSlvUD_CAB_double($/;"	f
+CSR_CmplxVecMult_CAB_double	common/toolbox/MultiNcut/a_times_b_cmplx.c	/^void CSR_CmplxVecMult_CAB_double($/;"	f
+CSR_VecMult_CAB_double	common/toolbox/MultiNcut/a_times_b_cmplx.c	/^void CSR_VecMult_CAB_double($/;"	f
+CSR_VecMult_CaABC_double	common/toolbox/MultiNcut/a_times_b_cmplx.c	/^void CSR_VecMult_CaABC_double($/;"	f
+CSR_VecTriangSlvLD_CAB_double	common/toolbox/MultiNcut/a_times_b_cmplx.c	/^void CSR_VecTriangSlvLD_CAB_double($/;"	f
+CSR_VecTriangSlvUD_CAB_double	common/toolbox/MultiNcut/a_times_b_cmplx.c	/^void CSR_VecTriangSlvUD_CAB_double($/;"	f
+CSRsymm_CmplxVecMult_CAB_double	common/toolbox/MultiNcut/a_times_b_cmplx.c	/^void CSRsymm_CmplxVecMult_CAB_double($/;"	f
+CSRsymm_VecMult_CAB_double	common/toolbox/MultiNcut/a_times_b_cmplx.c	/^void CSRsymm_VecMult_CAB_double($/;"	f
+DIAMETER	common/kernels/imageBlur_kernel.cu	2;"	d	file:
+Distor2Calib	common/toolbox/toolbox_basic/TOOLBOX_calib/Distor2Calib.m	/^function [fc_2,Rc_2,Tc_2,H_2,distance,V_vert,V_hori,x_all_c,V_hori_pix,V_vert_pix,V_diag1_pix,V_diag2_pix]=Distor2Calib(k_dist,grid_pts_centered,n_sq_x,n_sq_y,Np,W,L,Xgrid_2,f_ini,N_iter,two_focal);$/;"	f
+Distor2Calib	common/toolbox/toolbox_basic/calib_bouguetj/Distor2Calib.m	/^function [fc_2,Rc_2,Tc_2,H_2,distance,V_vert,V_hori,x_all_c,V_hori_pix,V_vert_pix,V_diag1_pix,V_diag2_pix]=Distor2Calib(k_dist,grid_pts_centered,n_sq_x,n_sq_y,Np,W,L,Xgrid_2,f_ini,N_iter,two_focal);$/;"	f
+F2D	common/c/sdvbs_common.h	/^}F2D;$/;"	t	typeref:struct:__anon3
+GOOD_FEATURE_LAMBDA_TH	common/toolbox/lagrcv/lagrcv.h	9;"	d
+I2D	common/c/sdvbs_common.h	/^}I2D;$/;"	t	typeref:struct:__anon1
+INPUT	benchmarks/tracking/data/cif/Makefile	/^INPUT=cif$/;"	m
+INPUT	benchmarks/tracking/data/fullhd/Makefile	/^INPUT=fullhd$/;"	m
+INPUT	benchmarks/tracking/data/qcif/Makefile	/^INPUT=qcif$/;"	m
+INPUT	benchmarks/tracking/data/sim/Makefile	/^INPUT=sim$/;"	m
+INPUT	benchmarks/tracking/data/sim_fast/Makefile	/^INPUT=sim_fast$/;"	m
+INPUT	benchmarks/tracking/data/sqcif/Makefile	/^INPUT=sqcif$/;"	m
+INPUT	benchmarks/tracking/data/test/Makefile	/^INPUT=test$/;"	m
+INPUT	benchmarks/tracking/data/vga/Makefile	/^INPUT=vga$/;"	m
+LK_ACCURACY_TH	common/toolbox/lagrcv/lagrcv.h	10;"	d
+LK_MAX_ITER	common/toolbox/lagrcv/lagrcv.h	11;"	d
+LK_MAX_WIN	common/toolbox/lagrcv/lagrcv.h	12;"	d
+LVA_BX_INSTRUCTION	benchmarks/tracking/src/c/script_tracking.cu	19;"	d	file:
+LVA_FUNCTION	benchmarks/tracking/src/c/script_tracking.cu	/^extern void LVA_FUNCTION(int type, void* start, void* end, int self)$/;"	f
+LVA_FUNCTION_RM	benchmarks/tracking/src/c/script_tracking.cu	/^extern void LVA_FUNCTION_RM(int type,void* start,void* end, int self)$/;"	f
+MAX_CORNERS	common/toolbox/lagrcv/goodFeaturesToTrack.cc	12;"	d	file:
+MAX_CORNERS	common/toolbox/lagrcv/test.cc	12;"	d	file:
+MAX_IMAGE_SIZE_1D	common/toolbox/lagrcv/lagrcv.h	14;"	d
+MAX_LEVEL	common/toolbox/lagrcv/calcOptFlowLKMex.cc	16;"	d	file:
+MAX_LEVEL	common/toolbox/lagrcv/calcOptFlowLKPyrMex.cc	16;"	d	file:
+MAX_LEVEL	common/toolbox/lagrcv/calcOptFlowLKPyrMex2.cc	16;"	d	file:
+MAX_LEVEL	common/toolbox/lagrcv/calcOptFlowLKPyrWInitMex.cc	16;"	d	file:
+MAX_LEVEL	common/toolbox/lagrcv/calcOptFlowLKPyrWInitMex2.cc	16;"	d	file:
+MAX_LEVEL	common/toolbox/lagrcv/calcOptFlowLKPyrWInitSobelMex.cc	16;"	d	file:
+MAX_LEVEL	common/toolbox/lagrcv/lagrcv.h	13;"	d
+MAX_SIZE	common/toolbox/lagrcv/test.cc	13;"	d	file:
+MNcut	common/toolbox/MultiNcut/MNcut.m	/^function [NcutDiscretes,eigenVectors,eigenValues] = MNcut(I,nsegs);$/;"	f
+Ncut_IC	common/toolbox/toolbox_basic/common/Ncut_IC.m	/^function [v,d] = Ncut_IC(I,nb_radius_IC);$/;"	f
+Ncut_IC_m	common/toolbox/toolbox_basic/common/Ncut_IC_m.m	/^function [v,d] = Ncut_IC_m(I,mask,nb_radius_IC,sig_IC);$/;"	f
+Ncut_IC_m	common/toolbox/toolbox_basic/common/Ncut_IC_m2.m	/^function [v,d] = Ncut_IC_m(I,mask,nb_radius_IC,sig_IC);$/;"	f
+PYR_LEVELS	common/toolbox/lagrcv/calcOpticalFlowLK.cc	13;"	d	file:
+PYR_LEVELS	common/toolbox/lagrcv/calcOpticalFlowPyrLK.cc	13;"	d	file:
+Poisson	common/toolbox/toolbox_basic/filter_hist/poisson.m	/^function [x] = Poisson(lambda);$/;"	f
+PoissonField	common/toolbox/toolbox_basic/filter_hist/poissonfield.m	/^function [x,y,success] = PoissonField(int,sx,sy,ir);$/;"	f
+RADIUS	common/kernels/imageBlur_kernel.cu	1;"	d	file:
+Rectangle2Square	common/toolbox/toolbox_basic/TOOLBOX_calib/Rectangle2Square.m	/^function [square] = Rectangle2Square(rectangle,L,W);$/;"	f
+Rectangle2Square	common/toolbox/toolbox_basic/calib_bouguetj/Rectangle2Square.m	/^function [square] = Rectangle2Square(rectangle,L,W);$/;"	f
+S	common/kernels/imageBlur_kernel.cu	3;"	d	file:
+SINGLEDIMINDEX	common/kernels/imageBlur_kernel.cu	6;"	d	file:
+UI2D	common/c/sdvbs_common.h	/^}UI2D;$/;"	t	typeref:struct:__anon2
+UnWarpPlane	common/toolbox/toolbox_basic/TOOLBOX_calib/UnWarpPlane.m	/^function  [u_hori,u_vert] = UnWarpPlane(x1,x2,x3,x4);$/;"	f
+UnWarpPlane	common/toolbox/toolbox_basic/calib_bouguetj/UnWarpPlane.m	/^function  [u_hori,u_vert] = UnWarpPlane(x1,x2,x3,x4);$/;"	f
+WIN_SIZE	common/toolbox/lagrcv/calcOpticalFlowLK.cc	12;"	d	file:
+WIN_SIZE	common/toolbox/lagrcv/calcOpticalFlowPyrLK.cc	12;"	d	file:
+WIN_SIZE	common/toolbox/lagrcv/findCornerSubPix.cc	13;"	d	file:
+_SCRIPT_TRACK_	benchmarks/tracking/src/c/tracking.h	6;"	d
+_SDVBS_COMMON_	common/c/sdvbs_common.h	6;"	d
+afromncut	common/toolbox/toolbox_basic/stella/afromncut.m	/^function a = afromncut(v,s,d,visimg,no_rep,pixel_loc)$/;"	f
+allcosts	common/toolbox/toolbox_basic/matching/pub/contrib/v5/optim/assignprob/allcosts.m	/^function [c,p]=allcosts(C)$/;"	f
+allperm	common/toolbox/toolbox_basic/matching/pub/contrib/v5/optim/assignprob/allperm.m	/^function p=allperm(n)$/;"	f
+anisodiff	common/toolbox/toolbox_basic/common/anisodiff.m	/^function [outimage] = anisodiff(inimage,iterations,K)$/;"	f
+apply_distortion	common/toolbox/toolbox_basic/TOOLBOX_calib/apply_distortion.m	/^function [xd,dxddk] = apply_distortion(x,k)$/;"	f
+apply_image	common/toolbox/toolbox_basic/filter_hist/apply_image.m	/^function [aout1,aout2,aout3,aout4] = apply_image(gx,gy,wc)  $/;"	f
+apply_image	common/toolbox/toolbox_basic/filter_hist/pair_dist.m	/^function A = apply_image(gx,gy,I,wc)  $/;"	f
+apply_image	common/toolbox/toolbox_basic/filter_hist/pair_dist2.m	/^function A = apply_image(gx,gy,I,wc)  $/;"	f
+apply_image	common/toolbox/toolbox_basic/filter_hist/pair_dist_text.m	/^function A = apply_image(I,bars,wc)  $/;"	f
+apply_image	common/toolbox/toolbox_basic/filter_hist/pair_dist_text2.m	/^function A = apply_image(I,bars,wc)  $/;"	f
+arrayref	common/c/sdvbs_common.h	35;"	d
+asubsref	common/c/sdvbs_common.h	34;"	d
+back_proj	common/toolbox/toolbox_basic/filter_hist/back_proj.m	/^function BI = back_proj(PFt,vec)$/;"	f
+backproj_outer	common/toolbox/toolbox_basic/filter_hist/backproj_outer.m	/^function v = backproj_outer(fvs,u,hb)$/;"	f
+backproj_outer_chank	common/toolbox/toolbox_basic/filter_hist/backproj_outer_chank.m	/^function v = backproj_outer_chank(fvs,u,d,chank_size)$/;"	f
+backproj_outer_chank	common/toolbox/toolbox_basic/filter_hist/backproj_outer_chank2.m	/^function v = backproj_outer_chank(fvs,u,d,chank_size)$/;"	f
+bar2d	common/toolbox/toolbox_basic/filter/bar2d.m	/^function kernel = bar2d(sigx,sigy,siz,angle)$/;"	f
+bars	common/toolbox/toolbox_basic/filter/bars.m	/^function [filt] = bars(X,Y,ks);$/;"	f
+bin	common/toolbox/toolbox_basic/common/bin.m	/^function [i, nnbins] = bin(x, dx, x0, x1);$/;"	f
+binize	common/toolbox/toolbox_basic/filter_hist/binize.m	/^function [binv,bins] = binize(data,sig,bin_min,bin_max,num_bin)$/;"	f
+binize	common/toolbox/toolbox_basic/filter_hist/binize_old.m	/^function [binv,bins] = binize(data,sig,bin_min,bin_max,num_bin)$/;"	f
+calcAreaSum	benchmarks/tracking/src/c/calcAreaSum.cu	/^F2D* calcAreaSum(F2D* src, int cols, int rows, int winSize)$/;"	f
+calcAreaSum	common/toolbox/lagrcv/lagrcv.cpp	/^void calcAreaSum(double *src, int sizeY, int sizeX, int winSize, double *ret){$/;"	f
+calcAreaSum	common/toolbox/lagrcv/lagrcv.cpp	/^void calcAreaSum(int *src, int sizeY, int sizeX, int sizeSum, int *ret){$/;"	f
+calcGoodFeature	benchmarks/tracking/src/c/calcGoodFeature.cu	/^F2D* calcGoodFeature(F2D* verticalEdgeImage, F2D* horizontalEdgeImage, int cols, int rows, int winSize)$/;"	f
+calcGoodFeature	common/toolbox/lagrcv/lagrcv.cpp	/^void calcGoodFeature(char *dX, char *dY, int sizeY, int sizeX, int winSize, float* lambda, float* tr, float* det){$/;"	f
+calcGoodFeature	common/toolbox/lagrcv/lagrcv.cpp	/^void calcGoodFeature(double *dX, double *dY, int sizeY, int sizeX, int winSize, double* lambda, double* tr, double* det,$/;"	f
+calcGradient	common/toolbox/lagrcv/lagrcv.cpp	/^void calcGradient(char *src, int sizeY, int sizeX, char *dX, char *dY){$/;"	f
+calcGradient	common/toolbox/lagrcv/lagrcv.cpp	/^void calcGradient(double *src, int sizeY, int sizeX, double *dX, double *dY){$/;"	f
+calcImgBlur	common/toolbox/lagrcv/lagrcv.cpp	/^void calcImgBlur(double *src, int sizeY, int sizeX, double *dest){$/;"	f
+calcImgResize	common/toolbox/lagrcv/lagrcv.cpp	/^void calcImgResize(double *src, int sizeY, int sizeX, double *dest, int dstSizeY, int dstSizeX){$/;"	f
+calcLKTrack	common/toolbox/lagrcv/lagrcv.cpp	/^void calcLKTrack(double* imgI, double* iDx, double* iDy, double* imgJ, const int* imdims, $/;"	f
+calcLKTrack	common/toolbox/lagrcv/lagrcv.cpp	/^void calcLKTrack(double* imgI, double* iDx, double* iDy, double* imgJ, const int* imdims,$/;"	f
+calcMinEigenValue	common/toolbox/lagrcv/lagrcv.cpp	/^void calcMinEigenValue(char *dX, char *dY, int sizeY, int sizeX, float* lambda){$/;"	f
+calcPyrLKTrack	benchmarks/tracking/src/c/calcPyrLKTrack.cu	/^I2D* calcPyrLKTrack(F2D* previousImageBlur_level1, F2D* previousImageBlur_level2, F2D* vertEdge_level1, F2D* vertEdge_level2, F2D* horzEdge_level1, F2D* horzEdge_level2, F2D* currentImageBlur_level1, F2D* currentImageBlur_level2, F2D* previousFrameFeatures, int nFeatures, int winSize, float accuracy, int max_iter, F2D* currentFrameFeatures)$/;"	f
+calcPyrLKTrack	common/toolbox/lagrcv/lagrcv.cpp	/^void calcPyrLKTrack(double** iP, double** iDxP, double** iDyP, double** jP, const int* imgDims, int pLevel, $/;"	f
+calcPyrLKTrackWInit	common/toolbox/lagrcv/lagrcv.cpp	/^void calcPyrLKTrackWInit(double** iP, double** iDxP, double** iDyP, double** jP, const int* imgDims, int pLevel, $/;"	f
+calcPyrLKTrackWInit	common/toolbox/lagrcv/lagrcv.cpp	/^void calcPyrLKTrackWInit(double** iP, double** jP, const int* imgDims, int pLevel, $/;"	f
+calcSobel	common/toolbox/lagrcv/lagrcv.cpp	/^void calcSobel(double *src, int sizeY, int sizeX, double *dX, double *dY){$/;"	f
+calcSobel_dX	common/c/calcSobel_dX.cu	/^F2D* calcSobel_dX(F2D* imageIn)$/;"	f
+calcSobel_dY	common/c/calcSobel_dY.cu	/^F2D* calcSobel_dY(F2D* imageIn)$/;"	f
+calcSubSampleAvg	common/toolbox/lagrcv/lagrcv.cpp	/^void calcSubSampleAvg(double *src, int sizeY, int sizeX, double *dest, int destSizeY, int destSizeX){$/;"	f
+carve_it	common/toolbox/toolbox_basic/affine/carve_it.m	/^function img = carve_it(I,center,window_size_h)$/;"	f
+clip_image	common/toolbox/toolbox_basic/filter/clip_image.m	/^function J = clip_image(I,w)$/;"	f
+colize	common/toolbox/toolbox_basic/filter_hist/colize.m	/^function t1a = colize(t1,I1);$/;"	f
+colize	common/toolbox/toolbox_basic/filter_hist/colize_test.m	/^function t1a = colize(t1,I1);$/;"	f
+colize_hist	common/toolbox/toolbox_basic/filter_hist/colize_hist.m	/^function fh = colize_hist(fv,hb)$/;"	f
+colize_histnb_s	common/toolbox/toolbox_basic/filter_hist/colize_histnb_s.m	/^function fhs = colize_histnb_s(fh,Is,nw,hw)$/;"	f
+colize_histnb_s	common/toolbox/toolbox_basic/filter_hist/colize_histnb_sf.m	/^function fhs = colize_histnb_s(fvs,Is,hb,nw,hw)$/;"	f
+colize_histneigh	common/toolbox/toolbox_basic/filter_hist/colize_histneighb.m	/^function fhs = colize_histneigh(fh,Is,nw)$/;"	f
+colize_joint_hist	common/toolbox/toolbox_basic/filter_hist/colize_joint_hist.m	/^function fh = colize_joint_hist(fv,hb)$/;"	f
+comp_distortion	common/toolbox/toolbox_basic/TOOLBOX_calib/comp_distortion.m	/^function [x_comp]  = comp_distortion(x_dist,k2);$/;"	f
+comp_distortion	common/toolbox/toolbox_basic/TOOLBOX_calib/comp_distortion2.m	/^function [x_comp]  = comp_distortion(x_dist,k2);$/;"	f
+comp_distortion	common/toolbox/toolbox_basic/calib_bouguetj/comp_distortion.m	/^function [x_comp]  = comp_distortion(x_dist,k2);$/;"	f
+comp_distortion	common/toolbox/toolbox_basic/calib_bouguetj/comp_distortion2.m	/^function [x_comp]  = comp_distortion(x_dist,k2);$/;"	f
+comp_distortion_oulu	common/toolbox/toolbox_basic/TOOLBOX_calib/comp_distortion_oulu.m	/^function [x] = comp_distortion_oulu(xd,k);$/;"	f
+comp_distortion_oulu	common/toolbox/toolbox_basic/calib_bouguetj/comp_distortion_oulu.m	/^function [x] = comp_distortion_oulu(xd,k);$/;"	f
+compact	common/toolbox/toolbox_basic/filter_hist/compact.m	/^function I = compact(img,ws)$/;"	f
+compileAll	common/toolbox/MultiNcut/compileAll.m	/^function compileAll(Cdir);$/;"	f
+computeMultiW	common/toolbox/MultiNcut/computeMultiW.m	/^function [multiWpp,constraintMat, Wind,data,emag,ephase]= computeMultiW (image,data);$/;"	f
+compute_J	common/toolbox/toolbox_basic/affine/compute_J.m	/^function [JJ,mask] = compute_J(A,D,I,center,window_size_h)$/;"	f
+compute_J	common/toolbox/toolbox_basic/filter/compute_J_simple.m	/^function J = compute_J(I,A,D,base)$/;"	f
+compute_J	common/toolbox/toolbox_basic/filter_hist/compute_J.m	/^function J = compute_J(A,I,size_x,size_y,D)$/;"	f
+compute_J	common/toolbox/toolbox_basic/filter_hist/new_compute_J.m	/^function [JJ,mask] = compute_J(A,D,I,center,window_size_h)$/;"	f
+compute_J	common/toolbox/toolbox_basic/filter_hist/rotate_J.m	/^function J = compute_J(angle,I)$/;"	f
+compute_Lf	common/toolbox/toolbox_basic/filter_hist/compute_Lf.m	/^function dists = compute_Lf(F,cts,wz,nr,nc)$/;"	f
+compute_angle	common/toolbox/toolbox_basic/filter/compute_angle.m	/^function [angle,mag,c2,c3] = compute_angle(I)$/;"	f
+compute_collineation	common/toolbox/toolbox_basic/TOOLBOX_calib/compute_collineation.m	/^function [H,Hnorm,inv_Hnorm] = compute_collineation (a00, a10, a11, a01);$/;"	f
+compute_collineation	common/toolbox/toolbox_basic/calib_bouguetj/compute_collineation.m	/^function [H,Hnorm,inv_Hnorm] = compute_collineation (a00, a10, a11, a01);$/;"	f
+compute_corr	common/toolbox/toolbox_basic/filter_hist/compute_corr.m	/^function a = compute_corr(f,g)$/;"	f
+compute_diff	common/toolbox/toolbox_basic/filter_hist/compute_diff.m	/^function B = compute_diff(Ja,Jfa,hw,hnb);$/;"	f
+compute_diff_patch	common/toolbox/toolbox_basic/filter_hist/compute_diff_patch.m	/^function a = compute_diff_patch(gx1,gy1,gx2,gy2,I1,I2)$/;"	f
+compute_diff_patch	common/toolbox/toolbox_basic/filter_hist/compute_diff_patch2.m	/^function [a,phi1,phi2] = compute_diff_patch(gx1,gy1,gx2,gy2,I1,I2)$/;"	f
+compute_extrinsic	common/toolbox/toolbox_basic/TOOLBOX_calib/compute_extrinsic.m	/^function [omckk,Tckk,Rckk,H,x,ex,JJ] = compute_extrinsic(x_kk,X_kk,fc,cc,kc,alpha_c,MaxIter,thresh_cond),$/;"	f
+compute_extrinsic	common/toolbox/toolbox_basic/calib_bouguetj/compute_extrinsic.m	/^function [omckk,Tckk,Rckk,H,x,ex,JJ] = compute_extrinsic(x_kk,X_kk,fc,cc,kc,MaxIter,thresh_cond),$/;"	f
+compute_extrinsic_init	common/toolbox/toolbox_basic/TOOLBOX_calib/compute_extrinsic_init.m	/^function [omckk,Tckk,Rckk] = compute_extrinsic_init(x_kk,X_kk,fc,cc,kc,alpha_c),$/;"	f
+compute_extrinsic_init	common/toolbox/toolbox_basic/calib_bouguetj/compute_extrinsic_init.m	/^function [omckk,Tckk,Rckk] = compute_extrinsic_init(x_kk,X_kk,fc,cc,kc),$/;"	f
+compute_extrinsic_refine	common/toolbox/toolbox_basic/TOOLBOX_calib/compute_extrinsic_refine.m	/^function [omckk,Tckk,Rckk,JJ] = compute_extrinsic_refine(omc_init,Tc_init,x_kk,X_kk,fc,cc,kc,alpha_c,MaxIter,thresh_cond),$/;"	f
+compute_extrinsic_refine	common/toolbox/toolbox_basic/calib_bouguetj/compute_extrinsic_refine.m	/^function [omckk,Tckk,Rckk,JJ] = compute_extrinsic_refine(omc_init,Tc_init,x_kk,X_kk,fc,cc,kc,MaxIter,thresh_cond),$/;"	f
+compute_filter	common/toolbox/toolbox_basic/filter_hist/compute_filter.m	/^function [filter_output,filters] = compute_filter(I,sig,r,sz);$/;"	f
+compute_filter_fft	common/toolbox/toolbox_basic/filter/compute_filter_fft.m	/^function [filter_output,filters] = compute_filter_fft(I,sig,r,sz,num_ori);$/;"	f
+compute_filter_fft	common/toolbox/toolbox_basic/filter_hist/compute_filter_fft.m	/^function [filter_output,filters] = compute_filter_fft(I,sig,r,sz,num_ori);$/;"	f
+compute_g2	common/toolbox/toolbox_basic/filter/compute_g2.m	/^function [g,ga,gb,gc] = compute_g2(I,angle)$/;"	f
+compute_h2	common/toolbox/toolbox_basic/filter/compute_h2.m	/^function [h,ha,hb,hc,hd] = compute_h2(I,angle)$/;"	f
+compute_homography	common/toolbox/toolbox_basic/TOOLBOX_calib/compute_homography.m	/^function [H,Hnorm,inv_Hnorm] = compute_homography (m,M);$/;"	f
+compute_homography	common/toolbox/toolbox_basic/calib_bouguetj/compute_homography.m	/^function [H,Hnorm,inv_Hnorm] = compute_homography (m,M);$/;"	f
+compute_odd_filter_fft	common/toolbox/toolbox_basic/filter/compute_ofilter_fft.m	/^function [filter_output,filters] = compute_odd_filter_fft(I,sig,r,sz,num_ori);$/;"	f
+condass	common/toolbox/toolbox_basic/matching/pub/contrib/v5/optim/assignprob/condass.m	/^function [k,C1,T1,C2,T2]=condass(A)$/;"	f
+construct_w	common/toolbox/toolbox_basic/fact/construct_w.m	/^function W = construct_w(centers,Ds,img_center,indexes,frames)$/;"	f
+construct_w2	common/toolbox/toolbox_basic/fact/construct_w2.m	/^function W = construct_w2(centers,Ds,img_center,indexes,frames)$/;"	f
+conv_trim	common/toolbox/toolbox_basic/filter_hist/conv_trim.m	/^function[B] = conv_trim(A, r, c)$/;"	f
+cornerfinder	common/toolbox/toolbox_basic/TOOLBOX_calib/cornerfinder.m	/^function [xc,good,bad,type] = cornerfinder(xt,I,wintx,winty,wx2,wy2);$/;"	f
+cornerfinder	common/toolbox/toolbox_basic/calib_bouguetj/cornerfinder.m	/^function [xc,good,bad,type] = cornerfinder(xt,I,wintx,winty,wx2,wy2);$/;"	f
+corr_hist	common/toolbox/toolbox_basic/filter_hist/corr_hist.m	/^function alpha = corr_hist(hists)$/;"	f
+count_squares	common/toolbox/toolbox_basic/TOOLBOX_calib/count_squares.m	/^function ns = count_squares(I,x1,y1,x2,y2,win);$/;"	f
+count_squares	common/toolbox/toolbox_basic/calib_bouguetj/count_squares.m	/^function ns = count_squares(I,x1,y1,x2,y2,win);$/;"	f
+crop_im_fil	common/toolbox/toolbox_basic/filter_hist/crop_im_fil.m	/^function [J,f,rect] = crop_im_fil(Ja,Jfa,fig_id)$/;"	f
+cutoff	common/toolbox/toolbox_basic/filter_hist/cutoff.m	/^function I = cutoff(I,wc)$/;"	f
+cutout	common/toolbox/toolbox_basic/filter_hist/cutout.m	/^function a = cutout(I,ct,wz);$/;"	f
+data	common/c/sdvbs_common.h	/^    float data[];$/;"	m	struct:__anon3
+data	common/c/sdvbs_common.h	/^    int data[];$/;"	m	struct:__anon1
+data	common/c/sdvbs_common.h	/^    unsigned int data[];$/;"	m	struct:__anon2
+density	common/toolbox/toolbox_basic/common/density.m	/^function [rrho, xxvec, yyvec] = density(x, y, dx, dy, xy0);$/;"	f
+dgauss	common/toolbox/toolbox_basic/filter/dgauss.m	/^function dg = dgauss(sig)$/;"	f
+discretisation	common/toolbox/MultiNcut/discretisation.m	/^function [SegLabel,EigenVectors]=discretisation(EigenVectors,nr,nc)$/;"	f
+discretisationEigenVectorData	common/toolbox/MultiNcut/discretisationEigenVectorData.m	/^function Y = discretisationEigenVectorData(EigenVector)$/;"	f
+disp_Imask	common/toolbox/toolbox_basic/filter_hist/disp_Imask.m	/^function Imasks = disp_Imask(Is,nr,nc,hw,masks)$/;"	f
+disp_diff	common/toolbox/toolbox_basic/filter_hist/disp_diff.m	/^function disp_diff(H1,H2)$/;"	f
+disp_groups	common/toolbox/toolbox_basic/filter_hist/disp_groups.m	/^function disp_groups(groups,ids,nr,nc);$/;"	f
+disp_hist2d	common/toolbox/toolbox_basic/filter_hist/disp_hist2d.m	/^function H2 = disp_hist2d(J,Jf,scales,filter_ids)$/;"	f
+disp_image	common/toolbox/toolbox_basic/disp/disp_image.m	/^function disp_image(img,sze,index,mask)$/;"	f
+dispimg	common/toolbox/toolbox_basic/stella/dispimg.m	/^function dispimg(g,fmt,lgd,cmap,ishori);$/;"	f
+dist2	common/toolbox/toolbox_basic/textons/dist2.m	/^function n2 = dist2(x, c)$/;"	f
+dist_pair	common/toolbox/toolbox_basic/filter_hist/dist_pair.m	/^function d = dist_pair(idx,fv,hb)$/;"	f
+dist_pair_chank	common/toolbox/toolbox_basic/filter_hist/dist_pair_chank.m	/^function d = dist_pair_chank(a,fvs,chank_size)$/;"	f
+dog1	common/toolbox/toolbox_basic/filter/dog1.m	/^function G=dog1(sig,N);$/;"	f
+dog2	common/toolbox/toolbox_basic/filter/dog2.m	/^function G=dog2(sig,N);$/;"	f
+doog1	common/toolbox/MultiNcut/doog1.m	/^function H=doog1(sig,r,th,N);$/;"	f
+doog1	common/toolbox/toolbox_basic/filter/doog1.m	/^function H=doog1(sig,r,th,N);$/;"	f
+doog1	common/toolbox/toolbox_basic/filtersQuad/doog1.m	/^function H=doog1(sig,r,th,N);$/;"	f
+doog2	common/toolbox/MultiNcut/doog2.m	/^function G=doog2(sig,r,th,N);$/;"	f
+doog2	common/toolbox/toolbox_basic/filter/doog2.m	/^function G=doog2(sig,r,th,N);$/;"	f
+doog2	common/toolbox/toolbox_basic/filter/mdoog2.m	/^function G=doog2(sig,r,th,N);$/;"	f
+doog2	common/toolbox/toolbox_basic/filter/mk_odd_filter.m	/^function G=doog2(sig,r,th,N);$/;"	f
+doog2	common/toolbox/toolbox_basic/filter_hist/doog2.m	/^function [G]=doog2(sig,r,th,N);$/;"	f
+doog2	common/toolbox/toolbox_basic/filtersQuad/doog2.m	/^function G=doog2(sig,r,th,N);$/;"	f
+draw_box	common/toolbox/toolbox_basic/disp/draw_box.m	/^function draw_box(left,right,top,down)$/;"	f
+draw_box	common/toolbox/toolbox_basic/disp/draw_box2.m	/^function draw_box(center,w_h,j)$/;"	f
+eigSolve	common/toolbox/MultiNcut/eigSolve.m	/^function [eigenVectors,s]= eigSolve (multiWpp,ConstraintMat,data)$/;"	f
+eig_decomp	common/toolbox/toolbox_basic/filter_hist/eig_decomp.m	/^function [v,d] = eig_decomp(A)$/;"	f
+eig_decomp_v5	common/toolbox/toolbox_basic/filter_hist/eig_decomp_v5.m	/^function [v,d] = eig_decomp_v5(A,nv)$/;"	f
+eig_proj	common/toolbox/toolbox_basic/filter_hist/eig_proj.m	/^function v = eig_proj(u,data)$/;"	f
+eigs_decomp	common/toolbox/toolbox_basic/filter_hist/eigs_decomp.m	/^function [v,d,D,Ipara] = eigs_decomp(fn,num_eigs)$/;"	f
+eigtemp	common/toolbox/lagrcv/goodFeaturesToTrack.cc	/^IplImage *eigtemp = NULL, *temp2 = NULL;$/;"	v
+erfcore	common/toolbox/toolbox_basic/filter_hist/tmp3.m	/^function result = erfcore(x,jint)$/;"	f
+euclid_dist	common/toolbox/toolbox_basic/filter_hist/euclid_dist.m	/^function [A,mag] = euclid_dist(v)$/;"	f
+expand	common/toolbox/toolbox_basic/pyramid/expand.m	/^function J = expand(I)$/;"	f
+extract_grid	common/toolbox/toolbox_basic/TOOLBOX_calib/extract_grid.m	/^function [x,X,n_sq_x,n_sq_y,ind_orig,ind_x,ind_y] = extract_grid(I,wintx,winty,fc,cc,kc,dX,dY);$/;"	f
+extract_grid	common/toolbox/toolbox_basic/calib_bouguetj/extract_grid.m	/^function [x,X,n_sq_x,n_sq_y,ind_orig,ind_x,ind_y] = extract_grid(I,wintx,winty,fc,cc,kc);$/;"	f
+fDeepCopy	common/c/fDeepCopy.cu	/^F2D* fDeepCopy(F2D* in)$/;"	f
+fDeepCopyRange	common/c/fDeepCopyRange.cu	/^F2D* fDeepCopyRange(F2D* in, int startRow, int numberRows, int startCol, int numberCols)$/;"	f
+fDivide	common/c/fDivide.cu	/^F2D* fDivide(F2D* a, float b)$/;"	f
+fFind3	common/c/fFind3.cu	/^F2D* fFind3(F2D* in)$/;"	f
+fFreeHandle	common/c/fFreeHandle.cu	/^void fFreeHandle(F2D* out)$/;"	f
+fHorzcat	common/c/fHorzcat.cu	/^F2D* fHorzcat(F2D* a, F2D* b)$/;"	f
+fMallocHandle	common/c/fMallocHandle.cu	/^F2D* fMallocHandle(int rows, int cols)$/;"	f
+fMdivide	common/c/fMdivide.cu	/^F2D* fMdivide(F2D* a, F2D* b)$/;"	f
+fMinus	common/c/fMinus.cu	/^F2D* fMinus(F2D* a, F2D* b)$/;"	f
+fMtimes	common/c/fMtimes.cu	/^F2D* fMtimes(F2D* a, F2D* b)$/;"	f
+fPlus	common/c/fPlus.cu	/^F2D* fPlus(F2D* a, F2D* b)$/;"	f
+fReshape	common/c/fReshape.cu	/^F2D* fReshape(F2D* in, int rows, int cols)$/;"	f
+fSelfCheck	common/c/fSelfCheck.cu	/^int fSelfCheck(F2D* in1, char* path, float tol)$/;"	f
+fSetArray	common/c/fSetArray.cu	/^F2D* fSetArray(int rows, int cols, float val)$/;"	f
+fSort	common/c/fSort.cu	/^F2D* fSort(F2D* in, int dim)$/;"	f
+fSortIndices	common/c/fSortIndices.cu	/^I2D* fSortIndices(F2D* input, int dim)$/;"	f
+fSum	common/c/fSum.cu	/^F2D* fSum(F2D* inMat)$/;"	f
+fSum2	common/c/fSum2.cu	/^F2D* fSum2(F2D* inMat, int dir)$/;"	f
+fTimes	common/c/fTimes.cu	/^F2D* fTimes(F2D* a, F2D* b)$/;"	f
+fTranspose	common/c/fTranspose.cu	/^F2D* fTranspose(F2D* a)$/;"	f
+fWriteMatrix	common/c/fWriteMatrix.cu	/^void fWriteMatrix(F2D* input, char* inpath)$/;"	f
+factor	common/toolbox/toolbox_basic/fact/factor.m	/^function [R,t,S] = factor(W)$/;"	f
+factor	common/toolbox/toolbox_basic/fact/factor_test.m	/^function [R,t,S,C,b] = factor(W)$/;"	f
+factor	common/toolbox/toolbox_basic/fact/factor_test2.m	/^function [R,t,S,C,b] = factor(W)$/;"	f
+ffConv2	common/c/ffConv2.cu	/^F2D* ffConv2(F2D* a, F2D* b)$/;"	f
+ffConv2_dY	common/c/ffConv2_dY.cu	/^F2D* ffConv2_dY(F2D* a, F2D* b)$/;"	f
+ffDivide	common/c/ffDivide.cu	/^F2D* ffDivide(F2D* a, F2D* b)$/;"	f
+ffTimes	common/c/ffTimes.cu	/^F2D* ffTimes(F2D* a, float b)$/;"	f
+ffVertcat	common/c/ffVertcat.cu	/^F2D* ffVertcat(F2D* matrix1, F2D* matrix2)$/;"	f
+ffiConv2	common/c/ffiConv2.cu	/^F2D* ffiConv2(F2D* a, I2D* b)$/;"	f
+fft_filt_2	common/toolbox/MultiNcut/fft_filt_2.m	/^function FI=fft_filt_2(V,FB,sf);$/;"	f
+fft_filt_2	common/toolbox/toolbox_basic/filter/fft_filt_2.m	/^function FI=fft_filt_2(V,FB,sf);$/;"	f
+fiConv2	common/c/fiConv2.cu	/^F2D* fiConv2(I2D* a, F2D* b)$/;"	f
+fiDeepCopy	common/c/fiDeepCopy.cu	/^F2D* fiDeepCopy(I2D* in)$/;"	f
+fillFeatures	benchmarks/tracking/src/c/fillFeatures.cu	/^F2D* fillFeatures(F2D* lambda, int N_FEA, int win)$/;"	f
+filter_output	common/toolbox/toolbox_basic/filter_hist/filter_output.m	/^function If = filter_output(I,sigs,szs,flag);$/;"	f
+find3G	common/toolbox/toolbox_basic/fact/findG.m	/^function G = find3G(Rhat)$/;"	f
+find3G	common/toolbox/toolbox_basic/fact/findg1.m	/^function [G,C] = find3G(Rhat)$/;"	f
+find3G	common/toolbox/toolbox_basic/fact/findg2.m	/^function [G,C] = find3G(Rhat)$/;"	f
+find_AD	common/toolbox/toolbox_basic/affine/find_AD.m	/^function [A,D] = find_AD(I,J,mask,w)$/;"	f
+find_D	common/toolbox/toolbox_basic/affine/find_D.m	/^function D = find_D(I,J,mask,w)$/;"	f
+find_bst_cut	common/toolbox/toolbox_basic/filter_hist/find_bst_cut.m	/^function [cut_threshold,max_asso] = find_bst_cut(fn_base,para,threshold,Gmask)$/;"	f
+find_center	common/toolbox/toolbox_basic/affine/find_center.m	/^function [center_x,center_y] = find_center(size_x,size_y)$/;"	f
+find_center	common/toolbox/toolbox_basic/filter_hist/find_center.m	/^function [center_x,center_y] = find_center(size_x,size_y);$/;"	f
+find_cutpoint	common/toolbox/toolbox_basic/filter_hist/find_cutpoint.m	/^function [cutpoints,x] = find_cutpoint(data,cmap,nbin)$/;"	f
+find_edge	common/toolbox/toolbox_basic/common/find_edge.m	/^function [edgemap,mag,th] = find_edge(I,sig,mag_thld)$/;"	f
+find_textons	common/toolbox/toolbox_basic/textons/find_textons.m	/^function [centers,label,post,d2]=find_textons(FIw,ncenters,centers_in,n_iter);$/;"	f
+find_textons	common/toolbox/toolbox_basic/textons/find_textons1.m	/^function [centers,label,post,d2]=find_textons(fv,ncenters,centers_in,n_iter);$/;"	f
+firstncut	common/toolbox/toolbox_basic/stella/firstncut.m	/^function [v,s,d] = firstncut(base_name,rec_num);$/;"	f
+gauss	common/toolbox/toolbox_basic/filter/gauss.m	/^function dg = gauss(sig)$/;"	f
+gauss_lowpass	common/toolbox/toolbox_basic/pyramid/gauss_lowpass.m	/^function J = gauss_lowpass(I,a)$/;"	f
+gaussian	common/toolbox/MultiNcut/gaussian.m	/^function p=gaussian(x,m,C);$/;"	f
+gaussian	common/toolbox/toolbox_basic/filter/gaussian.m	/^function p=gaussian(x,m,C);$/;"	f
+gen_feature_s	common/toolbox/toolbox_basic/affine/gen_feature_s.m	/^function I = gen_feature_s(size_of_feature)$/;"	f
+gen_filters	common/toolbox/toolbox_basic/filter_hist/gen_filters.m	/^function filters = gen_filters(sig,r,sz);$/;"	f
+gen_w	common/toolbox/toolbox_basic/pyramid/gen_w.m	/^function w = gen_w(a)$/;"	f
+getANMS	benchmarks/tracking/src/c/getANMS.cu	/^F2D *getANMS (F2D *points, float r)$/;"	f
+getANMS	common/toolbox/ikkjin/getANMS.m	/^function [interestPnts]=getANMS(x, y, v, r, dataDir)$/;"	f
+getBmrkName	common/support/buildTable.py	/^def getBmrkName(fileName):$/;"	f
+getCycleCountTup	common/support/buildTable.py	/^def getCycleCountTup(fileName):$/;"	f
+getExprName	common/support/buildTable.py	/^def getExprName(fileName):$/;"	f
+getImgGrad	common/toolbox/ikkjin/getImgGrad.m	/^function Ig=getImgGrad(imgroi)$/;"	f
+getInterpolatePatch	benchmarks/tracking/src/c/getInterpolatePatch.cu	/^F2D* getInterpolatePatch(F2D* src, int cols, float centerX, float centerY, int winSize)$/;"	f
+getInterpolatePatch	common/toolbox/lagrcv/lagrcv.cpp	/^void getInterpolatePatch(double* srcImg, int* srcDims, double centerX, double centerY, int winSize, double* dstImg){$/;"	f
+getPatch	common/toolbox/lagrcv/lagrcv.cpp	/^void getPatch(double* srcImg, const int* srcDims, double centerX, double centerY, int winSize, double** dstImg){$/;"	f
+getPyramid	common/toolbox/lagrcv/test/getPyramid.m	/^function pyr=getPyramid(img, level)$/;"	f
+get_cumhist	common/toolbox/toolbox_basic/filter_hist/get_cumhist.m	/^function cumhists = get_cumhist(hists)$/;"	f
+get_cumhist	common/toolbox/toolbox_basic/filter_hist/get_cumhist_inten.m	/^function CH_inten = get_cumhist(hists)$/;"	f
+get_diff2	common/toolbox/toolbox_basic/filter/get_diff2.m	/^function [diffI,corr,mag,theta] = get_diff2(I,J,w)$/;"	f
+get_diff_free	common/toolbox/toolbox_basic/filter/get_diff_free.m	/^function [diff,corr,mag,angle] = get_diff_free(I,J)$/;"	f
+get_hists	common/toolbox/toolbox_basic/filter_hist/get_hist.m	/^function [hists,bins] = get_hists(J,Jbar)$/;"	f
+get_hists_inten	common/toolbox/toolbox_basic/filter_hist/get_hist_inten.m	/^function [Hinten,Hbins] = get_hists_inten(J,nbin)$/;"	f
+get_win	common/toolbox/toolbox_basic/filter_hist/get_win.m	/^function J = get_win(I,center,wc)$/;"	f
+get_win5	common/toolbox/toolbox_basic/filter_hist/get_win5.m	/^function J = get_win5(I,center,wc)$/;"	f
+getfnames	common/toolbox/toolbox_basic/stella/getfnames.m	/^function [fn,dn] = getfnames(direc,opt)$/;"	f
+getimage2	common/toolbox/toolbox_basic/stella/getimage2.m	/^function f = getimage2(imagefile)$/;"	f
+ginput2	common/toolbox/toolbox_basic/TOOLBOX_calib/ginput3.m	/^function [out1,out2,out3] = ginput2(arg1)$/;"	f
+ginput2	common/toolbox/toolbox_basic/calib_bouguetj/ginput3.m	/^function [out1,out2,out3] = ginput2(arg1)$/;"	f
+grad2	common/toolbox/toolbox_basic/filter/grad1.m	/^function [gx,gy] = grad2(I,ratio)$/;"	f
+grad2	common/toolbox/toolbox_basic/filter/grad2.m	/^function [gx,gy] = grad2(I,ratio)$/;"	f
+gradient	common/toolbox/toolbox_basic/affine/grad.m	/^function[gr,gc] = gradient(image, hsamples)$/;"	f
+gradient	common/toolbox/toolbox_basic/common/grad.m	/^function[gr,gc] = gradient(image, hsamples,cm)$/;"	f
+gradient	common/toolbox/toolbox_basic/filter_hist/grad.m	/^function[gr,gc] = gradient(image, hsamples)$/;"	f
+half_sigmoid	common/toolbox/toolbox_basic/filter_hist/half_sigmoid.m	/^function a = half_sigmoid(x,offset,sig)$/;"	f
+harris	common/toolbox/ikkjin/harris.m	/^function [x,y,v] = harris(imrgb);$/;"	f
+height	common/c/sdvbs_common.h	/^    int height;$/;"	m	struct:__anon1
+height	common/c/sdvbs_common.h	/^    int height;$/;"	m	struct:__anon2
+height	common/c/sdvbs_common.h	/^    int height;$/;"	m	struct:__anon3
+hemisphere	common/toolbox/toolbox_basic/affine/hemisphere_s.m	/^function [x,y,z] = hemisphere(r)$/;"	f
+hist2d	common/toolbox/toolbox_basic/filter_hist/hist2d.m	/^function H2 = hist2d(J,Jf,scales,filter_ids)$/;"	f
+hist_I_f	common/toolbox/toolbox_basic/filter_hist/hist_I_f.m	/^function h2d = hist_I_f(I,If,binI,binf)$/;"	f
+hist_diff	common/toolbox/toolbox_basic/filter_hist/hist_diff.m	/^function hdiff = hist_diff(H1,H2)$/;"	f
+hist_f	common/toolbox/toolbox_basic/filter_hist/hist_f.m	/^function h2d = hist_f(Ifs,f1,s1,f2,s2)$/;"	f
+hist_inner	common/toolbox/toolbox_basic/filter_hist/hist_inner.m	/^function fh = hist_inner(fv,hb)$/;"	f
+hist_inner_chank	common/toolbox/toolbox_basic/filter_hist/hist_in_chank.m	/^function covfh = hist_inner_chank(fv,chank_size,nbin)$/;"	f
+histbin_fv_chank	common/toolbox/toolbox_basic/filter_hist/histbin_fv_chank.m	/^function histbin_fv_chank(fvs,hb,chank_size,fname_base)$/;"	f
+hmflip	common/toolbox/toolbox_basic/matching/pub/contrib/v5/optim/assignprob/hungarian.m	/^function [A,C,U]=hmflip(A,C,LC,LR,U,l,r)$/;"	f
+hminiass	common/toolbox/toolbox_basic/matching/pub/contrib/v5/optim/assignprob/hungarian.m	/^function [A,C,U]=hminiass(A)$/;"	f
+hminired	common/toolbox/toolbox_basic/matching/pub/contrib/v5/optim/assignprob/hungarian.m	/^function A=hminired(A)$/;"	f
+hmreduce	common/toolbox/toolbox_basic/matching/pub/contrib/v5/optim/assignprob/hungarian.m	/^function [A,CH,RH]=hmreduce(A,CH,RH,LC,LR,SLC,SLR)$/;"	f
+horzcat	common/c/horzcat.cu	/^F2D* horzcat(F2D* a, F2D* b, F2D* c)$/;"	f
+hsv2clrs	common/toolbox/toolbox_basic/filter_hist/hsv2clrs.m	/^function [x,y,z] = hsv2clrs(h,s,v)$/;"	f
+hungarian	common/toolbox/toolbox_basic/matching/pub/contrib/v5/optim/assignprob/hungarian.m	/^function [C,T]=hungarian(A)$/;"	f
+iDeepCopy	common/c/iDeepCopy.cu	/^I2D* iDeepCopy(I2D* in)$/;"	f
+iDeepCopyRange	common/c/iDeepCopyRange.cu	/^I2D* iDeepCopyRange(I2D* in, int startRow, int numberRows, int startCol, int numberCols)$/;"	f
+iFreeHandle	common/c/iFreeHandle.cu	/^void iFreeHandle(I2D* out)$/;"	f
+iHorzcat	common/c/iHorzcat.cu	/^I2D* iHorzcat(I2D* a, I2D* b)$/;"	f
+iMallocHandle	common/c/iMallocHandle.cu	/^I2D* iMallocHandle(int rows, int cols)$/;"	f
+iMinus	common/c/iMinus.cu	/^I2D* iMinus(I2D* a, I2D* b)$/;"	f
+iReshape	common/c/iReshape.cu	/^I2D* iReshape(I2D* in, int rows, int cols)$/;"	f
+iSetArray	common/c/iSetArray.cu	/^I2D* iSetArray(int rows, int cols, int val)$/;"	f
+iSort	common/c/iSort.cu	/^I2D* iSort(I2D* in, int dim)$/;"	f
+iSortIndices	common/c/iSortIndices.cu	/^I2D* iSortIndices(I2D* in, int dim)$/;"	f
+iTimes	common/c/iTimes.cu	/^I2D* iTimes(I2D* a, I2D* b)$/;"	f
+iTranspose	common/c/iTranspose.cu	/^I2D* iTranspose(I2D* a)$/;"	f
+iVertcat	common/c/iVertcat.cu	/^I2D* iVertcat(I2D* matrix1, I2D* matrix2)$/;"	f
+idcut	common/toolbox/toolbox_basic/filter_hist/1d_cut.m	/^function [x,map] = idcut(data,cmap,nbin)$/;"	f
+idcut	common/toolbox/toolbox_basic/filter_hist/id_cut.m	/^function [x,map] = idcut(data,cmap,nbin)$/;"	f
+ifDeepCopy	common/c/ifDeepCopy.cu	/^I2D* ifDeepCopy(F2D* in)$/;"	f
+ifMtimes	common/c/ifMtimes.cu	/^F2D* ifMtimes(I2D* a, F2D* b)$/;"	f
+iiConv2	common/c/iiConv2.cu	/^I2D* iiConv2(I2D* a, I2D* b)$/;"	f
+im	common/toolbox/toolbox_basic/affine/im.m	/^function im(I)$/;"	f
+im	common/toolbox/toolbox_basic/disp/im.m	/^function im(I)$/;"	f
+im	common/toolbox/toolbox_basic/filter_hist/im.m	/^function im(I)$/;"	f
+im3	common/toolbox/toolbox_basic/filter_hist/im3.m	/^function im3(d)$/;"	f
+im5	common/toolbox/toolbox_basic/filter_hist/im5.m	/^function im5(data,nr,nc,mag)$/;"	f
+im_vd	common/toolbox/toolbox_basic/io/im_vd.m	/^function J = im_vd(I);$/;"	f
+im_vect	common/toolbox/toolbox_basic/filter_hist/im_vect.m	/^function a = im_vect(loca,v,scale);$/;"	f
+imageBlur	common/c/imageBlur.cu	/^F2D* imageBlur(I2D* imageIn)$/;"	f
+imageResize	common/c/imageResize.cu	/^F2D* imageResize(F2D* imageIn)$/;"	f
+imread2	common/toolbox/toolbox_basic/io/imread2.m	/^function I = imread2(fname,im_dir);$/;"	f
+imrotate	common/toolbox/toolbox_basic/filter/mimrotate.m	/^function bout = imrotate(arg1,arg2,arg3,arg4)$/;"	f
+imrotate	common/toolbox/toolbox_basic/filter_hist/imrotate.m	/^function bout = imrotate(arg1,arg2,arg3,arg4)$/;"	f
+ims	common/toolbox/toolbox_basic/disp/ims.m	/^function ims(I,nr,nc)$/;"	f
+ims	common/toolbox/toolbox_basic/filter_hist/ims.m	/^function ims(I,nr,nc)$/;"	f
+imvs	common/toolbox/toolbox_basic/filter_hist/imvs.m	/^function imvs(I,v,nr,nc)$/;"	f
+is3D	common/toolbox/toolbox_basic/TOOLBOX_calib/is3D.m	/^function test = is3D(X),$/;"	f
+is3D	common/toolbox/toolbox_basic/calib_bouguetj/is3D.m	/^function test = is3D(X),$/;"	f
+isMinus	common/c/isMinus.cu	/^I2D* isMinus(I2D* a, int b)$/;"	f
+isPlus	common/c/isPlus.cu	/^I2D* isPlus(I2D* a, int b)$/;"	f
+is_step	common/toolbox/toolbox_basic/filter_hist/is_step.m	/^function P_step = is_step(gx,gy)$/;"	f
+iter_AD	common/toolbox/toolbox_basic/affine/iter_AD.m	/^function [A,D] = iter_AD(I,J,mask,w,k,num_trans)$/;"	f
+jshincut	common/toolbox/toolbox_basic/stella/jshincut.m	/^function [par,rec_num] = jshincut(par,image_dir)$/;"	f
+jshincutdefpar	common/toolbox/toolbox_basic/stella/jshincutdefpar.m	/^function rec = jshincutdefpar;$/;"	f
+kmeans2	common/toolbox/toolbox_basic/textons/kmeans2.m	/^function [centres, options, d2, post, errlog] = kmeans2(centres, data, options)$/;"	f
+ks_2d	common/toolbox/toolbox_basic/filter_hist/ks_2d.m	/^function [na,nb,nc,nd] = ks_2d(cum_filter)$/;"	f
+loadinr	common/toolbox/toolbox_basic/TOOLBOX_calib/loadinr.m	/^function im = loadinr(fname, im)$/;"	f
+loadinr	common/toolbox/toolbox_basic/calib_bouguetj/loadinr.m	/^function im = loadinr(fname, im)$/;"	f
+loadpgm	common/toolbox/toolbox_basic/TOOLBOX_calib/loadpgm.m	/^function I = loadpgm(file)$/;"	f
+loadpgm	common/toolbox/toolbox_basic/calib_bouguetj/loadpgm.m	/^function I = loadpgm(file)$/;"	f
+loadppm	common/toolbox/toolbox_basic/TOOLBOX_calib/loadppm.m	/^function I = loadppm(file)$/;"	f
+loadppm	common/toolbox/toolbox_basic/calib_bouguetj/loadppm.m	/^function [R,G,B] = loadppm(file)$/;"	f
+m_interp4	common/toolbox/toolbox_basic/affine/m_interp4.m	/^function [F,mask] = m_interp4(z,s,t)$/;"	f
+m_interp4	common/toolbox/toolbox_basic/filter/m_interp4.m	/^function [F,mask] = m_interp4(z,s,t)$/;"	f
+m_interp4	common/toolbox/toolbox_basic/filter_hist/m_interp4.m	/^function [F,mask] = m_interp4(z,s,t)$/;"	f
+magic_timing_begin	common/c/timingUtils.h	26;"	d
+magic_timing_begin	common/c/timingUtils.h	2;"	d
+magic_timing_begin	common/c/timingUtils.h	69;"	d
+magic_timing_end	common/c/timingUtils.h	37;"	d
+magic_timing_end	common/c/timingUtils.h	6;"	d
+magic_timing_end	common/c/timingUtils.h	73;"	d
+magic_timing_report	common/c/timingUtils.h	15;"	d
+magic_timing_report	common/c/timingUtils.h	49;"	d
+magic_timing_report	common/c/timingUtils.h	77;"	d
+main	benchmarks/tracking/src/c/script_tracking.cu	/^int main(int argc, char* argv[])$/;"	f
+main	common/support/buildTable.py	/^def main():$/;"	f
+make_filter	common/toolbox/toolbox_basic/filter_hist/makefilter.m	/^function H = make_filter(txture,sze,noise)$/;"	f
+make_filter	common/toolbox/toolbox_basic/filter_hist/mkf_t1.m	/^function [H,h] = make_filter(txture,sze,noise)$/;"	f
+make_filter	common/toolbox/toolbox_basic/filter_hist/mkf_t2.m	/^function [H,h] = make_filter(txture,sze,noise)$/;"	f
+make_filter	common/toolbox/toolbox_basic/filter_hist/mkf_test.m	/^function [H,h] = make_filter(txture,sze,n_c,a,b,c)$/;"	f
+make_filterbank	common/toolbox/MultiNcut/make_filterbank_even2.m	/^function FB = make_filterbank(num_ori,filter_scales,wsz,enlong)$/;"	f
+make_filterbank	common/toolbox/MultiNcut/make_filterbank_odd2.m	/^function FB = make_filterbank(num_ori,filter_scales,wsz,enlong)$/;"	f
+make_filterbank	common/toolbox/toolbox_basic/common/make_filterbank_even2.m	/^function FB = make_filterbank(num_ori,filter_scales,wsz,enlong)$/;"	f
+make_filterbank	common/toolbox/toolbox_basic/common/make_filterbank_odd2.m	/^function FB = make_filterbank(num_ori,filter_scales,wsz,enlong)$/;"	f
+make_filterbank	common/toolbox/toolbox_basic/filter/make_filterbank.m	/^function FB = make_filterbank(num_ori,num_scale,wsz)$/;"	f
+make_filterbank	common/toolbox/toolbox_basic/filter/make_filterbank_even.m	/^function FB = make_filterbank(num_ori,filter_scales,wsz)$/;"	f
+make_filterbank	common/toolbox/toolbox_basic/filter/make_filterbank_odd.m	/^function FB = make_filterbank(num_ori,filter_scales,wsz)$/;"	f
+make_filterbank	common/toolbox/toolbox_basic/filtersQuad/make_filterbank_even2.m	/^function FB = make_filterbank(num_ori,filter_scales,wsz,enlong)$/;"	f
+make_filterbank	common/toolbox/toolbox_basic/filtersQuad/make_filterbank_odd2.m	/^function FB = make_filterbank(num_ori,filter_scales,wsz,enlong)$/;"	f
+make_filterbank_23	common/toolbox/toolbox_basic/filter/make_filterbank_23.m	/^function [FB,M1,M2,N3]=make_filterbank_23; $/;"	f
+make_masks	common/toolbox/toolbox_basic/filter_hist/make_masks.m	/^function masks = make_masks(groups,ids,nr,nc);$/;"	f
+make_multi_filter	common/toolbox/toolbox_basic/filter_hist/mkmulfilter.m	/^function H = make_multi_filter(templates,num_templates,sze,u,noise)$/;"	f
+makesgn	common/toolbox/toolbox_basic/filter_hist/mksgn.m	/^function sgn = makesgn(sigma,sigma_x,sze)$/;"	f
+makesgn	common/toolbox/toolbox_basic/filter_hist/mksgn2.m	/^function sgn = makesgn(sigma,sigma_x,sze)$/;"	f
+max_supress2	common/toolbox/toolbox_basic/common/max_supress2.m	/^function NMS = max_supress2(data,ismax);$/;"	f
+mean_std_robust	common/toolbox/toolbox_basic/TOOLBOX_calib/mean_std_robust.m	/^function [m,s] = mean_std_robust(x);$/;"	f
+mean_std_robust	common/toolbox/toolbox_basic/calib_bouguetj/mean_std_robust.m	/^function [m,s] = mean_std_robust(x);$/;"	f
+mexFunction	common/toolbox/MultiNcut/affinityic.c	/^void mexFunction($/;"	f
+mexFunction	common/toolbox/MultiNcut/cimgnbmap.c	/^void mexFunction($/;"	f
+mexFunction	common/toolbox/MultiNcut/cimgnbmap_cross.c	/^void mexFunction($/;"	f
+mexFunction	common/toolbox/MultiNcut/cimgnbmap_star.c	/^void mexFunction($/;"	f
+mexFunction	common/toolbox/MultiNcut/mex_projection_QR.c	/^void mexFunction($/;"	f
+mexFunction	common/toolbox/MultiNcut/mex_projection_QR_symmetric.c	/^void mexFunction($/;"	f
+mexFunction	common/toolbox/MultiNcut/multiAffinityic.c	/^void mexFunction($/;"	f
+mexFunction	common/toolbox/MultiNcut/multiIntensityFirstLayer.c	/^void mexFunction($/;"	f
+mexFunction	common/toolbox/MultiNcut/multiIntensityWppc.c	/^void mexFunction($/;"	f
+mexFunction	common/toolbox/MultiNcut/sparsifyc.c	/^void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])$/;"	f
+mexFunction	common/toolbox/MultiNcut/spmtimesd.c	/^void mexFunction($/;"	f
+mexFunction	common/toolbox/lagrcv/calcGradientPyrMex.cc	/^void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {$/;"	f
+mexFunction	common/toolbox/lagrcv/calcImgBlurMex.cc	/^void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {$/;"	f
+mexFunction	common/toolbox/lagrcv/calcOptFlowLKMex.cc	/^void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {$/;"	f
+mexFunction	common/toolbox/lagrcv/calcOptFlowLKPyrMex.cc	/^void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {$/;"	f
+mexFunction	common/toolbox/lagrcv/calcOptFlowLKPyrMex2.cc	/^void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {$/;"	f
+mexFunction	common/toolbox/lagrcv/calcOptFlowLKPyrWInitMex.cc	/^void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {$/;"	f
+mexFunction	common/toolbox/lagrcv/calcOptFlowLKPyrWInitMex2.cc	/^void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {$/;"	f
+mexFunction	common/toolbox/lagrcv/calcOptFlowLKPyrWInitSobelMex.cc	/^void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {$/;"	f
+mexFunction	common/toolbox/lagrcv/calcOpticalFlowLK.cc	/^void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {$/;"	f
+mexFunction	common/toolbox/lagrcv/calcOpticalFlowPyrLK.cc	/^void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {$/;"	f
+mexFunction	common/toolbox/lagrcv/calcResizedImgMex.cc	/^void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {$/;"	f
+mexFunction	common/toolbox/lagrcv/calcSobelMex.cc	/^void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {$/;"	f
+mexFunction	common/toolbox/lagrcv/calcSobelPyrMex.cc	/^void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {$/;"	f
+mexFunction	common/toolbox/lagrcv/calcSubsampleAvgMex.cc	/^void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {$/;"	f
+mexFunction	common/toolbox/lagrcv/calcTextureMex.cc	/^void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {$/;"	f
+mexFunction	common/toolbox/lagrcv/calcTexturePyrMex.cc	/^void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {$/;"	f
+mexFunction	common/toolbox/lagrcv/dummyMex.cc	/^void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {$/;"	f
+mexFunction	common/toolbox/lagrcv/findCornerSubPix.cc	/^void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {$/;"	f
+mexFunction	common/toolbox/lagrcv/goodFeaturesToTrack.cc	/^void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {$/;"	f
+mexFunction	common/toolbox/lagrcv/lk_flow.cc	/^void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {$/;"	f
+mexFunction	common/toolbox/lagrcv/test.cc	/^void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {$/;"	f
+mexFunction	common/toolbox/mex_template.c	/^void mexFunction(int nargout, mxArray *out[], int nargin, const mxArray $/;"	f
+mexFunction	common/toolbox/toolbox_basic/affinityic.c	/^void mexFunction($/;"	f
+mexFunction	common/toolbox/toolbox_basic/common/affinityic.c	/^void mexFunction($/;"	f
+mexFunction	common/toolbox/toolbox_basic/common/cimgnbmap.c	/^void mexFunction($/;"	f
+mexFunction	common/toolbox/toolbox_basic/common/spmtimesd.c	/^void mexFunction($/;"	f
+mexFunction	common/toolbox/toolbox_basic/spmtimesd.c	/^void mexFunction($/;"	f
+mgrad	common/toolbox/toolbox_basic/common/mgrad.m	/^function [dx,dy] = mgrad(I,w)$/;"	f
+mkdog1	common/toolbox/toolbox_basic/filter/mkdog1.m	/^function dog1 = mkdog1(sigma_base,size_w)$/;"	f
+mkdog2	common/toolbox/toolbox_basic/filter/mkdog2.m	/^function dog2 = mkdog2(sigma_base,size_w)$/;"	f
+mkdoog2	common/toolbox/toolbox_basic/filter/mkdoog2.m	/^function doog2 = mkdoog2(sigma_w,r,theta,size_w)$/;"	f
+mkdoog2	common/toolbox/toolbox_basic/filter_hist/mkpoog2.m	/^function doog2 = mkdoog2(sigma_w,r,theta,size_w)$/;"	f
+mkdoogs	common/toolbox/toolbox_basic/filter/mkdoogs.m	/^function [doogs,index] = mkdoogs(sigma_w,r,theta,theta_to,size_w)$/;"	f
+mkgaussian	common/toolbox/toolbox_basic/filter/mkg.m	/^function g= mkgaussian(xo,yo,sigma_x,sigma_y,size_w)$/;"	f
+mkgaussian	common/toolbox/toolbox_basic/filter_hist/mkg.m	/^function g= mkgaussian(xo,yo,sigma_x,sigma_y,size_w)$/;"	f
+mkgaussian	common/toolbox/toolbox_basic/filter_hist/mkgaussian.m	/^function G = mkgaussian(xo,yo,sigma_x,sigma_y,size_w)$/;"	f
+montage2	common/toolbox/toolbox_basic/disp/montage2.m	/^function montage2(FI)$/;"	f
+multi_error_oulu	common/toolbox/toolbox_basic/calib_bouguetj/multi_error_oulu.m	/^function ex = multi_error_oulu(param,n_ima,cc);$/;"	f
+mwis	common/toolbox/toolbox_basic/filter_hist/mwis.m	/^function [l1,l2,phi] = mwis(gx,gy)$/;"	f
+mwis_image	common/toolbox/toolbox_basic/filter_hist/mwis_image.m	/^function [l1,l2,phi] = mwis_image(gx,gy,hs)$/;"	f
+myinterp	common/toolbox/toolbox_basic/filter_hist/myinterp.m	/^function y = myinterp(d,rate)$/;"	f
+ncut	common/toolbox/toolbox_basic/common/ncut.m	/^function [v,s,na,d] = ncut(a,nv,sigma,offset)$/;"	f
+ncut	common/toolbox/toolbox_basic/common/ncut_b.m	/^function [v,d] = ncut(A,nv)$/;"	f
+ncut	common/toolbox/toolbox_basic/common/ncut_bb.m	/^function [v,d] = ncut(A,nv)$/;"	f
+ncut	common/toolbox/toolbox_basic/common/ncut_e.m	/^function [v,d] = ncut(A,nv)$/;"	f
+ncut	common/toolbox/toolbox_basic/common/ncut_neg.m	/^function [v,d] = ncut(A,nv)$/;"	f
+ncut	common/toolbox/toolbox_basic/common/ncut_sparse.m	/^function [v,d] = ncut(A,nv)$/;"	f
+ncut	common/toolbox/toolbox_basic/common/ncut_tmp.m	/^function [v,d] = ncut(A,nv)$/;"	f
+ncut	common/toolbox/toolbox_basic/filter_hist/Ncut.m	/^function [v,d] = ncut(A,nv)$/;"	f
+ncut	common/toolbox/toolbox_basic/filter_hist/ncut_b.m	/^function [v,d] = ncut(A,nv)$/;"	f
+ncutcheckin	common/toolbox/toolbox_basic/stella/ncutcheckin.m	/^function rec_num = ncutcheckin(fn,sdir,tdir)$/;"	f
+ncutd	common/toolbox/toolbox_basic/common/ncutd.m	/^function [v,s,na,d] = ncutd(a,nv,beta,sigma,offset)$/;"	f
+nonmaxsup	common/toolbox/toolbox_basic/common/nonmaxsup.m	/^function f = nonmaxsup(g,ismax,r)$/;"	f
+norm_inten	common/toolbox/toolbox_basic/affine/norm_inten.m	/^function I = norm_inten(J)$/;"	f
+normalize	common/toolbox/toolbox_basic/TOOLBOX_calib/normalize.m	/^function [xn] = normalize(x_kk,fc,cc,kc,alpha_c),$/;"	f
+normalize	common/toolbox/toolbox_basic/calib_bouguetj/normalize.m	/^function [xn] = normalize(x_kk,fc,cc,kc),$/;"	f
+openfigure	common/toolbox/toolbox_basic/stella/openfigure.m	/^function h = openfigure(m,n,caption,isnew)$/;"	f
+pair_dist_text3	common/toolbox/toolbox_basic/filter_hist/pair_dist_text3.m	/^function [A,D] = pair_dist_text3(Cum,cumhists)  $/;"	f
+pair_dist_text4	common/toolbox/toolbox_basic/filter_hist/pair_dist_text4.m	/^function [A] = pair_dist_text4(Iw,Cresult,cso)  $/;"	f
+pari_hist_dist_fast	common/toolbox/toolbox_basic/common/pair_dist.m	/^function W  = pari_hist_dist_fast(data)$/;"	f
+patch_cat	common/toolbox/toolbox_basic/filter_hist/patch_cat.m	/^function T = patch_cat(dotfilter,text_des)$/;"	f
+pathdef	common/toolbox/lagrcv/test/pathdef.m	/^function p = pathdef$/;"	f
+peek_pgm_size	common/toolbox/toolbox_basic/io/peek_pgm_size.m	/^function [nr,nc] = peek_pgm_size(filename)$/;"	f
+pgmread	common/toolbox/toolbox_basic/TOOLBOX_calib/pgmread.m	/^function img = pgmread(filename)$/;"	f
+pgmread	common/toolbox/toolbox_basic/affine/readpgm.m	/^function img = pgmread(filename)$/;"	f
+pgmread	common/toolbox/toolbox_basic/calib_bouguetj/pgmread.m	/^function img = pgmread(filename)$/;"	f
+pgmread	common/toolbox/toolbox_basic/filter_hist/pgmread.m	/^function img = pgmread(filename,size)$/;"	f
+pgmread	common/toolbox/toolbox_basic/filter_hist/readpgm.m	/^function img = pgmread(filename)$/;"	f
+pgmread	common/toolbox/toolbox_basic/io/pgmread.m	/^function [img,header] = pgmread(filename)$/;"	f
+pgmread	common/toolbox/toolbox_basic/io/read_scan.m	/^function [img,sizeinfo] = pgmread(filename)$/;"	f
+pgmread	common/toolbox/toolbox_basic/io/readpgm.m	/^function img = pgmread(filename)$/;"	f
+pgmread_evinfo	common/toolbox/toolbox_basic/io/readpgm_evinfo.m	/^function [img,ev_info] = pgmread_evinfo(filename)$/;"	f
+photonEndTiming	common/c/photonEndTiming.cu	/^unsigned int * photonEndTiming()$/;"	f
+photonPrintTiming	common/c/photonPrintTiming.cu	/^void photonPrintTiming(unsigned int * elapsed)$/;"	f
+photonReportTiming	common/c/photonReportTiming.cu	/^unsigned int * photonReportTiming(unsigned int* startCycles,unsigned int* endCycles)$/;"	f
+photonStartTiming	common/c/photonStartTiming.cu	/^unsigned int* photonStartTiming()$/;"	f
+ppm2jpg	common/toolbox/toolbox_basic/io/ppmtojpg.m	/^function []= ppm2jpg(fname,dlm,ori)$/;"	f
+proj_back	common/toolbox/toolbox_basic/filter_hist/proj_back.m	/^function mask = proj_back(I,hw,mask_s)$/;"	f
+proj_back_id	common/toolbox/toolbox_basic/filter_hist/proj_back_id.m	/^function [vbig,bnr,bnc] = proj_back_id(v,gcs,gce,grs,gre)$/;"	f
+project2_oulu	common/toolbox/toolbox_basic/TOOLBOX_calib/project2_oulu.m	/^function [x] = project2_oulu(X,R,T,f,t,k)$/;"	f
+project2_oulu	common/toolbox/toolbox_basic/calib_bouguetj/project2_oulu.m	/^function [x] = project2_oulu(X,R,T,f,t,k)$/;"	f
+project_points	common/toolbox/toolbox_basic/TOOLBOX_calib/project_points.m	/^function [xp,dxpdom,dxpdT,dxpdf,dxpdc,dxpdk] = project_points(X,om,T,f,c,k)$/;"	f
+project_points	common/toolbox/toolbox_basic/calib_bouguetj/project_points.m	/^function [xp,dxpdom,dxpdT,dxpdf,dxpdc,dxpdk] = project_points(X,om,T,f,c,k)$/;"	f
+project_points2	common/toolbox/toolbox_basic/TOOLBOX_calib/project_points2.m	/^function [xp,dxpdom,dxpdT,dxpdf,dxpdc,dxpdk,dxpdalpha] = project_points2(X,om,T,f,c,k,alpha)$/;"	f
+projectedGrid	common/toolbox/toolbox_basic/TOOLBOX_calib/projectedGrid.m	/^function [XX,H] = projectedGrid ( P1, P2, P3, P4 , nx, ny);$/;"	f
+projectedGrid	common/toolbox/toolbox_basic/calib_bouguetj/projectedGrid.m	/^function [XX,H] = projectedGrid ( P1, P2, P3, P4 , nx, ny);$/;"	f
+quadedgep	common/toolbox/toolbox_basic/common/quadedgep.m	/^function [x,y,gx,gy,par,threshold,mag,mage,g,FIe,FIo,mago] = quadedgep(I,par,threshold);$/;"	f
+quadedgep2	common/toolbox/MultiNcut/quadedgep2.m	/^function [x,y,gx,gy,par,threshold,mag_s,mage,g,FIe,FIo,mago] = quadedgep2(I,par,data,threshold);$/;"	f
+quadedgep2	common/toolbox/toolbox_basic/filtersQuad/quadedgep2.m	/^function [x,y,gx,gy,par,threshold,mag_s,mage,g,FIe,FIo,mago] = quadedgep2(I,par,data,threshold);$/;"	f
+quadpair	common/toolbox/toolbox_basic/filter/quadpair.m	/^function [F1,F2]=quadpair(sig,lam,th,N);$/;"	f
+quant	common/toolbox/toolbox_basic/filter_hist/quant.m	/^function [x,map] = quant(d1,d2,d3,nbin,ws)$/;"	f
+quickNcutHardBiais2	common/toolbox/MultiNcut/quickNcutHardBiais2.m	/^function [v,s] = quickNcutHardBiais2(W,U,nbEigenValues,dataGraphCut)%voir : rajouter sigma$/;"	f
+randWrapper	common/c/randWrapper.cu	/^F2D* randWrapper(int m, int n)$/;"	f
+randnWrapper	common/c/randnWrapper.cu	/^F2D* randnWrapper(int m, int n)$/;"	f
+read422	common/toolbox/toolbox_basic/io/read422.m	/^function I = read422(fname,nc);$/;"	f
+read422	common/toolbox/toolbox_basic/io/read422f.m	/^function I = read422(fname,nc);$/;"	f
+readFile	common/c/readFile.cu	/^F2D* readFile(unsigned char* fileName)$/;"	f
+readImage	common/c/readImage.cu	/^I2D* readImage(const char* pathName)$/;"	f
+read_ev_pgm	common/toolbox/toolbox_basic/io/read_ev_pgm.m	/^function [evs,ev_info] = read_ev_pgm(basename,start_id,end_id,neigs)$/;"	f
+read_ev_pgm	common/toolbox/toolbox_basic/io/read_ev_pgm_real.m	/^function [evs,ev_info] = read_ev_pgm(basename,start_id,end_id,neigs)$/;"	f
+read_ev_pgm2	common/toolbox/toolbox_basic/io/read_ev_pgm2.m	/^function [evs,ev_info] = read_ev_pgm2(basename,start_id,end_id,neigs)$/;"	f
+read_imgs	common/toolbox/toolbox_basic/io/read_cimgs.m	/^function Is = read_imgs(homedir,imgdir,prename,postname,digits,startid,endid,step_img)$/;"	f
+read_imgs	common/toolbox/toolbox_basic/io/read_imgs.m	/^function Is = read_imgs(homedir,imgdir,prename,postname,digits,startid,endid,step_img)$/;"	f
+read_pfm	common/toolbox/toolbox_basic/filter_hist/mreadpfm.m	/^function I = read_pfm(filename)$/;"	f
+read_pfm	common/toolbox/toolbox_basic/filter_hist/mreadpfm2.m	/^function I = read_pfm(filename)$/;"	f
+read_pmm	common/toolbox/toolbox_basic/io/read_pmm.m	/^function I = read_pmm(fname)$/;"	f
+read_seg	common/toolbox/toolbox_basic/io/read_seg_file.m	/^function [seg_map,seg] = read_seg(filename)$/;"	f
+readimage	common/toolbox/MultiNcut/readimage.m	/^function I = readimage(fn,maxSize);$/;"	f
+readlines	common/toolbox/toolbox_basic/io/readlines.m	/^function [lines,indexes] = readlines(fname)$/;"	f
+readpcm	common/toolbox/toolbox_basic/common/readpcm.m	/^function I = readpcm(filename)$/;"	f
+readpdm	common/toolbox/toolbox_basic/io/readpdm3.m	/^function I = readpdm(filename)$/;"	f
+readpfm	common/toolbox/toolbox_basic/common/readpdm.m	/^function I = readpfm(filename)$/;"	f
+readpfm	common/toolbox/toolbox_basic/common/readpfm.m	/^function I = readpfm(filename)$/;"	f
+readpfm	common/toolbox/toolbox_basic/filter_hist/readpdm.m	/^function I = readpfm(filename)$/;"	f
+readpfm	common/toolbox/toolbox_basic/filter_hist/readpfm.m	/^function I = readpfm(filename)$/;"	f
+readpfm	common/toolbox/toolbox_basic/filter_hist/readpfm_id.m	/^function Is = readpfm(filename,ids,nodes)$/;"	f
+readpfm	common/toolbox/toolbox_basic/filter_hist/readpfm_idf.m	/^function Is = readpfm(filename,ids,nodes)$/;"	f
+readpfm	common/toolbox/toolbox_basic/io/readpdmc.m	/^function I = readpfm(filename)$/;"	f
+readpfm	common/toolbox/toolbox_basic/io/readpfm.m	/^function I = readpfm(filename)$/;"	f
+readpfm	common/toolbox/toolbox_basic/io/readpfm3.m	/^function I = readpfm(filename)$/;"	f
+readpfm	common/toolbox/toolbox_basic/io/readpfmc.m	/^function I = readpfm(filename)$/;"	f
+readpmm	common/toolbox/toolbox_basic/io/readpmm.m	/^function I=readpmm(name)$/;"	f
+readpnm	common/toolbox/toolbox_basic/filter_hist/readpnm.m	/^function I = readpnm(name)$/;"	f
+readppm	common/toolbox/toolbox_basic/filter_hist/readppm.m	/^function [r, g, b] = readppm(name)$/;"	f
+readppm	common/toolbox/toolbox_basic/io/readppm.m	/^function [I,r, g, b] = readppm(name)$/;"	f
+readras	common/toolbox/toolbox_basic/TOOLBOX_calib/readras.m	/^function [X, map] = readras(filename, ys, ye, xs, xe);$/;"	f
+readras	common/toolbox/toolbox_basic/calib_bouguetj/readras.m	/^function [X, map] = readras(filename, ys, ye, xs, xe);$/;"	f
+rect	common/toolbox/toolbox_basic/TOOLBOX_calib/rect.m	/^function [Irec] = rect(I,R,f,c,k,alpha,KK_new);$/;"	f
+rect	common/toolbox/toolbox_basic/calib_bouguetj/rect.m	/^function [Irec] = rect(I,R,f,c,k,KK_new);$/;"	f
+reduce	common/toolbox/toolbox_basic/pyramid/reduce.m	/^function J = reduce(I)$/;"	f
+reduce_all	common/toolbox/toolbox_basic/filter_hist/reduce_all.m	/^function b = reduce_all(a)$/;"	f
+remap_angle	common/toolbox/toolbox_basic/remap_angle.m	/^function a = remap_angle(theta,min,max)$/;"	f
+renormalize	common/toolbox/toolbox_basic/common/renormalize.m	/^function W2 = renormalize(W,nstep)$/;"	f
+rigid_motion	common/toolbox/toolbox_basic/TOOLBOX_calib/rigid_motion.m	/^function [Y,dYdom,dYdT] = rigid_motion(X,om,T);$/;"	f
+rigid_motion	common/toolbox/toolbox_basic/calib_bouguetj/rigid_motion.m	/^function [Y,dYdom,dYdT] = rigid_motion(X,om,T);$/;"	f
+rodrigues	common/toolbox/toolbox_basic/TOOLBOX_calib/rodrigues.m	/^function	[out,dout]=rodrigues(in)$/;"	f
+rodrigues	common/toolbox/toolbox_basic/calib_bouguetj/rodrigues.m	/^function	[out,dout]=rodrigues(in)$/;"	f
+rotation	common/toolbox/toolbox_basic/TOOLBOX_calib/rotation.m	/^function [] = rotation(st);$/;"	f
+rotation	common/toolbox/toolbox_basic/calib_bouguetj/rotation.m	/^function [] = rotation(st);$/;"	f
+saveinr	common/toolbox/toolbox_basic/TOOLBOX_calib/saveinr.m	/^function saveinr(fname, im)$/;"	f
+saveinr	common/toolbox/toolbox_basic/calib_bouguetj/saveinr.m	/^function saveinr(fname, im)$/;"	f
+savepgm	common/toolbox/toolbox_basic/TOOLBOX_calib/savepgm.m	/^function savepgm(fname, im)$/;"	f
+savepgm	common/toolbox/toolbox_basic/calib_bouguetj/savepgm.m	/^function savepgm(fname, im)$/;"	f
+saveppm	common/toolbox/toolbox_basic/TOOLBOX_calib/saveppm.m	/^function saveppm(fname, I)$/;"	f
+saveppm	common/toolbox/toolbox_basic/calib_bouguetj/saveppm.m	/^function saveppm(fname, R, G, B)$/;"	f
+selfCheck	common/c/selfCheck.cu	/^int selfCheck(I2D* in1, char* path, int tol)$/;"	f
+show_3dpoints	common/toolbox/toolbox_basic/fact/show_3dpoints.m	/^function show_3dpoints(S)$/;"	f
+show_S	common/toolbox/toolbox_basic/fact/show_S.m	/^function show_S(S,fig)$/;"	f
+show_edge	common/toolbox/toolbox_basic/common/show_edge.m	/^function [id_i,id_j,ids] = show_edge(I,MI,thI);$/;"	f
+show_hist	common/toolbox/toolbox_basic/filter_hist/show_cumhist.m	/^function show_hist(cumhists,bins,fig_id,hold_flag,ct)$/;"	f
+show_hist	common/toolbox/toolbox_basic/filter_hist/show_hist.m	/^function show_hist(hists,bins,fig_id)$/;"	f
+show_t	common/toolbox/toolbox_basic/fact/show_t.m	/^function show_t(t)$/;"	f
+show_t	common/toolbox/toolbox_basic/fact/show_t3.m	/^function show_t(t)$/;"	f
+showim	common/toolbox/toolbox_basic/stella/showim.m	/^function showim(f,cmap,ishori)$/;"	f
+showmask	common/toolbox/MultiNcut/showmask.m	/^function RGB=showmask(V,M,hue);$/;"	f
+showmask	common/toolbox/toolbox_basic/disp/showmask.m	/^function showmask(V,M,display_flag);$/;"	f
+showmask	common/toolbox/toolbox_basic/disp/showmaskb.m	/^function RGB = showmask(V,M,M2,display_flag);$/;"	f
+showncut	common/toolbox/toolbox_basic/stella/showncut.m	/^function [g,lgd,v,s,dd] = showncut(fn,rec_num)$/;"	f
+showsmm	common/toolbox/toolbox_basic/filter_hist/showsmm.m	/^function [T,A,M2,TAM]=showsmm(L1,L2,phi,maxM);$/;"	f
+showsmm	common/toolbox/toolbox_basic/filter_hist/showsmm_v5.m	/^function [T,A,M2,TAM]=showsmm(L1,L2,phi,maxM);$/;"	f
+sigmoid	common/toolbox/toolbox_basic/filter_hist/sigmoid.m	/^function a = sigmoid(x,offset,sig)$/;"	f
+signif	common/toolbox/toolbox_basic/filter_hist/signif.m	/^function a = signif(b)$/;"	f
+signif_N	common/toolbox/toolbox_basic/filter_hist/signif_N.m	/^function a = signif_N(b,N)$/;"	f
+smooth	common/toolbox/toolbox_basic/filter/smooth.m	/^function g = smooth(image, hsamples)$/;"	f
+smooth	common/toolbox/toolbox_basic/filter_hist/smooth.m	/^function g = smooth(image, hsamples)$/;"	f
+softkmeans	common/toolbox/toolbox_basic/filter/softkmean.m	/^function [cluster,var,mix,membership,lG] = softkmeans(data,k,cluster0)$/;"	f
+softmeans	common/toolbox/toolbox_basic/filter/softmeans.m	/^function [cluster,var,mix,membership,lG] = softmeans(cluster0,var0,minvar,mix0,minmix,data)$/;"	f
+softmeans2	common/toolbox/toolbox_basic/filter/softmeans2.m	/^function [cluster,var,mix,membership,lG] = softmeans2(var0,minvar,mix0,minmix,data,cluster0,iter)$/;"	f
+subsref	common/c/sdvbs_common.h	33;"	d
+swarp	common/toolbox/toolbox_basic/filter_hist/swarp.m	/^function J = swarp(I)$/;"	f
+swarpback	common/toolbox/toolbox_basic/filter_hist/swarpback.m	/^function J = swarpback(I);$/;"	f
+temp2	common/toolbox/lagrcv/goodFeaturesToTrack.cc	/^IplImage *eigtemp = NULL, *temp2 = NULL;$/;"	v
+tim_eigs	common/toolbox/MultiNcut/tim_eigs.m	/^function  varargout = tim_eigs(varargin)$/;"	f
+tmp1	common/toolbox/toolbox_basic/filter_hist/tmp1.m	/^function d = tmp1(bs,be,data,sig)$/;"	f
+tmp2	common/toolbox/toolbox_basic/filter_hist/tmp2.m	/^function d = tmp2(bs,be,data,sig)$/;"	f
+true_loc	common/toolbox/toolbox_basic/filter_hist/true_loc.m	/^function a = true_loc(loca,g,scale);$/;"	f
+uiFreeHandle	common/c/uiFreeHandle.cu	/^void uiFreeHandle(UI2D* out)$/;"	f
+uiMallocHandle	common/c/uiMallocHandle.cu	/^UI2D* uiMallocHandle(int rows, int cols)$/;"	f
+uiSetArray	common/c/uiSetArray.cu	/^UI2D* uiSetArray(int rows, int cols, int val)$/;"	f
+vmquant	common/toolbox/toolbox_basic/common/vmquant.m	/^function [im, map] = vmquant(arg1,arg2,arg3,arg4,arg5,arg6,arg7)$/;"	f
+vmquant	common/toolbox/toolbox_basic/filter_hist/vmquant.m	/^function [im, map] = vmquant(arg1,arg2,arg3,arg4,arg5,arg6,arg7)$/;"	f
+weightedBlurKernel	common/kernels/imageBlur_kernel.cu	/^__global__ void weightedBlurKernel(int* inputPixels, float* outputPixels,float* intermediate, int* weightedKernel,uint width, uint height \/*, other arguments *\/)$/;"	f
+wfbp	common/toolbox/toolbox_basic/TOOLBOX_calib/ginput3.m	/^function key = wfbp$/;"	f
+wfbp	common/toolbox/toolbox_basic/calib_bouguetj/ginput3.m	/^function key = wfbp$/;"	f
+width	common/c/sdvbs_common.h	/^    int width;$/;"	m	struct:__anon1
+width	common/c/sdvbs_common.h	/^    int width;$/;"	m	struct:__anon2
+width	common/c/sdvbs_common.h	/^    int width;$/;"	m	struct:__anon3
+willson_convert	common/toolbox/toolbox_basic/TOOLBOX_calib/willson_convert.m	/^function [fc,cc,kc,Rc,Tc,omc,nx,ny] = willson_convert(Ncx,Nfx,dx,dy,dpx,dpy,Cx,Cy,sx,f,kappa1,Tx,Ty,Tz,Rx,Ry,Rz,p1,p2);$/;"	f
+wismm	common/toolbox/toolbox_basic/filter_hist/wismm.m	/^function [L1,L2,phi,Txx,Txy,Tyy]=wismm(X,N);$/;"	f
+wismm2	common/toolbox/toolbox_basic/filter_hist/wismm2.m	/^function [L1,L2,phi,aniso,pol,con,window_sizes]=wismm2(V);$/;"	f
+wismm3	common/toolbox/toolbox_basic/filter_hist/wismm3.m	/^function [L1,L2,phi,aniso,pol,con,window_sizes]=wismm3(V);$/;"	f
+writeMatrix	common/c/writeMatrix.cu	/^void writeMatrix(I2D* input, char* inpath)$/;"	f
+write_command	common/toolbox/toolbox_basic/filter_hist/write_command.m	/^function write_command(fname,fn_base,para)$/;"	f
+writeout_feature	common/toolbox/toolbox_basic/filter_hist/writeout_feature.m	/^function writeout_feature(I,tex,fname,I_max,tex_max)$/;"	f
+writepfm	common/toolbox/toolbox_basic/common/writepdm.m	/^function writepfm(name,I)$/;"	f
+writepfm	common/toolbox/toolbox_basic/common/writepfm.m	/^function writepfm(name,I)$/;"	f
+writepfm	common/toolbox/toolbox_basic/filter_hist/writepfm.m	/^function writepfm(name,I)$/;"	f
+writepgm	common/toolbox/toolbox_basic/filter_hist/writepgm.m	/^function I = writepgm(name,I)$/;"	f
+writepgm	common/toolbox/toolbox_basic/io/writepgm.m	/^function I = writepgm(name,I)$/;"	f
+writepmm	common/toolbox/toolbox_basic/filter_hist/writepmm.m	/^function writepmm(name,I)$/;"	f
+writepnm5	common/toolbox/toolbox_basic/filter_hist/writepnm5.m	/^function writepnm5(name,I)$/;"	f
+writeppm	common/toolbox/toolbox_basic/io/writeppm.m	/^function writeppm(name,I)$/;"	f
+writeras	common/toolbox/toolbox_basic/TOOLBOX_calib/writeras.m	/^function writeras(filename, image, map);$/;"	f
+writeras	common/toolbox/toolbox_basic/calib_bouguetj/writeras.m	/^function writeras(filename, image, map);$/;"	f
+zt	common/toolbox/toolbox_basic/fact/zt.m	/^function v = zt(a, b)$/;"	f

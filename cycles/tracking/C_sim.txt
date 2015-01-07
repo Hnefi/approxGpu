@@ -1,0 +1,4 @@
+Input size		- (48x48)
+Verification		- Successful
+Cycles elapsed		- 5253138
+

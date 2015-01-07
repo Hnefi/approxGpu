@@ -1,0 +1,86 @@
+10
+
+dir
+249
+svn://parallel.ucsd.edu/sd-vbs/benchmarks/tracking/data
+svn://parallel.ucsd.edu/sd-vbs
+
+
+
+2010-05-10T19:58:30.867393Z
+241
+kvs
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+91d582d5-6a0b-4526-a242-aea513efd8bb
+
+test
+dir
+
+cif
+dir
+
+qcif
+dir
+
+sim_fast
+dir
+
+sqcif
+dir
+
+sim
+dir
+
+vga
+dir
+
+Makefile
+file
+
+
+
+
+2014-11-04T14:44:28.000000Z
+7a38f8927fd1f6a9d0ae6c6575f62949
+2009-11-03T18:46:13.375780Z
+14
+kvs
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+100
+
+fullhd
+dir
+
