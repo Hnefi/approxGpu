@@ -1,9 +1,5 @@
-#define RADIUS 2
-#define DIAMETER (RADIUS*2) + 1
-#define S DIAMETER*DIAMETER // size
-#define CENTER S/2
-
-#define SINGLEDIMINDEX(i,j,width) ((j)*(width) + (i))
+#include "imageResize_kernel.h"
+#define SINGLEDIMINDEX(i,j,width) ((i)*(width) + (j))
 
 __global__ void imageResizeKernel(int* inputPixels, float* outputPixels,float* intermediate, int* weightedKernel,uint width, uint height /*, other arguments */)
 {
