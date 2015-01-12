@@ -1,4 +1,3 @@
-#include "imageBlur_kernel.h"
 #define RADIUS 2
 #define DIAMETER (RADIUS*2) + 1
 #define S DIAMETER*DIAMETER // size
@@ -6,7 +5,7 @@
 
 #define SINGLEDIMINDEX(i,j,width) ((j)*(width) + (i))
 
-__global__ void weightedBlurKernel(int* inputPixels, float* outputPixels,float* intermediate, int* weightedKernel,uint width, uint height /*, other arguments */)
+__global__ void imageResizeKernel(int* inputPixels, float* outputPixels,float* intermediate, int* weightedKernel,uint width, uint height /*, other arguments */)
 {
     // assign id's
     int i = blockIdx.x * blockDim.x + threadIdx.x;

@@ -3,6 +3,7 @@ Author: Sravanthi Kota Venkata
 ********************************/
 
 #include "sdvbs_common.h"
+#include "../kernels/imageResize_kernel.h"
 
 F2D* imageResize(F2D* imageIn)
 {

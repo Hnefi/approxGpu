@@ -18,7 +18,7 @@ Author: Sravanthi Kota Venkata
 #include <sys/time.h>
 
 #include "sdvbs_common.h"
-#include "../kernels/imageBlur_kernel.cu"
+#include "../kernels/imageBlur_kernel.h"
 
 F2D* imageBlur(I2D* imageIn)
 {
