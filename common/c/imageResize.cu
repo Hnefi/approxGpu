@@ -56,10 +56,6 @@ F2D* imageResize(F2D* imageIn)
             m = m+1;
         }
     }
-
-    /*for(i=(startRow*outputCols);i<= (startRow*outputCols)+5;i++)
-        //printf("\tElement # %d of row # %d of CPU intermediate array is: %0.4f\n",i,startRow,subsref(temp,startRow,i));
-        printf("\tElement # %d of CPU intermediate array is: %0.4f\n",i,temp->data[i]);*/
     
     m = 0;
     for(i=startRow; i<endRow; i+=2)

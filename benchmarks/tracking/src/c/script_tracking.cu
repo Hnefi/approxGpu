@@ -208,9 +208,8 @@ for(count=1; count<=counter; count++)
 
     /** Image pyramid **/
     blurred_level1 = blurredImage;
-    blurred_level2 = imageResize(blurredImage);
-    //blurred_level1 = ret->blurredImg;
-    //blurred_level2 = newFramePyramid->resizedImg;
+    //blurred_level2 = imageResize(blurredImage);
+    blurred_level2 = newFramePyramid->resizedImg;
 
     /** Gradient image computation, for all scales **/
     verticalEdge_level1 = calcSobel_dX(blurred_level1);   
