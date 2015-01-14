@@ -3,7 +3,6 @@ Author: Sravanthi Kota Venkata
 ********************************/
 
 #include "sdvbs_common.h"
-#include "../kernels/imageResize_kernel.h"
 
 F2D* imageResize(F2D* imageIn)
 {
@@ -50,12 +49,17 @@ F2D* imageResize(F2D* imageIn)
             tempVal = 0;
             for(k=-halfKernel; k<=halfKernel; k++)
             {
-                tempVal += subsref(imageIn,i,j+k) * asubsref(kernel,k+halfKernel);
+                float v = subsref(imageIn,i,j+k) * asubsref(kernel,k+halfKernel);
+                tempVal += v;
             }
             subsref(temp,i,m) = tempVal/kernelSum;
             m = m+1;
         }
     }
+
+    /*for(i=(startRow*outputCols);i<= (startRow*outputCols)+5;i++)
+        //printf("\tElement # %d of row # %d of CPU intermediate array is: %0.4f\n",i,startRow,subsref(temp,startRow,i));
+        printf("\tElement # %d of CPU intermediate array is: %0.4f\n",i,temp->data[i]);*/
     
     m = 0;
     for(i=startRow; i<endRow; i+=2)

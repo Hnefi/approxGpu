@@ -1,4 +1,10 @@
+// Mark Sutherland, Josh San Migue
+//  - U of Toronto
+
+// Global memory-based array image blur. non-optimized
+
 #include "imageBlur_kernel.h"
+
 #define RADIUS 2
 #define DIAMETER (RADIUS*2) + 1
 #define S DIAMETER*DIAMETER // size

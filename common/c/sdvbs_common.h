@@ -30,6 +30,13 @@ typedef struct
     float data[];
 }F2D;
 
+typedef struct {
+    F2D* blurredImg;
+    F2D* resizedImg;
+    F2D* horizEdge;
+    F2D* vertEdge;
+} ImagePyramid;
+
 #define subsref(a,i,j) a->data[(i) * a->width + (j)]
 #define asubsref(a,i) a->data[i]
 #define arrayref(a,i) a[i]
@@ -98,6 +105,7 @@ I2D* iiConv2(I2D* a, I2D* b);
 
 
 /** Image Transformations - resize, integration etc **/
+ImagePyramid* createImgPyramid(I2D* imageIn);
 F2D* imageResize(F2D* imageIn);
 F2D* imageBlur(I2D* imageIn);
 

@@ -40,7 +40,8 @@ M_RESULT=$(BMARK_DIR)/result
 
 # C source, data and result directory
 C_DIR=$(BMARK_DIR)/src/c
-C_OBJ=$(wildcard $(C_DIR)/*.cu)
+C_SRC := $(wildcard $(C_DIR)/*.cu)
+C_OBJ=$(C_SRC:.cu=.o)
 DATA_DIR=$(BMARK_DIR)/data/$(INPUT)
 C_RESULT=$(M_RESULT)
 
@@ -50,8 +51,6 @@ CUDA_SRC := $(wildcard $(CUDA_DIR)/*.cu)
 CUDA_OBJ := $(CUDA_SRC:.cu=.o)
 
 # Source files for C and Common folders
-C_SRC := $(wildcard $(C_DIR)/*.cu)
-#COMMON_SRC := $(wildcard $(COMMON_DIR)/*.c)
 COMMON_SRC = $(wildcard $(COMMON_DIR)/*.cu)
 COMMON_OBJ := $(COMMON_SRC:.cu=.o)
 
@@ -122,6 +121,15 @@ all: c-run matlab-run mcc-run
 clean:
 	@-rm $(BMARK)
 
-
-
-
+.PHONY: destroy
+destroy:
+	@-rm $(BMARK)
+	@echo -e "Cleaning all files in current directory..."
+	rm -f *.o
+	@echo -e "Cleaning all common C files..."
+	cd $(COMMON_DIR) 
+	rm -f *.o
+	@echo -e "Cleaning all kernel files..."
+	cd $(CUDA_DIR)
+	rm -f *o.o
+	cd $(DATA_DIR)

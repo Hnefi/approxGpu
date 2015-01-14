@@ -1,0 +1,1 @@
+__global__ void createImagePyramid(int* srcImg, float* blurOutputImg,float* resizedBlurImg,float* vertEdgeImg,float* horizEdgeImg, float* intermediate, float* intermediate2, float* intermediate_3, int* weightedKernel,uint width, uint height /*, other arguments */);

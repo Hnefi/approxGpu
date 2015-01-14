@@ -125,13 +125,20 @@ int main(int argc, char* argv[])
 
     /** Blur the image to remove noise - weighted avergae filter **/
 
-    /* MARK: Added code to use CUDA image blurring. */
-    blurredImage = imageBlur(Ic);
+    /* MARK: Added code to create all bluured level images in parallel */
+    ImagePyramid* preprocessed = createImgPyramid(Ic); // just need to define a struct to return 4 float* arrays
+    //blurredImage = imageBlur(Ic);
+    blurredImage = preprocessed->blurredImg;
 
     /** Scale down the image to build Image Pyramid. We find features across all scales of the image **/
     blurred_level1 = blurredImage;                   /** Scale 0 **/
-    blurred_level2 = imageResize(blurredImage);      /** Scale 1 **/
-
+    blurred_level2 = preprocessed->resizedImg;     /** Scale 1 **/
+    //blurred_level2 = imageResize(blurredImage);
+    //F2D* cpu_level2 = imageResize(blurredImage); 
+    /*for(int i = 0 ;i < 100;i++) {
+        printf("Element # %d of GPU resize: %0.4f\n",i,blurred_level2->data[i]);
+        printf("Element # %d of CPU resize: %0.4f\n",i,cpu_level2->data[i]);
+     }*/
 
     /** Edge Images - From pre-processed images, build gradient images, both horizontal and vertical **/
     verticalEdgeImage = calcSobel_dX(blurredImage);
@@ -188,8 +195,11 @@ for(count=1; count<=counter; count++)
     /* Start timing */
     start = photonStartTiming();
 
+    /** MARK Added: Create the new blurred and resized image**/
+    ImagePyramid* newFramePyramid = createImgPyramid(Ic); // just need to define a struct to return 4 float* arrays
     /** Blur image to remove noise **/
-    blurredImage = imageBlur(Ic);
+    //blurredImage = imageBlur(Ic);
+    blurredImage = newFramePyramid->blurredImg;
     previousFrameBlurred_level1 = fDeepCopy(blurred_level1);
     previousFrameBlurred_level2 = fDeepCopy(blurred_level2);
     
@@ -199,6 +209,8 @@ for(count=1; count<=counter; count++)
     /** Image pyramid **/
     blurred_level1 = blurredImage;
     blurred_level2 = imageResize(blurredImage);
+    //blurred_level1 = ret->blurredImg;
+    //blurred_level2 = newFramePyramid->resizedImg;
 
     /** Gradient image computation, for all scales **/
     verticalEdge_level1 = calcSobel_dX(blurred_level1);   
