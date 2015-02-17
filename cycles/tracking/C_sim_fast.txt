@@ -1,4 +1,6 @@
 Input size		- (32x32)
-Verification		- Successful
-Cycles elapsed		- 506747704
+Finished kernel blur.... Calling kernel resize with resized rows: 16, resized cols: 16, and (0x0) grid of thread blocks.
+Checking error: dimensions mismatch. Expected = 4, Observed = 0 
+Error in Tracking Map
+Cycles elapsed		- 540671494
 

@@ -50,17 +50,23 @@ F2D* imageResize(F2D* imageIn)
             for(k=-halfKernel; k<=halfKernel; k++)
             {
                 float v = subsref(imageIn,i,j+k) * asubsref(kernel,k+halfKernel);
+                if (i==30 & m == 0) {
+                    printf("CPU reading element: %d, row# %d col# %d, value: %0.8f\n",i*cols+j+k,i,m,subsref(imageIn,i,j+k));
+                }
                 tempVal += v;
+            }
+            if (i==30 & m == 0) {
+                printf("CPU row# %d col# %d final intermediate value: %0.4f.\n",i,m,tempVal/kernelSum);
             }
             subsref(temp,i,m) = tempVal/kernelSum;
             m = m+1;
         }
     }
-
-    /*for(i=(startRow*outputCols);i<= (startRow*outputCols)+5;i++)
+    /*
+    for(i=0;i<rows*outputCols;i++)
         //printf("\tElement # %d of row # %d of CPU intermediate array is: %0.4f\n",i,startRow,subsref(temp,startRow,i));
-        printf("\tElement # %d of CPU intermediate array is: %0.4f\n",i,temp->data[i]);*/
-    
+        printf("\tElement # %d of CPU intermediate array is: %0.4f\n",i,temp->data[i]);
+ */ 
     m = 0;
     for(i=startRow; i<endRow; i+=2)
     {
@@ -76,8 +82,8 @@ F2D* imageResize(F2D* imageIn)
         m = m+1;
     }
 
-    fFreeHandle(temp);
+    //fFreeHandle(temp);
+    fFreeHandle(imageOut);
     iFreeHandle(kernel);
-    return imageOut;
-    
+    return temp;
 }

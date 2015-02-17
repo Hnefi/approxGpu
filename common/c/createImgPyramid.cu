@@ -26,8 +26,17 @@ ImagePyramid* createImgPyramid(I2D* imageIn)
     int weightedKernel[5] = {1,4,6,4,1};
     int sobelKernel_1[3] = {1,0,-1};
     int sobelKernel_2[3] = {1,2,1};
-    dim3 nblocks(4,3);
+    
+    //dim3 nblocks(4,3);
     dim3 threadsPerBlock(32,32);
+
+    // dynamically calculate how many thread blocks to launch
+    int nBlocksWide = cols/32;
+    if (cols % 32) nBlocksWide++;
+    int nBlocksTall = rows/32;
+    if (rows % 32) nBlocksTall++;
+    dim3 nblocks(nBlocksWide,nBlocksTall);
+
     int* d_inputPixels;
     float* d_outputPixels;
     float* d_intermediate;
@@ -56,19 +65,30 @@ ImagePyramid* createImgPyramid(I2D* imageIn)
     // resize is smaller than the blurred
     int resizedRows = floor((rows+1)/2);
     int resizedCols = floor((cols+1)/2);
+    // dynamically calculate how many thread blocks to launch
+    /*
+    nBlocksWide = resizedCols/32;
+    if (resizedCols % 32) nBlocksWide++;
+    nBlocksTall = resizedRows/32;
+    if (resizedRows % 32) nBlocksTall++;
+    dim3 nBlocksResize(nBlocksWide,nBlocksTall);
+    */
 
-    cudaMalloc((void**)&resizeInt,rows*cols*sizeof(int));
-    cudaMalloc((void**)&dxInt,rows*cols*sizeof(int));
-    cudaMalloc((void**)&dyInt,rows*cols*sizeof(int));
-    cudaMalloc((void**)&resizeOutput,resizedRows*resizedCols*sizeof(int));
-    cudaMalloc((void**)&dxOutput,rows*cols*sizeof(int));
-    cudaMalloc((void**)&dyOutput,rows*cols*sizeof(int));
+    cudaMalloc((void**)&resizeInt,rows*resizedCols*sizeof(float));
+    cudaMalloc((void**)&dxInt,rows*cols*sizeof(float));
+    cudaMalloc((void**)&dyInt,rows*cols*sizeof(float));
+    cudaMalloc((void**)&resizeOutput,resizedRows*resizedCols*sizeof(float));
+    cudaMalloc((void**)&dxOutput,rows*cols*sizeof(float));
+    cudaMalloc((void**)&dyOutput,rows*cols*sizeof(float));
 
     // clear outputs since we only access some of these pixels, others are blank 
     cudaMemset(resizeOutput,0,resizedRows*resizedCols*sizeof(float));
     cudaMemset(dxOutput,0,rows*cols*sizeof(float));
     cudaMemset(dyOutput,0,rows*cols*sizeof(float));
+    cudaMemset(resizeInt,0,rows*resizedCols*sizeof(float));
 
+
+    printf("Finished kernel blur.... Calling kernel resize with resized rows: %d, resized cols: %d, and (%dx%d) grid of thread blocks.\n",resizedRows,resizedCols,nBlocksWide,nBlocksTall);
     /* Call all kernels in one stream (order does not matter as they all read their input from d_outputPixels) */
     imageResizeKernel<<<nblocks,threadsPerBlock>>>(d_outputPixels,resizeOutput,resizeInt,d_weightedKernel,rows,cols,resizedRows,resizedCols);
     //sobelXFilter<<<nblocks,threadsPerBlock>>>(d_outputPixels,dxOutput,dxInt,sobelKernel_1,sobelKernel_2,rows,cols);
@@ -85,6 +105,16 @@ ImagePyramid* createImgPyramid(I2D* imageIn)
     retStruct->vertEdge = fSetArray(rows,cols,0);
     memcpy((void*)&(retStruct->blurredImg->data[0]),(void*)&outputPixels[0],rows*cols*sizeof(float));
     cudaMemcpy((void*)&(retStruct->resizedImg->data[0]),resizeOutput,resizedRows*resizedCols*sizeof(float),cudaMemcpyDeviceToHost);
+
+    cudaDeviceSynchronize();
+  
+   
+    // TEMPORARY COPY FOR DEBUG.
+    cudaMemcpy((void*)&(retStruct->horizEdge->data[0]),resizeInt,rows*resizedCols*sizeof(float),cudaMemcpyDeviceToHost);
+    /*
+    for(int i=0;i<rows*resizedCols;i++){
+        printf("Element # %d of GPU intermediate array is: %0.4f\n",i,retStruct->horizEdge->data[i]);
+    }*/
 
     free(outputPixels); // on the host size, we copied it into the retStruct so we didn't lose the image
     cudaFree(resizeInt);
