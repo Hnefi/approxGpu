@@ -1,2 +1,2 @@
 
-__global__ void imageResizeKernel(float* inputPixels, float* outputPixels,float* intermediate, int* weightedKernel,uint width, uint height,uint r,uint c /*, other arguments */);
+__global__ void resizeKernel_st1(float* inputPixels,float* intermediate, int* weightedKernel,uint width, uint height,uint r,uint c /*, other arguments */);

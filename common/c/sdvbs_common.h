@@ -37,6 +37,11 @@ typedef struct {
     F2D* vertEdge;
 } ImagePyramid;
 
+typedef struct {
+    F2D* final;
+    F2D* intermediate;
+} TwoStepKernel;
+
 #define subsref(a,i,j) a->data[(i) * a->width + (j)]
 #define asubsref(a,i) a->data[i]
 #define arrayref(a,i) a[i]
@@ -106,8 +111,10 @@ I2D* iiConv2(I2D* a, I2D* b);
 
 /** Image Transformations - resize, integration etc **/
 ImagePyramid* createImgPyramid(I2D* imageIn);
-F2D* imageResize(F2D* imageIn);
-F2D* imageBlur(I2D* imageIn);
+//F2D* imageResize(F2D* imageIn);
+TwoStepKernel* imageResize(F2D* imageIn);
+//F2D* imageBlur(I2D* imageIn);
+TwoStepKernel* imageBlur(I2D* imageIn);
 
 
 /** Support functions **/

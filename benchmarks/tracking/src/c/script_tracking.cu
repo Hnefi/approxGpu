@@ -107,6 +107,9 @@ int main(int argc, char* argv[])
         counter = 4;
     #endif
 
+
+    cudaDeviceReset();
+
     /** Read input image **/
     Ic = readImage(im1);
     rows = Ic->height;
@@ -132,14 +135,28 @@ int main(int argc, char* argv[])
     /** Scale down the image to build Image Pyramid. We find features across all scales of the image **/
     blurred_level1 = blurredImage;                   /** Scale 0 **/
     blurred_level2 = preprocessed->resizedImg;     /** Scale 1 **/
-    F2D* blurredImageCPU = imageBlur(Ic);
-    F2D* cpu_level2 = imageResize(blurredImageCPU); 
+    /*
+    TwoStepKernel* cpu_blur_ret = imageBlur(Ic);
+    TwoStepKernel* cpu_resize_ret = imageResize(cpu_blur_ret->final);
+    blurred_level2 = cpu_resize_ret->final;
+    F2D* blurredImageCPU = cpu_blur_ret->final;
+    F2D* intBlurCPU = cpu_blur_ret->intermediate;
     F2D* gpuResizeInt = preprocessed->horizEdge;
-    for(int i = 0 ;i < cpu_level2->height * cpu_level2->width;i++) {
-        printf("Element # %d of GPU intermediate: %0.4f\n",i,gpuResizeInt->data[i]);
-        printf("Element # %d of CPU intermediate: %0.4f\n",i,cpu_level2->data[i]);
-     }
+    F2D* cpuResizeInt = cpu_resize_ret->intermediate;
+    */
 
+     //for(int i = 0 ;i < blurred_level2->height * blurred_level2->width ;i++) {
+        //printf("Element # %d of GPU int: %0.8f\n",i,preprocessed->vertEdge->data[i]);
+        //printf("Element # %d of CPU int: %0.8f\n", i,intBlurCPU->data[i]);
+        //printf("Element # %d of GPU blur: %0.8f\n",i,blurred_level1->data[i]);
+        //printf("Element # %d of CPU blur: %0.8f\n",i,blurredImageCPU->data[i]);
+
+        //printf("Element # %d of GPU int: %0.8f\n",i,gpuResizeInt->data[i]);
+        //printf("Element # %d of CPU int: %0.8f\n",i,cpuResizeInt->data[i]);
+        //printf("Element # %d of GPU resize: %0.8f\n",i,blurred_level2->data[i]);
+        //printf("Element # %d of CPU resize: %0.8f\n",i,cpu_resize_ret->final->data[i]);
+     //} 
+     
     /** Edge Images - From pre-processed images, build gradient images, both horizontal and vertical **/
     verticalEdgeImage = calcSobel_dX(blurredImage);
     horizontalEdgeImage = calcSobel_dY(blurredImage);
@@ -196,10 +213,11 @@ for(count=1; count<=counter; count++)
     start = photonStartTiming();
 
     /** MARK Added: Create the new blurred and resized image**/
-    //ImagePyramid* newFramePyramid = createImgPyramid(Ic); // just need to define a struct to return 4 float* arrays
+    ImagePyramid* newFramePyramid = createImgPyramid(Ic); // just need to define a struct to return 4 float* arrays
     /** Blur image to remove noise **/
-    blurredImage = imageBlur(Ic);
-    ///blurredImage = newFramePyramid->blurredImg;
+    //TwoStepKernel* ret = imageBlur(Ic);
+    //blurredImage = ret->final;
+    blurredImage = newFramePyramid->blurredImg;
     previousFrameBlurred_level1 = fDeepCopy(blurred_level1);
     previousFrameBlurred_level2 = fDeepCopy(blurred_level2);
     
@@ -208,8 +226,9 @@ for(count=1; count<=counter; count++)
 
     /** Image pyramid **/
     blurred_level1 = blurredImage;
-    blurred_level2 = imageResize(blurredImage);
-    //blurred_level2 = newFramePyramid->resizedImg;
+    //ret = imageResize(blurredImage);
+    //blurred_level2 = ret->final;
+    blurred_level2 = newFramePyramid->resizedImg;
 
     /** Gradient image computation, for all scales **/
     verticalEdge_level1 = calcSobel_dX(blurred_level1);   

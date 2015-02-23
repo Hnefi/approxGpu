@@ -16,60 +16,84 @@ Author: Sravanthi Kota Venkata
 #include <sys/mman.h>
 #include <time.h>
 #include <sys/time.h>
-
 #include "sdvbs_common.h"
-#include "../kernels/imageBlur_kernel.h"
 
-F2D* imageBlur(I2D* imageIn)
+//F2D* imageBlur(I2D* imageIn)
+TwoStepKernel* imageBlur(I2D* imageIn)
 {
     int rows, cols;
+    F2D *imageOut, *tempOut;
+    float temp;
+    I2D *kernel;
+    int k, kernelSize, startCol, endCol, halfKernel, startRow, endRow, i, j, kernelSum;
 
     rows = imageIn->height;
     cols = imageIn->width;
-  
-    int weightedKernel[5] = {1,4,6,4,1};
-    dim3 nblocks(4,3);
-    dim3 threadsPerBlock(32,32);
-    int* d_inputPixels;
-    float* d_outputPixels;
-    float* d_intermediate;
-    int* d_weightedKernel;
-    cudaMalloc((void**)&d_inputPixels,rows*cols*sizeof(int));
-    cudaMalloc((void**)&d_outputPixels,rows*cols*sizeof(float));
-    cudaMalloc((void**)&d_intermediate,rows*cols*sizeof(float));
-    cudaMalloc((void**)&d_weightedKernel,5*sizeof(int));
-    cudaMemcpy(d_inputPixels,&(imageIn->data[0]),rows*cols*sizeof(int),cudaMemcpyHostToDevice);
-    cudaMemcpy(d_weightedKernel,&(weightedKernel[0]),5*sizeof(int),cudaMemcpyHostToDevice);
-    cudaMemset(d_outputPixels,0,rows*cols*sizeof(float));
-    cudaMemset(d_intermediate,0,rows*cols*sizeof(float));
 
-    /* Kernel call */
-    weightedBlurKernel<<<nblocks,threadsPerBlock>>>(d_inputPixels,d_outputPixels,d_intermediate,d_weightedKernel,cols,rows);
+    TwoStepKernel* ret = (TwoStepKernel*) malloc(sizeof(TwoStepKernel));
+    ret->final = fSetArray(rows,cols,0);
+    ret->intermediate = fSetArray(rows,cols,0);
 
-    cudaThreadSynchronize();
+    imageOut = fSetArray(rows, cols, 0);
+    tempOut = fSetArray(rows, cols, 0);
+    kernel = iMallocHandle(1, 5); // 1 row, 5 columns of kernel (NON SQUARE)
 
-    float* outputPixels = (float*)malloc(rows*cols*sizeof(float));
-    cudaMemcpy(outputPixels,d_outputPixels,rows*cols*sizeof(float),cudaMemcpyDeviceToHost);
+    asubsref(kernel,0) = 1; //kernel->data[0] = 1;
+    asubsref(kernel,1) = 4;
+    asubsref(kernel,2) = 6;
+    asubsref(kernel,3) = 4;
+    asubsref(kernel,4) = 1;
+    kernelSize = 5;
+    kernelSum = 16;
 
-    // deep copy into imageOut structure
-    F2D* imageOut = fSetArray(rows,cols,0);
-    memcpy((void*)&(imageOut->data[0]),(void*)&outputPixels[0],rows*cols*sizeof(float));
-    cudaFree(d_inputPixels);
-    cudaFree(d_outputPixels);
-    cudaFree(d_intermediate);
-    cudaFree(d_weightedKernel);
-    return imageOut;
+    startCol = 2;  
+    endCol = cols - 2;  
+    halfKernel = 2;   
+
+    startRow = 2;    
+    endRow = rows - 2;  
 #ifdef APPROXIMATE
     // approximate all of the image data. NOTE: NOT THE KERNEL
     LVA_FUNCTION(2 /* int */, &(imageIn->data[0]),&(imageIn->data[rows*cols]),1);
     LVA_FUNCTION(5/*float*/, &(tempOut->data[0]),&(tempOut->data[rows*cols]),1);
     LVA_FUNCTION(5/*float*/, &(imageOut->data[0]),&(imageOut->data[rows*cols]),1);
 #endif
+    for(i=startRow; i<endRow; i++){
+        for(j=startCol; j<endCol; j++)
+        {
+            temp = 0;
+            for(k=-halfKernel; k<=halfKernel; k++)
+            {
+                temp += subsref(imageIn,i,j+k) * asubsref(kernel,k+halfKernel);
+            }
+            //subsref(tempOut,i,j) = temp/kernelSum;
+            subsref(ret->intermediate,i,j) = temp/kernelSum;
+        }
+    }
+    
+    for(i=startRow; i<endRow; i++)
+    {
+        for(j=startCol; j<endCol; j++)
+        {
+            temp = 0;
+            for(k=-halfKernel; k<=halfKernel; k++)
+            {
+                //temp += subsref(tempOut,(i+k),j) * asubsref(kernel,k+halfKernel);
+                temp += subsref(ret->intermediate,(i+k),j) * asubsref(kernel,k+halfKernel);
+            }
+            //subsref(imageOut,i,j) = temp/kernelSum;
+            subsref(ret->final,i,j) = temp/kernelSum;
+        }
+    }
 #ifdef APPROXIMATE
     LVA_FUNCTION_RM(2 /* int */ ,&(imageIn->data[0]),&(imageIn->data[rows*cols]),1);
     LVA_FUNCTION_RM(5/*float*/ ,&(tempOut->data[0]),&(tempOut->data[rows*cols]),1);
     LVA_FUNCTION_RM(5/*float*/ ,&(imageOut->data[0]),&(imageOut->data[rows*cols]),1);
 #endif
+    fFreeHandle(tempOut);
+    iFreeHandle(kernel);
+    //return imageOut;
+    return ret;
 }
              
 

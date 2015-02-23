@@ -3,12 +3,12 @@
 
 // Global memory-based array image blur. non-optimized
 
-#include "imageBlur_kernel.h"
+#include "imageBlur_kernel_stage2.h"
 
 #define RADIUS 2
 #define SINGLEDIMINDEX(i,j,width) ((i)*(width) + (j))
 
-__global__ void blurKernel_st1(int* inputPixels, float* intermediate, int* weightedKernel,uint width, uint height /*, other arguments */)
+__global__ void blurKernel_st2(float* outputPixels,float* intermediate, int* weightedKernel,uint width, uint height /*, other arguments */)
 {
     // assign id's
     int i = blockIdx.x * blockDim.x + threadIdx.x;
@@ -44,21 +44,20 @@ __global__ void blurKernel_st1(int* inputPixels, float* intermediate, int* weigh
                 ((jdx == j + yScale) && height <= totalY)) break; // same corner case
             float tmp = 0.0;
 
-              if( jdx < height-2 && jdx > 1
-                && idx < width-2 && idx > 1 ){
-                //int curElement = (width * jdx) + idx;
+            if(idx < width-2 && idx > 1
+               && jdx < height-2 && jdx > 1) { // bounds check #1
                   int curElement = SINGLEDIMINDEX(jdx,idx,width);
 
                 for (int ii = -RADIUS;ii <= RADIUS;ii++) {
-                    int location = curElement + ii;
+                    int location = curElement + (ii*width);
                     int filterWeightLoc = RADIUS + ii;
                     // bounds check #2 for surrounding pix
                     if (location < (width*height) && location >= 0) {
-                        tmp += inputPixels[location]*weightedKernel[filterWeightLoc];
+                        tmp += intermediate[location]*weightedKernel[filterWeightLoc];
                     }
                 }
-                float avg = (float)tmp / kernelSum;
-                intermediate[curElement] = avg;
+                float avg = tmp / kernelSum;
+                outputPixels[curElement] = avg;
             }
         }
     }
