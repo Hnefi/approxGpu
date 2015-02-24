@@ -60,16 +60,9 @@ ImagePyramid* createImgPyramid(I2D* imageIn)
     cudaMemset(d_outputPixels,0,rows*cols*sizeof(float));
     cudaMemset(d_intermediate,0,rows*cols*sizeof(float));
 
-    /* Kernel call */
-    blurKernel_st1<<<nblocks,threadsPerBlock>>>(d_inputPixels,d_intermediate,d_weightedKernel,cols,rows);
-    blurKernel_st2<<<nblocks,threadsPerBlock>>>(d_outputPixels,d_intermediate,d_weightedKernel,cols,rows);
-
-    cudaDeviceSynchronize();
-
     // set up memory for other 3 images. first blur output serves as input here.
     float* resizeInt, *dxInt, *dyInt;
     float* resizeOutput, *dxOutput, *dyOutput;
-
     cudaMalloc((void**)&resizeInt,rows*resizedCols*sizeof(float));
     cudaMalloc((void**)&dxInt,rows*cols*sizeof(float));
     cudaMalloc((void**)&dyInt,rows*cols*sizeof(float));
@@ -82,6 +75,10 @@ ImagePyramid* createImgPyramid(I2D* imageIn)
     cudaMemset(resizeInt,0,rows*resizedCols*sizeof(float));
     cudaMemset(dxOutput,0,rows*cols*sizeof(float));
     cudaMemset(dyOutput,0,rows*cols*sizeof(float));
+
+    /* Kernel call */
+    blurKernel_st1<<<nblocks,threadsPerBlock>>>(d_inputPixels,d_intermediate,d_weightedKernel,cols,rows);
+    blurKernel_st2<<<nblocks,threadsPerBlock>>>(d_outputPixels,d_intermediate,d_weightedKernel,cols,rows);
 
     /* Call all kernels in one stream (order does not matter as they all read their input from d_outputPixels) */
     resizeKernel_st1<<<nblocks,threadsPerBlock>>>(d_outputPixels,resizeInt,d_weightedKernel,rows,cols,resizedRows,resizedCols);
@@ -102,8 +99,8 @@ ImagePyramid* createImgPyramid(I2D* imageIn)
     cudaMemcpy((void*)&(retStruct->resizedImg->data[0]),resizeOutput,resizedRows*resizedCols*sizeof(float),cudaMemcpyDeviceToHost);
 
     // TEMPORARY COPY FOR DEBUG.
-    cudaMemcpy((void*)&(retStruct->horizEdge->data[0]),resizeInt,rows*resizedCols*sizeof(float),cudaMemcpyDeviceToHost);
-    cudaMemcpy((void*)&(retStruct->vertEdge->data[0]),d_intermediate,rows*cols*sizeof(float),cudaMemcpyDeviceToHost);
+    //cudaMemcpy((void*)&(retStruct->horizEdge->data[0]),resizeInt,rows*resizedCols*sizeof(float),cudaMemcpyDeviceToHost);
+    //cudaMemcpy((void*)&(retStruct->vertEdge->data[0]),d_intermediate,rows*cols*sizeof(float),cudaMemcpyDeviceToHost);
 
     cudaFree(resizeInt);
     cudaFree(dxInt);
