@@ -129,7 +129,11 @@ int main(int argc, char* argv[])
     /** Blur the image to remove noise - weighted avergae filter **/
 
     /* MARK: Added code to create all bluured level images in parallel */
-    ImagePyramid* preprocessed = createImgPyramid(Ic); // just need to define a struct to return 4 float* arrays
+    cudaStream_t frameStream;
+    cudaStreamCreate(&frameStream);
+    ImagePyramid* preprocessed = createImgPyramid(Ic, frameStream); // just need to define a struct to return 4 float* arrays
+    cudaStreamSynchronize(frameStream);
+    cudaStreamDestroy(frameStream);
     blurredImage = preprocessed->blurredImg;
 
     /** Scale down the image to build Image Pyramid. We find features across all scales of the image **/
@@ -187,8 +191,6 @@ int main(int argc, char* argv[])
 		}
     } 
      
-    end = photonEndTiming();
-    elapsed = photonReportTiming(start, end);
 
     fFreeHandle(verticalEdgeImage);
     fFreeHandle(horizontalEdgeImage);
@@ -196,28 +198,40 @@ int main(int argc, char* argv[])
     fFreeHandle(lambda);
     fFreeHandle(lambdaTemp);
     iFreeHandle(Ic);
-    free(start);
-    free(end);
+
+#define MAX_COUNTER     (4)
+    I2D *Ics[MAX_COUNTER];
+    ImagePyramid* newFramePyramids[MAX_COUNTER];
+    cudaStream_t frameStreams[MAX_COUNTER];
+
+/** Fire off streams for each frame **/
+for(count=1; count<=counter; count++)
+{
+    /** Read image **/
+    sprintf(im1, "%s/%d.bmp", argv[1], count);
+    Ics[count-1] = readImage(im1);
+
+    cudaStreamCreate(&frameStreams[count-1]);
+    newFramePyramids[count-1] = createImgPyramid(Ics[count-1],frameStreams[count-1]);
+}
 
 /** Until now, we processed base frame. The following for loop processes other frames **/
 for(count=1; count<=counter; count++)
 {
     /** Read image **/
-    sprintf(im1, "%s/%d.bmp", argv[1], count);
-    Ic = readImage(im1);
+    Ic = Ics[count-1];
     rows = Ic->height;
     cols = Ic->width;
     
+    cudaStreamSynchronize(frameStreams[count-1]);
+    cudaStreamDestroy(frameStreams[count-1]);
+
     //printf("Read image %d of dim %dx%d.\n",count,rows,cols);
     /* Start timing */
-    start = photonStartTiming();
+    //start = photonStartTiming();
 
-    /** MARK Added: Create the new blurred and resized image**/
-    ImagePyramid* newFramePyramid = createImgPyramid(Ic); // just need to define a struct to return 4 float* arrays
     /** Blur image to remove noise **/
-    //TwoStepKernel* ret = imageBlur(Ic);
-    //blurredImage = ret->final;
-    blurredImage = newFramePyramid->blurredImg;
+    blurredImage = newFramePyramids[count-1]->blurredImg;
     previousFrameBlurred_level1 = fDeepCopy(blurred_level1);
     previousFrameBlurred_level2 = fDeepCopy(blurred_level2);
     
@@ -226,9 +240,7 @@ for(count=1; count<=counter; count++)
 
     /** Image pyramid **/
     blurred_level1 = blurredImage;
-    //ret = imageResize(blurredImage);
-    //blurred_level2 = ret->final;
-    blurred_level2 = newFramePyramid->resizedImg;
+    blurred_level2 = newFramePyramids[count-1]->resizedImg;
 
     /** Gradient image computation, for all scales **/
     verticalEdge_level1 = calcSobel_dX(blurred_level1);   
@@ -288,17 +300,12 @@ for(count=1; count<=counter; count++)
     }*/
 
     fFreeHandle(newpoints);
-    
+}
     /* Timing utils */
     end = photonEndTiming();
-    elt = photonReportTiming(start, end);
-    elapsed[0] += elt[0];
-    elapsed[1] += elt[1];
-    
+    elapsed = photonReportTiming(start, end);
     free(start);
-    free(elt);
     free(end);   
-}
 
     //end roi
     LVA_BX_INSTRUCTION;

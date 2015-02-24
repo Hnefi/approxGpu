@@ -18,7 +18,7 @@
 //#include "../kernels/sobel_dY.h"
 
 
-ImagePyramid* createImgPyramid(I2D* imageIn)
+ImagePyramid* createImgPyramid(I2D* imageIn, cudaStream_t d_stream)
 {
     int rows, cols;
     rows = imageIn->height;
@@ -55,10 +55,10 @@ ImagePyramid* createImgPyramid(I2D* imageIn)
     cudaMalloc((void**)&d_intermediate,rows*cols*sizeof(float));
     cudaMalloc((void**)&d_weightedKernel,5*sizeof(int));
 
-    cudaMemcpy(d_inputPixels,&(imageIn->data[0]),rows*cols*sizeof(int),cudaMemcpyHostToDevice);
-    cudaMemcpy(d_weightedKernel,&(weightedKernel[0]),5*sizeof(int),cudaMemcpyHostToDevice);
-    cudaMemset(d_outputPixels,0,rows*cols*sizeof(float));
-    cudaMemset(d_intermediate,0,rows*cols*sizeof(float));
+    cudaMemcpyAsync(d_inputPixels,&(imageIn->data[0]),rows*cols*sizeof(int),cudaMemcpyHostToDevice,d_stream);
+    cudaMemcpyAsync(d_weightedKernel,&(weightedKernel[0]),5*sizeof(int),cudaMemcpyHostToDevice,d_stream);
+    cudaMemsetAsync(d_outputPixels,0,rows*cols*sizeof(float),d_stream);
+    cudaMemsetAsync(d_intermediate,0,rows*cols*sizeof(float),d_stream);
 
     // set up memory for other 3 images. first blur output serves as input here.
     float* resizeInt, *dxInt, *dyInt;
@@ -71,23 +71,20 @@ ImagePyramid* createImgPyramid(I2D* imageIn)
     cudaMalloc((void**)&dyOutput,rows*cols*sizeof(float));
 
     // clear outputs since we only access some of these pixels, others are blank 
-    cudaMemset(resizeOutput,0,resizedRows*resizedCols*sizeof(float));
-    cudaMemset(resizeInt,0,rows*resizedCols*sizeof(float));
-    cudaMemset(dxOutput,0,rows*cols*sizeof(float));
-    cudaMemset(dyOutput,0,rows*cols*sizeof(float));
+    cudaMemsetAsync(resizeOutput,0,resizedRows*resizedCols*sizeof(float),d_stream);
+    cudaMemsetAsync(resizeInt,0,rows*resizedCols*sizeof(float),d_stream);
+    cudaMemsetAsync(dxOutput,0,rows*cols*sizeof(float),d_stream);
+    cudaMemsetAsync(dyOutput,0,rows*cols*sizeof(float),d_stream);
 
     /* Kernel call */
-    blurKernel_st1<<<nblocks,threadsPerBlock>>>(d_inputPixels,d_intermediate,d_weightedKernel,cols,rows);
-    blurKernel_st2<<<nblocks,threadsPerBlock>>>(d_outputPixels,d_intermediate,d_weightedKernel,cols,rows);
+    blurKernel_st1<<<nblocks,threadsPerBlock,0,d_stream>>>(d_inputPixels,d_intermediate,d_weightedKernel,cols,rows);
+    blurKernel_st2<<<nblocks,threadsPerBlock,0,d_stream>>>(d_outputPixels,d_intermediate,d_weightedKernel,cols,rows);
 
     /* Call all kernels in one stream (order does not matter as they all read their input from d_outputPixels) */
-    resizeKernel_st1<<<nblocks,threadsPerBlock>>>(d_outputPixels,resizeInt,d_weightedKernel,rows,cols,resizedRows,resizedCols);
-    resizeKernel_st2<<<nblocks,threadsPerBlock>>>(resizeOutput,resizeInt,d_weightedKernel,rows,cols,resizedRows,resizedCols);
-    //sobelXFilter<<<nblocks,threadsPerBlock>>>(d_outputPixels,dxOutput,dxInt,sobelKernel_1,sobelKernel_2,rows,cols);
-    //sobelYFilter<<<nblocks,threadsPerBlock>>>(d_outputPixels,dyOutput,dyInt,sobelKernel_2,sobelKernel_1,rows, cols);
-
-    // synch back after this stream
-    cudaDeviceSynchronize();
+    resizeKernel_st1<<<nblocks,threadsPerBlock,0,d_stream>>>(d_outputPixels,resizeInt,d_weightedKernel,rows,cols,resizedRows,resizedCols);
+    resizeKernel_st2<<<nblocks,threadsPerBlock,0,d_stream>>>(resizeOutput,resizeInt,d_weightedKernel,rows,cols,resizedRows,resizedCols);
+    //sobelXFilter<<<nblocks,threadsPerBlock,0,d_stream>>>(d_outputPixels,dxOutput,dxInt,sobelKernel_1,sobelKernel_2,rows,cols);
+    //sobelYFilter<<<nblocks,threadsPerBlock,0,d_stream>>>(d_outputPixels,dyOutput,dyInt,sobelKernel_2,sobelKernel_1,rows, cols);
 
     // deep copy into the destination F2D structures
     ImagePyramid* retStruct = (ImagePyramid*)malloc(sizeof(ImagePyramid));
@@ -95,12 +92,12 @@ ImagePyramid* createImgPyramid(I2D* imageIn)
     retStruct->resizedImg = fSetArray(resizedRows,resizedCols,0);
     retStruct->horizEdge = fSetArray(rows,resizedCols,0);
     retStruct->vertEdge = fSetArray(rows,cols,0);
-    cudaMemcpy((void*)&(retStruct->blurredImg->data[0]),d_outputPixels,rows*cols*sizeof(float),cudaMemcpyDeviceToHost);
-    cudaMemcpy((void*)&(retStruct->resizedImg->data[0]),resizeOutput,resizedRows*resizedCols*sizeof(float),cudaMemcpyDeviceToHost);
-
+    cudaMemcpyAsync((void*)&(retStruct->blurredImg->data[0]),d_outputPixels,rows*cols*sizeof(float),cudaMemcpyDeviceToHost,d_stream);
+    cudaMemcpyAsync((void*)&(retStruct->resizedImg->data[0]),resizeOutput,resizedRows*resizedCols*sizeof(float),cudaMemcpyDeviceToHost,d_stream);
+    
     // TEMPORARY COPY FOR DEBUG.
-    //cudaMemcpy((void*)&(retStruct->horizEdge->data[0]),resizeInt,rows*resizedCols*sizeof(float),cudaMemcpyDeviceToHost);
-    //cudaMemcpy((void*)&(retStruct->vertEdge->data[0]),d_intermediate,rows*cols*sizeof(float),cudaMemcpyDeviceToHost);
+    //cudaMemcpyAsync((void*)&(retStruct->horizEdge->data[0]),resizeInt,rows*resizedCols*sizeof(float),cudaMemcpyDeviceToHost,d_stream);
+    //cudaMemcpyAsync((void*)&(retStruct->vertEdge->data[0]),d_intermediate,rows*cols*sizeof(float),cudaMemcpyDeviceToHost,d_stream);
 
     cudaFree(resizeInt);
     cudaFree(dxInt);

@@ -110,7 +110,7 @@ I2D* iiConv2(I2D* a, I2D* b);
 
 
 /** Image Transformations - resize, integration etc **/
-ImagePyramid* createImgPyramid(I2D* imageIn);
+ImagePyramid* createImgPyramid(I2D* imageIn, cudaStream_t d_stream);
 //F2D* imageResize(F2D* imageIn);
 TwoStepKernel* imageResize(F2D* imageIn);
 //F2D* imageBlur(I2D* imageIn);
