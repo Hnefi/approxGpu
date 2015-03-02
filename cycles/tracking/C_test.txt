@@ -1,5 +1,0 @@
-Input size		- (16x16)
-Calculated block dimensions as: 1 x 1
-Verification		- Successful
-Cycles elapsed		- 543380402
-

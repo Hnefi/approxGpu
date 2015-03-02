@@ -1,5 +1,5 @@
 Input size		- (96x128)
-Calculated block dimensions as: 1 x 1
-Verification		- Successful
-Cycles elapsed		- 788573704
+Checking error: dimensions mismatch. Expected = 28, Observed = 0 
+Error in Tracking Map
+Cycles elapsed		- 573979134
 

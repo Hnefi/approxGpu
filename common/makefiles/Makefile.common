@@ -124,12 +124,11 @@ clean:
 .PHONY: destroy
 destroy:
 	@-rm $(BMARK)
-	@echo -e "Cleaning all files in current directory..."
-	rm -f *.o
+	@echo -e "Cleaning all files in source directory..."
+	@-rm -f *.o
+	@-rm -f $(C_DIR)/*.o
 	@echo -e "Cleaning all common C files..."
-	cd $(COMMON_DIR) 
-	rm -f *.o
+	@-rm -f $(COMMON_DIR)/*.o
 	@echo -e "Cleaning all kernel files..."
-	cd $(CUDA_DIR)
-	rm -f *o.o
-	cd $(DATA_DIR)
+	@-rm -f $(CUDA_DIR)/*.o
+	@-rm -f $(DATA_DIR)/*.o

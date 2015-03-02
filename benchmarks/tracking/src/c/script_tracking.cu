@@ -108,8 +108,6 @@ int main(int argc, char* argv[])
     #endif
 
 
-    cudaDeviceReset();
-
     /** Read input image **/
     Ic = readImage(im1);
     rows = Ic->height;
@@ -118,7 +116,7 @@ int main(int argc, char* argv[])
     //start roi
     LVA_BX_INSTRUCTION;
     LVA_BX_INSTRUCTION;
-    
+    cudaDeviceReset();
     printf("Input size\t\t- (%dx%d)\n", rows, cols);
     
     /** Start Timing **/
@@ -131,7 +129,9 @@ int main(int argc, char* argv[])
     /* MARK: Added code to create all bluured level images in parallel */
     cudaStream_t frameStream;
     cudaStreamCreate(&frameStream);
+    //printf("Before calling createImgPyramid...\n");
     ImagePyramid* preprocessed = createImgPyramid(Ic, frameStream); // just need to define a struct to return 4 float* arrays
+    //printf("After calling createImgPyramid...\n");
     cudaStreamSynchronize(frameStream);
     cudaStreamDestroy(frameStream);
     blurredImage = preprocessed->blurredImg;
@@ -149,21 +149,33 @@ int main(int argc, char* argv[])
     F2D* cpuResizeInt = cpu_resize_ret->intermediate;
     */
 
-     //for(int i = 0 ;i < blurred_level2->height * blurred_level2->width ;i++) {
+     
+    /** Edge Images - From pre-processed images, build gradient images, both horizontal and vertical **/
+    /*
+    verticalEdgeImage = calcSobel_dX(blurredImage);
+    TwoStepKernel* dyRet = calcSobel_dY(blurredImage);
+    F2D* horizEdge_CPU = dyRet->final;
+    F2D* horizEdge_int = dyRet->intermediate;
+    F2D* verticalEdgeImage_GPU = preprocessed->vertEdge;
+    F2D* horizontalEdgeImage_GPU = preprocessed->horizEdge;
+    F2D* horizEdge_GPUint = preprocessed->tmp;
+    */
+    horizontalEdgeImage = preprocessed->horizEdge;
+    verticalEdgeImage = preprocessed->vertEdge;
+   /* 
+     for(int i = 0 ;i < verticalEdgeImage->height * verticalEdgeImage->width ;i++) {
         //printf("Element # %d of GPU int: %0.8f\n",i,preprocessed->vertEdge->data[i]);
         //printf("Element # %d of CPU int: %0.8f\n", i,intBlurCPU->data[i]);
         //printf("Element # %d of GPU blur: %0.8f\n",i,blurred_level1->data[i]);
         //printf("Element # %d of CPU blur: %0.8f\n",i,blurredImageCPU->data[i]);
 
-        //printf("Element # %d of GPU int: %0.8f\n",i,gpuResizeInt->data[i]);
-        //printf("Element # %d of CPU int: %0.8f\n",i,cpuResizeInt->data[i]);
-        //printf("Element # %d of GPU resize: %0.8f\n",i,blurred_level2->data[i]);
-        //printf("Element # %d of CPU resize: %0.8f\n",i,cpu_resize_ret->final->data[i]);
-     //} 
+        //printf("Element # %d of GPU int: %0.8f\n",i,horizEdge_GPUint->data[i]);
+        //printf("Element # %d of CPU int: %0.8f\n",i,horizEdge_int->data[i]);
+        printf("Element # %d of GPU horiz: %0.8f\n",i,horizontalEdgeImage->data[i]);
+        printf("Element # %d of CPU horiz: %0.8f\n",i,horizEdge_CPU->data[i]);
+     } 
+    */ 
      
-    /** Edge Images - From pre-processed images, build gradient images, both horizontal and vertical **/
-    verticalEdgeImage = calcSobel_dX(blurredImage);
-    horizontalEdgeImage = calcSobel_dY(blurredImage);
 
     /** Edge images are used for feature detection. So, using the verticalEdgeImage and horizontalEdgeImage images, we compute feature strength
         across all pixels. Lambda matrix is the feature strength matrix returned by calcGoodFeature **/
@@ -190,7 +202,6 @@ int main(int argc, char* argv[])
             subsref(features,i,j) = subsref(interestPnt,j,i); 
 		}
     } 
-     
 
     fFreeHandle(verticalEdgeImage);
     fFreeHandle(horizontalEdgeImage);
@@ -243,11 +254,20 @@ for(count=1; count<=counter; count++)
     blurred_level2 = newFramePyramids[count-1]->resizedImg;
 
     /** Gradient image computation, for all scales **/
+    /* 
     verticalEdge_level1 = calcSobel_dX(blurred_level1);   
-    horizontalEdge_level1 = calcSobel_dY(blurred_level1); 
+    TwoStepKernel* r1 = calcSobel_dY(blurred_level1); 
+    horizontalEdge_level1 = r1->final;
     
     verticalEdge_level2 = calcSobel_dX(blurred_level2); 
-    horizontalEdge_level2 = calcSobel_dY(blurred_level2);
+    r1 = calcSobel_dY(blurred_level2);
+    horizontalEdge_level2 = r1->final;
+    */
+
+    verticalEdge_level1 = newFramePyramids[count-1]->vertEdge;
+    verticalEdge_level2 = newFramePyramids[count-1]->vertEdge_small;
+    horizontalEdge_level1 = newFramePyramids[count-1]->horizEdge;
+    horizontalEdge_level2 = newFramePyramids[count-1]->horizEdge_small;
     
     newpoints = fSetArray(2, features->width, 0);
         

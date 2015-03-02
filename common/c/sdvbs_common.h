@@ -35,6 +35,10 @@ typedef struct {
     F2D* resizedImg;
     F2D* horizEdge;
     F2D* vertEdge;
+    F2D* horizEdge_small;
+    F2D* vertEdge_small;
+    F2D* tmp;
+    F2D* tmp2;
 } ImagePyramid;
 
 typedef struct {
@@ -45,6 +49,17 @@ typedef struct {
 #define subsref(a,i,j) a->data[(i) * a->width + (j)]
 #define asubsref(a,i) a->data[i]
 #define arrayref(a,i) a[i]
+
+static void HandleError( cudaError_t err,
+        const char *file,
+        int line ) {
+    if (err != cudaSuccess) {
+        printf( "%s in %s at line %d\n", cudaGetErrorString( err ),
+                file, line );
+        exit( EXIT_FAILURE );
+    }
+}
+#define HANDLE_ERROR( err ) (HandleError( err, __FILE__, __LINE__ ))
 
 /** Image read and write **/
 I2D* readImage(const char* pathName);;
@@ -101,7 +116,8 @@ I2D* isPlus(I2D* a, int b);
 
 /** Filtering operations **/
 F2D* calcSobel_dX(F2D* imageIn);
-F2D* calcSobel_dY(F2D* imageIn);
+//F2D* calcSobel_dY(F2D* imageIn);
+TwoStepKernel* calcSobel_dY(F2D* imageIn);
 F2D* ffConv2(F2D* a, F2D* b);
 F2D* fiConv2(I2D* a, F2D* b);
 F2D* ffConv2_dY(F2D* a, F2D* b);

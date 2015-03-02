@@ -4,7 +4,7 @@ Author: Sravanthi Kota Venkata
 
 #include "sdvbs_common.h"
 
-F2D* calcSobel_dY(F2D* imageIn)
+TwoStepKernel* calcSobel_dY(F2D* imageIn)
 {
     int rows, cols;
     I2D *kernel_1, *kernel_2;
@@ -18,12 +18,12 @@ F2D* calcSobel_dY(F2D* imageIn)
     cols = imageIn->width;
     
     // level 1 is the base image.
-
     outputRows = rows; 
     outputCols = cols;
+    TwoStepKernel* ret = (TwoStepKernel*)malloc(sizeof(TwoStepKernel));
+    ret->final = fSetArray(outputRows, outputCols, 0);
+    ret->intermediate = fSetArray(outputRows, outputCols, 0);
 
-    imageOut = fSetArray(outputRows, outputCols, 0);
-    tempOut = fSetArray(outputRows, outputCols, 0);
     kernel_1 = iMallocHandle(1, 3);
     kernel_2 = iMallocHandle(1, 3);
 
@@ -61,7 +61,8 @@ F2D* calcSobel_dY(F2D* imageIn)
             {
                 temp += subsref(imageIn,(i+k),j) * asubsref(kernel_1,k+halfKernel);
             }
-            subsref(tempOut,i,j) = temp/kernelSum_1;
+            //subsref(tempOut,i,j) = temp/kernelSum_1;
+            subsref(ret->intermediate,i,j) = temp/kernelSum_1;
         }
     }
 
@@ -72,9 +73,11 @@ F2D* calcSobel_dY(F2D* imageIn)
             temp = 0;
             for(k=-halfKernel; k<=halfKernel; k++)
             {
-                temp += subsref(tempOut,i,j+k) * asubsref(kernel_2,k+halfKernel);
+                //temp += subsref(tempOut,i,j+k) * asubsref(kernel_2,k+halfKernel);
+                temp += subsref(ret->intermediate,i,j+k) * asubsref(kernel_2,k+halfKernel);
             }
-            subsref(imageOut,i,j) = temp/(float)kernelSum_2;
+            //subsref(imageOut,i,j) = temp/(float)kernelSum_2;
+            subsref(ret->final,i,j) = temp/(float)kernelSum_2;
         }
     }
 
@@ -84,9 +87,9 @@ F2D* calcSobel_dY(F2D* imageIn)
     LVA_FUNCTION_RM(5/*float*/ ,&(imageOut->data[0]),&(imageOut->data[rows*cols]),1);
 #endif
 
-    fFreeHandle(tempOut);
+    //fFreeHandle(tempOut);
     iFreeHandle(kernel_1);
     iFreeHandle(kernel_2);
-    return imageOut;
+    return ret;
     
 }
