@@ -58,31 +58,50 @@ ImagePyramid* createImgPyramid(I2D* imageIn, cudaStream_t d_stream)
     HANDLE_ERROR( cudaHostRegister(&sobelKernel_1[0],3*sizeof(int),cudaHostRegisterPortable) );
     HANDLE_ERROR( cudaHostRegister(&sobelKernel_2[0],3*sizeof(int),cudaHostRegisterPortable) );
 
-    // SET UP MEMORY
-    cudaMalloc((void**)&d_inputPixels,rows*cols*sizeof(int));
-    cudaMalloc((void**)&d_outputPixels,rows*cols*sizeof(float));
-    cudaMalloc((void**)&d_intermediate,rows*cols*sizeof(float));
-    cudaMalloc((void**)&d_weightedKernel,5*sizeof(int));
-    cudaMalloc((void**)&resizeInt,rows*resizedCols*sizeof(float));
-    cudaMalloc((void**)&dxInt,rows*cols*sizeof(float));
-    cudaMalloc((void**)&dyInt,rows*cols*sizeof(float));
-    cudaMalloc((void**)&resizeOutput,resizedRows*resizedCols*sizeof(float));
-    cudaMalloc((void**)&dxOutput,rows*cols*sizeof(float));
-    cudaMalloc((void**)&dyOutput,rows*cols*sizeof(float));
-    cudaMalloc((void**)&sobel_kern_1,3*sizeof(int));
-    cudaMalloc((void**)&sobel_kern_2,3*sizeof(int));
-
-    cudaMalloc((void**)&dxOutput_small,resizedRows*resizedCols*sizeof(float));
-    cudaMalloc((void**)&dyOutput_small,resizedRows*resizedCols*sizeof(float));
-    cudaMalloc((void**)&dxInt_small,resizedRows*resizedCols*sizeof(float));
-    cudaMalloc((void**)&dyInt_small,resizedRows*resizedCols*sizeof(float));
-
-    // Copy in input data and input kernels.
-    cudaMemcpyAsync(d_inputPixels,&(imageIn->data[0]),rows*cols*sizeof(int),cudaMemcpyHostToDevice,d_stream);
-    // TODO: some way I don't have to copy in these tiny kernels
+    // SET UP MEMORY - local data
+    cudaMalloc((void**)&(imageIn->d_weightedKernel),5*sizeof(int));
+    cudaMalloc((void**)&(imageIn->sobel_kern_1),3*sizeof(int));
+    cudaMalloc((void**)&(imageIn->sobel_kern_2),3*sizeof(int));
+    d_weightedKernel = imageIn->d_weightedKernel;
+    sobel_kern_1 = imageIn->sobel_kern_1;
+    sobel_kern_2 = imageIn->sobel_kern_2;
     cudaMemcpyAsync(d_weightedKernel,&(weightedKernel[0]),5*sizeof(int),cudaMemcpyHostToDevice,d_stream);
     cudaMemcpyAsync(sobel_kern_1,&(sobelKernel_1[0]),3*sizeof(int),cudaMemcpyHostToDevice,d_stream);
     cudaMemcpyAsync(sobel_kern_2,&(sobelKernel_2[0]),3*sizeof(int),cudaMemcpyHostToDevice,d_stream);
+    cudaStreamSynchronize(d_stream);
+
+    // SET UP MEMORY
+    cudaMalloc((void**)&(imageIn->d_inputPixels),rows*cols*sizeof(int));
+    cudaMalloc((void**)&(imageIn->d_outputPixels),rows*cols*sizeof(float));
+    cudaMalloc((void**)&(imageIn->d_intermediate),rows*cols*sizeof(float));
+    cudaMalloc((void**)&(imageIn->resizeInt),rows*resizedCols*sizeof(float));
+    cudaMalloc((void**)&(imageIn->dxInt),rows*cols*sizeof(float));
+    cudaMalloc((void**)&(imageIn->dyInt),rows*cols*sizeof(float));
+    cudaMalloc((void**)&(imageIn->resizeOutput),resizedRows*resizedCols*sizeof(float));
+    cudaMalloc((void**)&(imageIn->dxOutput),rows*cols*sizeof(float));
+    cudaMalloc((void**)&(imageIn->dyOutput),rows*cols*sizeof(float));
+
+    cudaMalloc((void**)&(imageIn->dxOutput_small),resizedRows*resizedCols*sizeof(float));
+    cudaMalloc((void**)&(imageIn->dyOutput_small),resizedRows*resizedCols*sizeof(float));
+    cudaMalloc((void**)&(imageIn->dxInt_small),resizedRows*resizedCols*sizeof(float));
+    cudaMalloc((void**)&(imageIn->dyInt_small),resizedRows*resizedCols*sizeof(float));
+    
+    d_inputPixels = imageIn->d_inputPixels;
+    d_outputPixels = imageIn->d_outputPixels;
+    d_intermediate = imageIn->d_intermediate;
+    resizeInt = imageIn->resizeInt;
+    dxInt = imageIn->dxInt;
+    dyInt = imageIn->dyInt;
+    dyInt_small = imageIn->dyInt_small;
+    dxInt_small = imageIn->dxInt_small;
+    resizeOutput = imageIn->resizeOutput;
+    dxOutput = imageIn->dxOutput;
+    dyOutput = imageIn->dyOutput;
+    dxOutput_small = imageIn->dxOutput_small;
+    dyOutput_small = imageIn->dyOutput_small;
+
+    // Copy in input data and input kernels.
+    cudaMemcpyAsync(d_inputPixels,&(imageIn->data[0]),rows*cols*sizeof(int),cudaMemcpyHostToDevice,d_stream);
 
     // clear outputs since we only access some of these pixels, others must be blank 
     cudaMemsetAsync(d_outputPixels,0,rows*cols*sizeof(float),d_stream);
@@ -144,14 +163,21 @@ ImagePyramid* createImgPyramid(I2D* imageIn, cudaStream_t d_stream)
     cudaMemcpyAsync((void*)&(retStruct->vertEdge_small->data[0]),dxOutput_small,resizedRows*resizedCols*sizeof(float),cudaMemcpyDeviceToHost,d_stream);   
     cudaMemcpyAsync((void*)&(retStruct->horizEdge_small->data[0]),dyOutput_small,resizedRows*resizedCols*sizeof(float),cudaMemcpyDeviceToHost,d_stream);   
 
-    // TODO: DEFINITELY synchronize before freeing stuff.
-    cudaStreamSynchronize(d_stream);
-
-    // UNSET Host memory pinning.
-    cudaHostUnregister(&(imageIn->data[0]));
+    // UNSET Host memory pinning - local data
     cudaHostUnregister(&weightedKernel[0]);
     cudaHostUnregister(&sobelKernel_1[0]);
     cudaHostUnregister(&sobelKernel_2[0]);
+    cudaFree(d_weightedKernel);
+    cudaFree(sobel_kern_1);
+    cudaFree(sobel_kern_2);
+
+    return retStruct;
+}
+
+void destroyImgPyramid(I2D* imageIn, ImagePyramid *retStruct)
+{
+    // UNSET Host memory pinning.
+    cudaHostUnregister(&(imageIn->data[0]));
 
     cudaHostUnregister(&(retStruct->blurredImg->data[0]));
     cudaHostUnregister(&(retStruct->resizedImg->data[0]));
@@ -161,23 +187,18 @@ ImagePyramid* createImgPyramid(I2D* imageIn, cudaStream_t d_stream)
     cudaHostUnregister(&(retStruct->vertEdge_small->data[0]));
     cudaHostUnregister(&(retStruct->tmp->data[0]));
 
-    cudaFree(resizeInt);
-    cudaFree(dxInt);
-    cudaFree(dyInt);
-    cudaFree(resizeOutput);
-    cudaFree(dxOutput);
-    cudaFree(dyOutput);
-    cudaFree(d_inputPixels);
-    cudaFree(d_outputPixels);
-    cudaFree(d_intermediate);
-    cudaFree(d_weightedKernel);
-    cudaFree(sobel_kern_1);
-    cudaFree(sobel_kern_2);
-    cudaFree(dxInt_small);
-    cudaFree(dyInt_small);
-    cudaFree(dxOutput_small);
-    cudaFree(dyOutput_small);
-
-    return retStruct;
+    cudaFree(imageIn->resizeInt);
+    cudaFree(imageIn->dxInt);
+    cudaFree(imageIn->dyInt);
+    cudaFree(imageIn->resizeOutput);
+    cudaFree(imageIn->dxOutput);
+    cudaFree(imageIn->dyOutput);
+    cudaFree(imageIn->d_inputPixels);
+    cudaFree(imageIn->d_outputPixels);
+    cudaFree(imageIn->d_intermediate);
+    cudaFree(imageIn->dxInt_small);
+    cudaFree(imageIn->dyInt_small);
+    cudaFree(imageIn->dxOutput_small);
+    cudaFree(imageIn->dyOutput_small);
 }
 

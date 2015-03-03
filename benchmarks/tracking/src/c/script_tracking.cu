@@ -132,8 +132,27 @@ int main(int argc, char* argv[])
     //printf("Before calling createImgPyramid...\n");
     ImagePyramid* preprocessed = createImgPyramid(Ic, frameStream); // just need to define a struct to return 4 float* arrays
     //printf("After calling createImgPyramid...\n");
+
+    /* Other frames */
+#define MAX_COUNTER     (4)
+    I2D *Ics[MAX_COUNTER];
+    ImagePyramid* newFramePyramids[MAX_COUNTER];
+    cudaStream_t frameStreams[MAX_COUNTER];
+
+/** Fire off streams for other frames **/
+for(count=1; count<=counter; count++)
+{
+    /** Read image **/
+    sprintf(im1, "%s/%d.bmp", argv[1], count);
+    Ics[count-1] = readImage(im1);
+
+    cudaStreamCreate(&frameStreams[count-1]);
+    newFramePyramids[count-1] = createImgPyramid(Ics[count-1],frameStreams[count-1]);
+}
+
     cudaStreamSynchronize(frameStream);
     cudaStreamDestroy(frameStream);
+    destroyImgPyramid(Ic, preprocessed);
     blurredImage = preprocessed->blurredImg;
 
     /** Scale down the image to build Image Pyramid. We find features across all scales of the image **/
@@ -210,22 +229,6 @@ int main(int argc, char* argv[])
     fFreeHandle(lambdaTemp);
     iFreeHandle(Ic);
 
-#define MAX_COUNTER     (4)
-    I2D *Ics[MAX_COUNTER];
-    ImagePyramid* newFramePyramids[MAX_COUNTER];
-    cudaStream_t frameStreams[MAX_COUNTER];
-
-/** Fire off streams for each frame **/
-for(count=1; count<=counter; count++)
-{
-    /** Read image **/
-    sprintf(im1, "%s/%d.bmp", argv[1], count);
-    Ics[count-1] = readImage(im1);
-
-    cudaStreamCreate(&frameStreams[count-1]);
-    newFramePyramids[count-1] = createImgPyramid(Ics[count-1],frameStreams[count-1]);
-}
-
 /** Until now, we processed base frame. The following for loop processes other frames **/
 for(count=1; count<=counter; count++)
 {
@@ -236,6 +239,7 @@ for(count=1; count<=counter; count++)
     
     cudaStreamSynchronize(frameStreams[count-1]);
     cudaStreamDestroy(frameStreams[count-1]);
+    destroyImgPyramid(Ics[count-1], newFramePyramids[count-1]);
 
     //printf("Read image %d of dim %dx%d.\n",count,rows,cols);
     /* Start timing */

@@ -14,6 +14,12 @@ typedef struct
     int width;
     int height;
     int data[];
+    int* d_inputPixels;
+    float* d_outputPixels;
+    float* d_intermediate;
+    int* d_weightedKernel,*sobel_kern_1,*sobel_kern_2;
+    float* resizeInt, *dxInt, *dyInt, *dyInt_small, *dxInt_small;
+    float* resizeOutput, *dxOutput, *dyOutput, *dxOutput_small, *dyOutput_small;
 }I2D;
 
 typedef struct
@@ -127,6 +133,7 @@ I2D* iiConv2(I2D* a, I2D* b);
 
 /** Image Transformations - resize, integration etc **/
 ImagePyramid* createImgPyramid(I2D* imageIn, cudaStream_t d_stream);
+void destroyImgPyramid(I2D* imageIn, ImagePyramid *retStruct);
 //F2D* imageResize(F2D* imageIn);
 TwoStepKernel* imageResize(F2D* imageIn);
 //F2D* imageBlur(I2D* imageIn);
