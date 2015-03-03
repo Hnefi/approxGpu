@@ -16,11 +16,11 @@ unsigned int * photonReportTiming(unsigned int* startCycles,unsigned int* endCyc
 
     unsigned int *elapsed;
     elapsed = (unsigned int*)malloc(sizeof(unsigned int)*2);
-	unsigned long long start = (((unsigned long long)0x0) | startCycles[0]) << 32 | startCycles[1];
-	unsigned long long end = (((unsigned long long)0x0) | endCycles[0]) << 32 | endCycles[1];
+	unsigned long long start = (((unsigned long long)0x0) | startCycles[1]) << 32 | startCycles[0];
+	unsigned long long end = (((unsigned long long)0x0) | endCycles[1]) << 32 | endCycles[0];
 	unsigned long long diff = end - start;
-	elapsed[0] = (unsigned int)(diff >> 32);
-	elapsed[1] = (unsigned int)(diff & 0xffffffff);
+	elapsed[1] = (unsigned int)(diff >> 32);
+	elapsed[0] = (unsigned int)(diff & 0xffffffff);
     return elapsed;
 
 }
