@@ -167,9 +167,6 @@ ImagePyramid* createImgPyramid(I2D* imageIn, cudaStream_t d_stream)
     cudaHostUnregister(&weightedKernel[0]);
     cudaHostUnregister(&sobelKernel_1[0]);
     cudaHostUnregister(&sobelKernel_2[0]);
-    cudaFree(d_weightedKernel);
-    cudaFree(sobel_kern_1);
-    cudaFree(sobel_kern_2);
 
     return retStruct;
 }
@@ -187,6 +184,9 @@ void destroyImgPyramid(I2D* imageIn, ImagePyramid *retStruct)
     cudaHostUnregister(&(retStruct->vertEdge_small->data[0]));
     cudaHostUnregister(&(retStruct->tmp->data[0]));
 
+    cudaFree(imageIn->d_weightedKernel);
+    cudaFree(imageIn->sobel_kern_1);
+    cudaFree(imageIn->sobel_kern_2);
     cudaFree(imageIn->resizeInt);
     cudaFree(imageIn->dxInt);
     cudaFree(imageIn->dyInt);
