@@ -127,32 +127,10 @@ int main(int argc, char* argv[])
     /** Blur the image to remove noise - weighted avergae filter **/
 
     /* MARK: Added code to create all bluured level images in parallel */
-    cudaStream_t frameStream;
-    cudaStreamCreate(&frameStream);
     //printf("Before calling createImgPyramid...\n");
-    ImagePyramid* preprocessed = createImgPyramid(Ic, frameStream); // just need to define a struct to return 4 float* arrays
+    ImagePyramid* preprocessed = createImgPyramid(Ic, 0); // just need to define a struct to return 4 float* arrays
     //printf("After calling createImgPyramid...\n");
 
-    /* Other frames */
-#define MAX_COUNTER     (4)
-    I2D *Ics[MAX_COUNTER];
-    ImagePyramid* newFramePyramids[MAX_COUNTER];
-    cudaStream_t frameStreams[MAX_COUNTER];
-
-/** Fire off streams for other frames **/
-for(count=1; count<=counter; count++)
-{
-    /** Read image **/
-    sprintf(im1, "%s/%d.bmp", argv[1], count);
-    Ics[count-1] = readImage(im1);
-
-    cudaStreamCreate(&frameStreams[count-1]);
-    newFramePyramids[count-1] = createImgPyramid(Ics[count-1],frameStreams[count-1]);
-}
-
-    cudaStreamSynchronize(frameStream);
-    cudaStreamDestroy(frameStream);
-    destroyImgPyramid(Ic, preprocessed);
     blurredImage = preprocessed->blurredImg;
 
     /** Scale down the image to build Image Pyramid. We find features across all scales of the image **/
@@ -229,18 +207,25 @@ for(count=1; count<=counter; count++)
     fFreeHandle(lambdaTemp);
     iFreeHandle(Ic);
 
+    /* Other frames */
+#define MAX_COUNTER     (4)
+    I2D *Ics[MAX_COUNTER];
+    ImagePyramid* newFramePyramids[MAX_COUNTER];
+    cudaStream_t frameStreams[MAX_COUNTER];
+
 /** Until now, we processed base frame. The following for loop processes other frames **/
 for(count=1; count<=counter; count++)
 {
     /** Read image **/
+    sprintf(im1, "%s/%d.bmp", argv[1], count);
+    Ics[count-1] = readImage(im1);
+
+    newFramePyramids[count-1] = createImgPyramid(Ics[count-1],0);
+
     Ic = Ics[count-1];
     rows = Ic->height;
     cols = Ic->width;
     
-    cudaStreamSynchronize(frameStreams[count-1]);
-    cudaStreamDestroy(frameStreams[count-1]);
-    destroyImgPyramid(Ics[count-1], newFramePyramids[count-1]);
-
     //printf("Read image %d of dim %dx%d.\n",count,rows,cols);
     /* Start timing */
     //start = photonStartTiming();
