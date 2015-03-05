@@ -170,17 +170,12 @@ int main(int argc, char* argv[])
 		}
     } 
      
-    end = photonEndTiming();
-    elapsed = photonReportTiming(start, end);
-
     fFreeHandle(verticalEdgeImage);
     fFreeHandle(horizontalEdgeImage);
     fFreeHandle(interestPnt);
     fFreeHandle(lambda);
     fFreeHandle(lambdaTemp);
     iFreeHandle(Ic);
-    free(start);
-    free(end);
 
 /** Until now, we processed base frame. The following for loop processes other frames **/
 for(count=1; count<=counter; count++)
@@ -192,8 +187,6 @@ for(count=1; count<=counter; count++)
     cols = Ic->width;
     
     //printf("Read image %d of dim %dx%d.\n",count,rows,cols);
-    /* Start timing */
-    start = photonStartTiming();
 
     /** MARK Added: Create the new blurred and resized image**/
     //ImagePyramid* newFramePyramid = createImgPyramid(Ic); // just need to define a struct to return 4 float* arrays
@@ -270,16 +263,13 @@ for(count=1; count<=counter; count++)
 
     fFreeHandle(newpoints);
     
+}
     /* Timing utils */
     end = photonEndTiming();
-    elt = photonReportTiming(start, end);
-    elapsed[0] += elt[0];
-    elapsed[1] += elt[1];
+    elapsed = photonReportTiming(start, end);
     
     free(start);
-    free(elt);
     free(end);   
-}
 
     //end roi
     LVA_BX_INSTRUCTION;
