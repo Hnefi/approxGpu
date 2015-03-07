@@ -111,6 +111,16 @@ int main(int argc, char* argv[])
     Ic = readImage(im1);
     rows = Ic->height;
     cols = Ic->width;
+    /* Other frames */
+#define MAX_COUNTER     (4)
+    I2D *Ics[MAX_COUNTER];
+
+for(count=1; count<=counter; count++)
+{
+    /** Read image **/
+    sprintf(im1, "%s/%d.bmp", argv[1], count);
+    Ics[count-1] = readImage(im1);
+}
 
     //start roi
     LVA_BX_INSTRUCTION;
@@ -181,8 +191,7 @@ int main(int argc, char* argv[])
 for(count=1; count<=counter; count++)
 {
     /** Read image **/
-    sprintf(im1, "%s/%d.bmp", argv[1], count);
-    Ic = readImage(im1);
+    Ic = Ics[count-1];
     rows = Ic->height;
     cols = Ic->width;
     
