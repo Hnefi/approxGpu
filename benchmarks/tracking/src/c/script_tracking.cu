@@ -112,6 +112,19 @@ int main(int argc, char* argv[])
     Ic = readImage(im1);
     rows = Ic->height;
     cols = Ic->width;
+    /* Other frames */
+#define MAX_COUNTER     (4)
+    I2D *Ics[MAX_COUNTER];
+    ImagePyramid* newFramePyramids[MAX_COUNTER];
+    cudaStream_t frameStreams[MAX_COUNTER];
+
+/** Fire off streams for other frames **/
+for(count=1; count<=counter; count++)
+{
+    /** Read image **/
+    sprintf(im1, "%s/%d.bmp", argv[1], count);
+    Ics[count-1] = readImage(im1);
+}
 
     //start roi
     LVA_BX_INSTRUCTION;
@@ -133,19 +146,9 @@ int main(int argc, char* argv[])
     ImagePyramid* preprocessed = createImgPyramid(Ic, frameStream); // just need to define a struct to return 4 float* arrays
     //printf("After calling createImgPyramid...\n");
 
-    /* Other frames */
-#define MAX_COUNTER     (4)
-    I2D *Ics[MAX_COUNTER];
-    ImagePyramid* newFramePyramids[MAX_COUNTER];
-    cudaStream_t frameStreams[MAX_COUNTER];
-
 /** Fire off streams for other frames **/
 for(count=1; count<=counter; count++)
 {
-    /** Read image **/
-    sprintf(im1, "%s/%d.bmp", argv[1], count);
-    Ics[count-1] = readImage(im1);
-
     cudaStreamCreate(&frameStreams[count-1]);
     newFramePyramids[count-1] = createImgPyramid(Ics[count-1],frameStreams[count-1]);
 }
