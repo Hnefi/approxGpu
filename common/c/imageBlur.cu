@@ -52,6 +52,10 @@ TwoStepKernel* imageBlur(I2D* imageIn)
 
     startRow = 2;    
     endRow = rows - 2;  
+
+    rows = imageIn->height;
+    cols = imageIn->width;
+  
 #ifdef APPROXIMATE
     // approximate all of the image data. NOTE: NOT THE KERNEL
     LVA_FUNCTION(2 /* int */, &(imageIn->data[0]),&(imageIn->data[rows*cols]),1);
@@ -66,7 +70,6 @@ TwoStepKernel* imageBlur(I2D* imageIn)
             {
                 temp += subsref(imageIn,i,j+k) * asubsref(kernel,k+halfKernel);
             }
-            //subsref(tempOut,i,j) = temp/kernelSum;
             subsref(ret->intermediate,i,j) = temp/kernelSum;
         }
     }
@@ -78,10 +81,8 @@ TwoStepKernel* imageBlur(I2D* imageIn)
             temp = 0;
             for(k=-halfKernel; k<=halfKernel; k++)
             {
-                //temp += subsref(tempOut,(i+k),j) * asubsref(kernel,k+halfKernel);
                 temp += subsref(ret->intermediate,(i+k),j) * asubsref(kernel,k+halfKernel);
             }
-            //subsref(imageOut,i,j) = temp/kernelSum;
             subsref(ret->final,i,j) = temp/kernelSum;
         }
     }
@@ -90,9 +91,7 @@ TwoStepKernel* imageBlur(I2D* imageIn)
     LVA_FUNCTION_RM(5/*float*/ ,&(tempOut->data[0]),&(tempOut->data[rows*cols]),1);
     LVA_FUNCTION_RM(5/*float*/ ,&(imageOut->data[0]),&(imageOut->data[rows*cols]),1);
 #endif
-    fFreeHandle(tempOut);
     iFreeHandle(kernel);
-    //return imageOut;
     return ret;
 }
              

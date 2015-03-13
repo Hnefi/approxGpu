@@ -1,5 +1,0 @@
-Input size		- (1080x1920)
-Checking error: dimensions mismatch. Expected = 8, Observed = 10 
-Error in Tracking Map
-Cycles elapsed		- 11786351465
-

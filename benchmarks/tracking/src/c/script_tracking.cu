@@ -118,7 +118,6 @@ int main(int argc, char* argv[])
     ImagePyramid* newFramePyramids[MAX_COUNTER];
     cudaStream_t frameStreams[MAX_COUNTER];
 
-/** Fire off streams for other frames **/
 for(count=1; count<=counter; count++)
 {
     /** Read image **/
@@ -170,7 +169,19 @@ for(count=1; count<=counter; count++)
     F2D* gpuResizeInt = preprocessed->horizEdge;
     F2D* cpuResizeInt = cpu_resize_ret->intermediate;
     */
+    //ImagePyramid* preprocessed = createImgPyramid(Ic); // just need to define a struct to return 4 float* arrays
+    blurredImage = imageBlur(Ic);
+    //blurredImage = preprocessed->blurredImg;
 
+    /** Scale down the image to build Image Pyramid. We find features across all scales of the image **/
+    blurred_level1 = blurredImage;                   /** Scale 0 **/
+    //blurred_level2 = preprocessed->resizedImg;     /** Scale 1 **/
+    blurred_level2 = imageResize(blurredImage);
+    //F2D* cpu_level2 = imageResize(blurredImage); 
+    /*for(int i = 0 ;i < 100;i++) {
+        printf("Element # %d of GPU resize: %0.4f\n",i,blurred_level2->data[i]);
+        printf("Element # %d of CPU resize: %0.4f\n",i,cpu_level2->data[i]);
+     }*/
      
     /** Edge Images - From pre-processed images, build gradient images, both horizontal and vertical **/
     /*
@@ -224,7 +235,6 @@ for(count=1; count<=counter; count++)
             subsref(features,i,j) = subsref(interestPnt,j,i); 
 		}
     } 
-
     fFreeHandle(verticalEdgeImage);
     fFreeHandle(horizontalEdgeImage);
     fFreeHandle(interestPnt);
@@ -250,6 +260,10 @@ for(count=1; count<=counter; count++)
 
     /** Blur image to remove noise **/
     blurredImage = newFramePyramids[count-1]->blurredImg;
+
+    /** MARK Added: Create the new blurred and resized image**/
+    //ImagePyramid* newFramePyramid = createImgPyramid(Ic); // just need to define a struct to return 4 float* arrays
+    /** Blur image to remove noise **/
     previousFrameBlurred_level1 = fDeepCopy(blurred_level1);
     previousFrameBlurred_level2 = fDeepCopy(blurred_level2);
     
