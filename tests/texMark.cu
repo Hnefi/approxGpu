@@ -170,6 +170,7 @@ __global__ void avgMark(float* input, float* output, float* hashes, float* threa
                 int scaledGHB = ((threadIdx.y * blockDim.x) + threadIdx.x) * 3;
                 int singleRowOffset = SINGLEDIMINDEX(1,0,width);
                 if(curElement < (width*height) && curElement >= 0) {
+                    /*
                     float loaded = input[curElement-1];
                     tmp += loaded;
                     float curHash = hashGHB(&(ghb[scaledGHB]));
@@ -197,7 +198,6 @@ __global__ void avgMark(float* input, float* output, float* hashes, float* threa
                     //threadReads[scaled+3] = loaded;
                     //hashes[scaled+3] = curHash;
                     updateGHB(&(ghb[scaledGHB]),loaded);
-                    /*
                        loaded = input[curElement+1];
                        tmp += loaded;
                        threadReads[scaled+1] = loaded;
@@ -208,7 +208,7 @@ __global__ void avgMark(float* input, float* output, float* hashes, float* threa
                        tmp += loaded;
                        threadReads[scaled+3] = loaded;
                      */
-                    //tmp += ( input[curElement-1+shift] + input[curElement+1+shift] + input[curElement + singleRowOffset+shift] + input[curElement - singleRowOffset+shift] );
+                    tmp += ( input[curElement-1+shift] + input[curElement+1+shift] + input[curElement + singleRowOffset+shift] + input[curElement - singleRowOffset+shift] );
                     tmp /= 4.0;
                     output[curElement] = tmp;
                 }
