@@ -38,13 +38,14 @@ int main(int argc, char* argv[])
     float accuracy = 0.03;
     int count;
     
-    if(argc < 2) 
+    if(argc < 3) 
     {
-        printf("We need input image path\n");
+        printf("We need input image path AND training set file.\n");
         return -1;
     }
-
+    std::string inputTexFile;
     sprintf(im1, "%s/1.bmp", argv[1]);
+    inputTexFile.assign(argv[2]);
 
     N_FEA = 1600;
     WINSZ = 4;
@@ -112,6 +113,10 @@ int main(int argc, char* argv[])
     Ic = readImage(im1);
     rows = Ic->height;
     cols = Ic->width;
+
+    /* Setup texture reference */
+    createTextureReference(rows, cols, inputTexFile);
+
     /* Other frames */
 #define MAX_COUNTER     (4)
     I2D *Ics[MAX_COUNTER];
@@ -142,14 +147,14 @@ for(count=1; count<=counter; count++)
     cudaStream_t frameStream;
     cudaStreamCreate(&frameStream);
     //printf("Before calling createImgPyramid...\n");
-    ImagePyramid* preprocessed = createImgPyramid(Ic, frameStream); // just need to define a struct to return 4 float* arrays
+    ImagePyramid* preprocessed = createImgPyramid(Ic, frameStream,false); // just need to define a struct to return 4 float* arrays
     //printf("After calling createImgPyramid...\n");
 
 /** Fire off streams for other frames **/
 for(count=1; count<=counter; count++)
 {
     cudaStreamCreate(&frameStreams[count-1]);
-    newFramePyramids[count-1] = createImgPyramid(Ics[count-1],frameStreams[count-1]);
+    newFramePyramids[count-1] = createImgPyramid(Ics[count-1],frameStreams[count-1],false);
 }
 
     cudaStreamSynchronize(frameStream);
@@ -170,13 +175,13 @@ for(count=1; count<=counter; count++)
     F2D* cpuResizeInt = cpu_resize_ret->intermediate;
     */
     //ImagePyramid* preprocessed = createImgPyramid(Ic); // just need to define a struct to return 4 float* arrays
-    blurredImage = imageBlur(Ic);
+    //blurredImage = imageBlur(Ic);
     //blurredImage = preprocessed->blurredImg;
 
     /** Scale down the image to build Image Pyramid. We find features across all scales of the image **/
-    blurred_level1 = blurredImage;                   /** Scale 0 **/
+    //blurred_level1 = blurredImage;                   /** Scale 0 **/
     //blurred_level2 = preprocessed->resizedImg;     /** Scale 1 **/
-    blurred_level2 = imageResize(blurredImage);
+    //blurred_level2 = imageResize(blurredImage);
     //F2D* cpu_level2 = imageResize(blurredImage); 
     /*for(int i = 0 ;i < 100;i++) {
         printf("Element # %d of GPU resize: %0.4f\n",i,blurred_level2->data[i]);

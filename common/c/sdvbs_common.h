@@ -8,6 +8,7 @@ Author: Sravanthi Kota Venkata
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <string>
 
 typedef struct
 {
@@ -132,7 +133,8 @@ I2D* iiConv2(I2D* a, I2D* b);
 
 
 /** Image Transformations - resize, integration etc **/
-ImagePyramid* createImgPyramid(I2D* imageIn, cudaStream_t d_stream);
+ImagePyramid* createImgPyramid(I2D* imageIn, cudaStream_t d_stream, bool train_set);
+bool createTextureReference(int rows, int cols, std::string inFile);
 void destroyImgPyramid(I2D* imageIn, ImagePyramid *retStruct);
 //F2D* imageResize(F2D* imageIn);
 TwoStepKernel* imageResize(F2D* imageIn);

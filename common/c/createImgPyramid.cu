@@ -17,7 +17,7 @@
 #include "../kernels/calcSobel_dX_kernel.h"
 #include "../kernels/calcSobel_dY_kernel.h"
 
-ImagePyramid* createImgPyramid(I2D* imageIn, cudaStream_t d_stream)
+ImagePyramid* createImgPyramid(I2D* imageIn, cudaStream_t d_stream,bool train_set = false)
 {
     int rows, cols;
     rows = imageIn->height;
@@ -32,8 +32,8 @@ ImagePyramid* createImgPyramid(I2D* imageIn, cudaStream_t d_stream)
     dim3 threadsPerBlock(32,32);
 
     // dynamically calculate how many thread blocks to launch
-    int rowsIn = floor((rows+1)/4);
-    int colsIn = floor((cols+1)/4);
+    int rowsIn = floor((rows+1)/8);
+    int colsIn = floor((cols+1)/8);
 
     int resizedRows = floor((rows+1)/2);
     int resizedCols = floor((cols+1)/2);
@@ -51,6 +51,16 @@ ImagePyramid* createImgPyramid(I2D* imageIn, cudaStream_t d_stream)
     int* d_weightedKernel,*sobel_kern_1,*sobel_kern_2;
     float* resizeInt, *dxInt, *dyInt, *dyInt_small, *dxInt_small;
     float* resizeOutput, *dxOutput, *dyOutput, *dxOutput_small, *dyOutput_small;
+
+    float* threadReads, *threadHashes;
+    float* reads, *hashes;
+    int bytesForSmem = 32*32 * 3 * sizeof(float); // each thread gets 3 entries of 4 bytes each
+    if(train_set == true) {
+        reads = (float*) calloc(5*rows*cols,sizeof(float));
+        hashes = (float*) calloc(5*rows*cols,sizeof(float));
+        HANDLE_ERROR( cudaMalloc((void**)&threadReads,5*rows*cols*sizeof(float)) );
+        HANDLE_ERROR( cudaMalloc((void**)&threadHashes,5*rows*cols*sizeof(float)) );
+    }
 
     //Pin host memory array for greatest speed transfer.
     HANDLE_ERROR( cudaHostRegister(&(imageIn->data[0]),rows*cols*sizeof(int),cudaHostRegisterPortable) );
@@ -118,26 +128,44 @@ ImagePyramid* createImgPyramid(I2D* imageIn, cudaStream_t d_stream)
     cudaMemsetAsync(dyInt_small,0,resizedRows*resizedCols*sizeof(float),d_stream);
 
     /* Kernel call */
-    blurKernel_st1<<<nblocks,threadsPerBlock,0,d_stream>>>(d_inputPixels,d_intermediate,d_weightedKernel,cols,rows);
-    blurKernel_st2<<<nblocks,threadsPerBlock,0,d_stream>>>(d_outputPixels,d_intermediate,d_weightedKernel,cols,rows);
+    blurKernel_st1<<<nblocks,threadsPerBlock,bytesForSmem,d_stream>>>(d_inputPixels,d_intermediate,d_weightedKernel,threadHashes,threadReads,cols,rows);
+    blurKernel_st2<<<nblocks,threadsPerBlock,bytesForSmem,d_stream>>>(d_outputPixels,d_intermediate,d_weightedKernel,cols,rows);
 
     /* Call all kernels in one stream (order does not matter as they all read their input from d_outputPixels) */
-    resizeKernel_st1<<<nblocks,threadsPerBlock,0,d_stream>>>(d_outputPixels,resizeInt,d_weightedKernel,rows,cols,resizedRows,resizedCols);
-    resizeKernel_st2<<<nblocks,threadsPerBlock,0,d_stream>>>(resizeOutput,resizeInt,d_weightedKernel,rows,cols,resizedRows,resizedCols);
+    resizeKernel_st1<<<nblocks,threadsPerBlock,bytesForSmem,d_stream>>>(d_outputPixels,resizeInt,d_weightedKernel,rows,cols,resizedRows,resizedCols);
+    resizeKernel_st2<<<nblocks,threadsPerBlock,bytesForSmem,d_stream>>>(resizeOutput,resizeInt,d_weightedKernel,rows,cols,resizedRows,resizedCols);
 
     /* Calc dX Sobel filter */
-    calcSobel_dX_k1<<<nblocks,threadsPerBlock,0,d_stream>>>(d_outputPixels,dxInt,sobel_kern_1,sobel_kern_2,cols,rows);
-    calcSobel_dX_k2<<<nblocks,threadsPerBlock,0,d_stream>>>(dxInt,dxOutput,sobel_kern_1,sobel_kern_2,cols,rows);
+    calcSobel_dX_k1<<<nblocks,threadsPerBlock,bytesForSmem,d_stream>>>(d_outputPixels,dxInt,sobel_kern_1,sobel_kern_2,cols,rows);
+    calcSobel_dX_k2<<<nblocks,threadsPerBlock,bytesForSmem,d_stream>>>(dxInt,dxOutput,sobel_kern_1,sobel_kern_2,cols,rows);
 
-    calcSobel_dY_k1<<<nblocks,threadsPerBlock,0,d_stream>>>(d_outputPixels,dyInt,sobel_kern_1,sobel_kern_2,cols,rows);
-    calcSobel_dY_k2<<<nblocks,threadsPerBlock,0,d_stream>>>(dyInt,dyOutput,sobel_kern_1,sobel_kern_2,cols,rows);
+    calcSobel_dY_k1<<<nblocks,threadsPerBlock,bytesForSmem,d_stream>>>(d_outputPixels,dyInt,sobel_kern_1,sobel_kern_2,cols,rows);
+    calcSobel_dY_k2<<<nblocks,threadsPerBlock,bytesForSmem,d_stream>>>(dyInt,dyOutput,sobel_kern_1,sobel_kern_2,cols,rows);
 
     /* Calc level 2 sobel filter (on resized images) */
-    calcSobel_dX_k1<<<nblocks,threadsPerBlock,0,d_stream>>>(resizeOutput,dxInt_small,sobel_kern_1,sobel_kern_2,resizedCols,resizedRows);
-    calcSobel_dX_k2<<<nblocks,threadsPerBlock,0,d_stream>>>(dxInt_small,dxOutput_small,sobel_kern_1,sobel_kern_2,resizedCols,resizedRows);
+    calcSobel_dX_k1<<<nblocks,threadsPerBlock,bytesForSmem,d_stream>>>(resizeOutput,dxInt_small,sobel_kern_1,sobel_kern_2,resizedCols,resizedRows);
+    calcSobel_dX_k2<<<nblocks,threadsPerBlock,bytesForSmem,d_stream>>>(dxInt_small,dxOutput_small,sobel_kern_1,sobel_kern_2,resizedCols,resizedRows);
 
-    calcSobel_dY_k1<<<nblocks,threadsPerBlock,0,d_stream>>>(resizeOutput,dyInt_small,sobel_kern_1,sobel_kern_2,resizedCols,resizedRows);
-    calcSobel_dY_k2<<<nblocks,threadsPerBlock,0,d_stream>>>(dyInt_small,dyOutput_small,sobel_kern_1,sobel_kern_2,resizedCols,resizedRows);
+    calcSobel_dY_k1<<<nblocks,threadsPerBlock,bytesForSmem,d_stream>>>(resizeOutput,dyInt_small,sobel_kern_1,sobel_kern_2,resizedCols,resizedRows);
+    calcSobel_dY_k2<<<nblocks,threadsPerBlock,bytesForSmem,d_stream>>>(dyInt_small,dyOutput_small,sobel_kern_1,sobel_kern_2,resizedCols,resizedRows);
+
+    if(train_set == true) { 
+        cudaStreamSynchronize(d_stream); 
+        // we are synched here, now we can print out the training set (if we are frame 0)
+        HANDLE_ERROR( cudaMemcpy(reads,threadReads,5*rows*cols*sizeof(float),cudaMemcpyDeviceToHost) );
+        HANDLE_ERROR( cudaMemcpy(hashes,threadHashes,5*rows*cols*sizeof(float),cudaMemcpyDeviceToHost) );
+        for(int i = 0;i < 5*rows*cols;i+=5) {
+            printf("Global history hash [%0.5f], value: %0.5f\n",hashes[i],reads[i]);
+            printf("Global history hash [%0.5f], value: %0.5f\n",hashes[i+1],reads[i+1]);
+            printf("Global history hash [%0.5f], value: %0.5f\n",hashes[i+2],reads[i+2]);
+            printf("Global history hash [%0.5f], value: %0.5f\n",hashes[i+3],reads[i+3]);
+            printf("Global history hash [%0.5f], value: %0.5f\n",hashes[i+4],reads[i+4]);
+        }
+        cudaFree(threadHashes);
+        cudaFree(threadReads);
+        free(reads);
+        free(hashes);
+    }
 
     // deep copy into the destination F2D structures
     ImagePyramid* retStruct = (ImagePyramid*)malloc(sizeof(ImagePyramid));

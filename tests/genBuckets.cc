@@ -16,6 +16,8 @@ LVAData::GenerateUniqueValueSet(unsigned int max_size)
     // read of all threads/files
     slaveReader.processInput();
     slaveReader.reduceAverages();
+    // print to hashmap file
+    PrintTables();
 
     typedef boost::container::vector< std::pair<float,DqPtr> > VectorOfTablePairs;
 
@@ -25,6 +27,13 @@ LVAData::GenerateUniqueValueSet(unsigned int max_size)
 
     int prev_size = sorted.size();
     float mult_fac = (float) max_size / (float) prev_size;
+    /*
+    cout << "mult_fac is: " << mult_fac << endl;;
+
+    cout << "----sorted unique k/v pairs----" << endl;
+    for(int i = 0;i<prev_size;i++)
+        cout << sorted[i].second->at(0) << endl;
+        */
 
     // copy the first max_size-1 values
     FloatVector approxSet(max_size);
@@ -33,12 +42,20 @@ LVAData::GenerateUniqueValueSet(unsigned int max_size)
         approxSet[i] = d->at(0); // this is true because we averaged them down previously
     }
 
+    /*
+    cout << "----approx_set values----" << endl;
+    for(int i = 0;i<max_size;i++)
+        cout << approxSet[i] << endl;
+        */
+
     // now calculate I' = I * (mult_fac) = I * (max_size / prev_size), for all the upper order values
     //  then average these values in with the previous I' values
     for(int i = max_size; i < prev_size; i++) {
         DqPtr d = sorted[i].second;
         float valToAvg = d->at(0);
         int i_prime = boost::math::iround( (float)i * mult_fac );
+        cout << "i: " << i << ", i_prime: " << i_prime << endl;
+        //int i_prime = ( i % max_size );
         assert(i_prime < max_size);
         approxSet[i_prime] = (approxSet[i_prime] + valToAvg) / 2.0;
     }
@@ -79,7 +96,7 @@ LVAData::GenerateUniqueValueSet(unsigned int max_size)
     }
      */
 }
-/*
+
 int main(int argc, char* argv[])
 {
     std::string inputTexFile;
@@ -106,4 +123,3 @@ int main(int argc, char* argv[])
     dumpFile.close();
     return 0;
 }
-*/

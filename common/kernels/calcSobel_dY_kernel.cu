@@ -4,6 +4,8 @@
 // Global memory-based array sobel filtering - non optimized
 
 #include "calcSobel_dY_kernel.h"
+#include "ghbFunctions.h"
+#include "texRef.h"
 
 #define RADIUS 1
 #define SINGLEDIMINDEX(i,j,width) ((i)*(width) + (j))
@@ -36,6 +38,8 @@ __global__ void calcSobel_dY_k1(float* inputPixels, float* intermediate,
     }
     float kernelSum_1 = 4.0;
     float kernelSum_2 = 2.0;
+    extern __shared__ float ghb[]; // for per-thread local history
+    int my_ghb_index = ((threadIdx.y * blockDim.x) + threadIdx.x) * 3;
 
     // still check for this in case of small img, not all threads need execute
     for (int idx = i; idx < (i + xScale); idx++) {
@@ -50,14 +54,23 @@ __global__ void calcSobel_dY_k1(float* inputPixels, float* intermediate,
                 float tmp = 0.0;
                 int curElement = SINGLEDIMINDEX(jdx,idx,width);
 
-                for (int ii = -RADIUS;ii <= RADIUS;ii++) {
+                for (int ii = -RADIUS;ii < RADIUS;ii++) {
                     int location = curElement + SINGLEDIMINDEX(ii,0,width);
                     int filterWeightLoc = RADIUS + ii;
                     // bounds check #2 for surrounding pix
                     if (location < (width*height) && location >= 0) {
-                        tmp += inputPixels[location]*kernel_2[filterWeightLoc];
+                        float loaded = intermediate[location];
+                        tmp += loaded*kernel_2[filterWeightLoc];
+                        updateGHB(&ghb[my_ghb_index],loaded);
                     }
                 }
+                int filterWeightLoc = 2*RADIUS;
+                float curValueHash = hashGHB(&ghb[my_ghb_index]);
+                float texVal = tex1D(tref,curValueHash);
+                tmp += texVal * kernel_2[filterWeightLoc];
+                updateGHB(&ghb[my_ghb_index],texVal);
+
+
                 float avg = (float)tmp / kernelSum_2;
                 intermediate[curElement] = avg;
             }
@@ -93,6 +106,8 @@ __global__ void calcSobel_dY_k2(float* intermediate, float* outputPixels,
     }
     float kernelSum_1 = 4;
     float kernelSum_2 = 2;
+    extern __shared__ float ghb[]; // for per-thread local history
+    int my_ghb_index = ((threadIdx.y * blockDim.x) + threadIdx.x) * 3;
 
     // still check for this in case of small img, not all threads need execute
     for (int idx = i; idx < (i + xScale); idx++) {
@@ -104,20 +119,31 @@ __global__ void calcSobel_dY_k2(float* intermediate, float* outputPixels,
 
               if( idx > 0 && idx < width-1
                && jdx > 0 && jdx < height-1) {
-                float tmp = 0.0;
-                int curElement = SINGLEDIMINDEX(jdx,idx,width);
+                  float tmp = 0.0;
+                    int curElement = SINGLEDIMINDEX(jdx,idx,width);
+                  int location = curElement;
+                  int filterWeightLoc = RADIUS;
+                  if(location < (width*height) && location >=0) {
+                      float loaded = intermediate[location];
+                      tmp += loaded*kernel_1[filterWeightLoc];
+                      updateGHB(&ghb[my_ghb_index],loaded);
+                  }
 
-                for (int ii = -RADIUS;ii <= RADIUS;ii++) {
-                    int location = curElement + ii;
-                    int filterWeightLoc = RADIUS + ii;
-                    // bounds check #2 for surrounding pix
-                    if (location < (width*height) && location >= 0) {
-                        tmp += intermediate[location]*kernel_1[filterWeightLoc];
-                    }
-                }
-                float avg = (float)tmp / kernelSum_1;
-                outputPixels[curElement] = avg;
-            }
+                  for (int ii = -RADIUS;ii <= RADIUS;ii++) {
+                      if(ii == 0) continue;
+                      int filterWeightLoc = RADIUS + ii;
+                      // bounds check #2 for surrounding pix
+                      if (location < (width*height) && location >= 0) {
+                          float curValueHash = hashGHB(&ghb[my_ghb_index]);
+                          float texVal = tex1D(tref,curValueHash);
+                          tmp += texVal * kernel_1[filterWeightLoc];
+                          updateGHB(&ghb[my_ghb_index],texVal);
+                      }
+                  }
+                  float avg = (float)tmp / kernelSum_1;
+                  outputPixels[curElement] = avg;
+              }
+        
         }
     }
 }

@@ -4,7 +4,8 @@
 // Global memory-based array image resize. non-optimized
 
 #include "imageResize_kernel_st2.h"
-#include <stdio.h>
+#include "ghbFunctions.h"
+#include "texRef.h"
 
 #define RADIUS 2
 #define SINGLEDIMINDEX(i,j,width) ((i)*(width) + (j))
@@ -38,6 +39,8 @@ __global__ void resizeKernel_st2(float* outputPixels,float* intermediate, int* w
     }
 
     float kernelSum = 16.0;
+    extern __shared__ float ghb[]; // for per-thread local history
+    int my_ghb_index = ((threadIdx.y * blockDim.x) + threadIdx.x) * 3;
     
     for (int idx = i; idx < (i + xScale); idx++) {
         if ( ((idx == i+xScale) && xmod == 0) ||
@@ -51,11 +54,21 @@ __global__ void resizeKernel_st2(float* outputPixels,float* intermediate, int* w
             && jdx >= 0 && jdx < resizedRows-2 ) { // over all row/col
                 int elemToWrite = SINGLEDIMINDEX(jdx,idx,resizedCols);
                 int elemToReadFrom = SINGLEDIMINDEX((jdx*2),idx,resizedCols);
-                for (int ii = 0;ii <= 2*RADIUS;ii++) {
+
+                // loop peel the first iteration for a gmem read
+                // and then approx. the rest of the loads
+                float loaded = intermediate[elemToReadFrom];
+                tmp += loaded * weightedKernel[0];
+                updateGHB(&ghb[my_ghb_index],loaded);
+
+                for (int ii = 1;ii <= 2*RADIUS;ii++) {
                     int location = elemToReadFrom + SINGLEDIMINDEX(ii,0,resizedCols);
                     // bounds check #2 for surrounding pix
                     if (location < (resizedCols*height) && location >= 0) {
-                        tmp += intermediate[location]*weightedKernel[ii];
+                        float curValueHash = hashGHB(&ghb[my_ghb_index]);
+                        float texVal = tex1D(tref,curValueHash);
+                        tmp += texVal * weightedKernel[ii];
+                        updateGHB(&ghb[my_ghb_index],texVal);
                     }
                 }
                 float avg = tmp / kernelSum;

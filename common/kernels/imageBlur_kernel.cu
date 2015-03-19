@@ -4,11 +4,14 @@
 // Global memory-based array image blur. non-optimized
 
 #include "imageBlur_kernel.h"
+#include "ghbFunctions.h"
+#include "texRef.h"
+#include <stdio.h>
 
 #define RADIUS 2
 #define SINGLEDIMINDEX(i,j,width) ((i)*(width) + (j))
 
-__global__ void blurKernel_st1(int* inputPixels, float* intermediate, int* weightedKernel,uint width, uint height /*, other arguments */)
+__global__ void blurKernel_st1(int* inputPixels, float* intermediate, int* weightedKernel,float* hashes, float* threadReads,uint width, uint height /*, other arguments */)
 {
     // assign id's
     int i = blockIdx.x * blockDim.x + threadIdx.x;
@@ -34,6 +37,9 @@ __global__ void blurKernel_st1(int* inputPixels, float* intermediate, int* weigh
         j *= yScale;
     }
     float kernelSum = 16.0;
+    
+    extern __shared__ float ghb[]; // for per-thread local history
+    int my_ghb_index = ((threadIdx.y * blockDim.x) + threadIdx.x) * 3;
 
     // still check for this in case of small img, not all threads need execute
     for (int idx = i; idx < (i + xScale); idx++) {
@@ -48,15 +54,47 @@ __global__ void blurKernel_st1(int* inputPixels, float* intermediate, int* weigh
                 && idx < width-2 && idx > 1 ){
                 //int curElement = (width * jdx) + idx;
                   int curElement = SINGLEDIMINDEX(jdx,idx,width);
+                  int scaled = curElement * 5;
 
-                for (int ii = -RADIUS;ii <= RADIUS;ii++) {
+                  // a bit of manual loop unrolling - base the gmem read on the center
+                  // pix, and then approximate all pixels around it from tex mem
+                  int location = curElement;
+                  int filterWeightLoc = RADIUS;
+                  if(location < (width*height) && location >=0) {
+                      float loaded = inputPixels[location];
+                      tmp += loaded * weightedKernel[filterWeightLoc];
+                      updateGHB(&ghb[my_ghb_index],loaded);
+                  }
+
+                  for(int ii = -RADIUS;ii <= RADIUS;ii++) {
+                      if( ii == 0) continue; // done with gmem read above
+                    location = curElement + ii;
+                    filterWeightLoc = RADIUS + ii;
+                    // bounds check #2 for surrounding pix
+                    if (location < (width*height) && location >= 0) {
+                        float curValueHash = hashGHB(&ghb[my_ghb_index]);
+                        float texVal = tex1D(tref,curValueHash / 225.0);
+                        //threadReads[scaled+filterWeightLoc] = texVal;
+                        //hashes[scaled+filterWeightLoc] = curValueHash;
+                        tmp += texVal * weightedKernel[filterWeightLoc];
+                        updateGHB(&ghb[my_ghb_index],texVal);
+                    }
+                  }
+
+                /*for (int ii = -RADIUS;ii <= RADIUS;ii++) {
                     int location = curElement + ii;
                     int filterWeightLoc = RADIUS + ii;
                     // bounds check #2 for surrounding pix
                     if (location < (width*height) && location >= 0) {
-                        tmp += inputPixels[location]*weightedKernel[filterWeightLoc];
+                        float loaded = inputPixels[location];
+                        tmp += loaded * weightedKernel[filterWeightLoc];
+                        float curHash = hashGHB(&(ghb[my_ghb_index]));
+                        threadReads[scaled+filterWeightLoc] = loaded;
+                        hashes[scaled+filterWeightLoc] = curHash;
+                        updateGHB(&(ghb[my_ghb_index]),loaded);
                     }
                 }
+                */
                 float avg = (float)tmp / kernelSum;
                 intermediate[curElement] = avg;
             }

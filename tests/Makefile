@@ -11,3 +11,8 @@ texMark: $(CU_OBJS)
 
 clean:
 	rm -f tmBin *.o 
+
+
+trainSet: genBuckets.cc
+	g++ $^ -lboost_regex -o trSetGen
+

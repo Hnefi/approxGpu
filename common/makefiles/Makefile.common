@@ -67,7 +67,7 @@ COMPILE_PG = $(COMPILE_G) -pg
 
 c-run:
 	@echo -e "Data set\t\t- $(INPUT)" 
-	@./$(BMARK)$(EXE) $(DATA_DIR) $(C_RESULT) | tee $(TIMING_DIR)/C_$(INPUT).txt
+	@./$(BMARK)$(EXE) $(DATA_DIR) $(C_RESULT) 
 
 c-run-approx: compile-approx
 	@echo -e "Data set\t\t- $(INPUT)" 
@@ -87,12 +87,12 @@ profile: compile-prof
 
 %.o: %.cu
 	@echo "Compiling object file for $<"
-	@$(COMPILE_C) -c $< -o $@
+	@$(COMPILE_C) -G -g -c $< -o $@
 
 compile: $(C_OBJ) $(COMMON_OBJ) $(CUDA_OBJ)
 	@echo 
 	@echo -e "Benchmark\t\t- $(BMARK)"
-	@$(COMPILE_C) $^ -o $(BMARK)$(EXE)
+	@$(COMPILE_C) $^ -G -g -o $(BMARK)$(EXE)
 
 compile-approx: $(C_SRC)
 	@echo

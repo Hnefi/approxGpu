@@ -4,6 +4,8 @@
 // Global memory-based array image blur. non-optimized
 
 #include "imageBlur_kernel_stage2.h"
+#include "ghbFunctions.h"
+#include "texRef.h"
 
 #define RADIUS 2
 #define SINGLEDIMINDEX(i,j,width) ((i)*(width) + (j))
@@ -34,6 +36,8 @@ __global__ void blurKernel_st2(float* outputPixels,float* intermediate, int* wei
         j *= yScale;
     }
     float kernelSum = 16.0;
+    extern __shared__ float ghb[]; // for per-thread local history
+    int my_ghb_index = ((threadIdx.y * blockDim.x) + threadIdx.x) * 3;
 
     // still check for this in case of small img, not all threads need execute
     for (int idx = i; idx < (i + xScale); idx++) {
@@ -48,14 +52,26 @@ __global__ void blurKernel_st2(float* outputPixels,float* intermediate, int* wei
                && jdx < height-2 && jdx > 1) { // bounds check #1
                   int curElement = SINGLEDIMINDEX(jdx,idx,width);
 
-                for (int ii = -RADIUS;ii <= RADIUS;ii++) {
-                    int location = curElement + (ii*width);
+                  int location = curElement;
+                  int filterWeightLoc = RADIUS;
+                  if(location < (width*height) && location >=0) {
+                      float loaded = intermediate[location];
+                      tmp += loaded*weightedKernel[filterWeightLoc];
+                      updateGHB(&ghb[my_ghb_index],loaded);
+                  }
+
+                  for(int ii = -RADIUS;ii <= RADIUS;ii++) {
+                      if( ii == 0) continue; // done with gmem read above
+                    int location = curElement + ii;
                     int filterWeightLoc = RADIUS + ii;
                     // bounds check #2 for surrounding pix
                     if (location < (width*height) && location >= 0) {
-                        tmp += intermediate[location]*weightedKernel[filterWeightLoc];
+                        float curValueHash = hashGHB(&ghb[my_ghb_index]);
+                        float texVal = tex1D(tref,curValueHash);
+                        tmp += texVal*weightedKernel[filterWeightLoc];
+                        updateGHB(&ghb[my_ghb_index],texVal);
                     }
-                }
+                  }
                 float avg = tmp / kernelSum;
                 outputPixels[curElement] = avg;
             }
