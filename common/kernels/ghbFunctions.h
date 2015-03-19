@@ -1,13 +1,13 @@
 #ifndef _GHB_FUNC_H
 #define _GHB_FUNC_H
-__device__ void updateGHB(float* mem_arr,float new_val)
+__device__ __forceinline__ void updateGHB(float* mem_arr,float new_val)
 {
     mem_arr[0] = mem_arr[1];
     mem_arr[1] = mem_arr[2];
     mem_arr[2] = (new_val / 225.0);
 }
 
-__device__ float hashGHB(float* mem_arr)
+__device__ __forceinline__ float hashGHB(float* mem_arr)
 {
     float sum = mem_arr[0] + mem_arr[1] + mem_arr[2];
     sum /= 3.0;

@@ -149,12 +149,14 @@ for(count=1; count<=counter; count++)
     //printf("Before calling createImgPyramid...\n");
     ImagePyramid* preprocessed = createImgPyramid(Ic, frameStream,false); // just need to define a struct to return 4 float* arrays
     //printf("After calling createImgPyramid...\n");
+    cudaStreamSynchronize(frameStream);
 
 /** Fire off streams for other frames **/
 for(count=1; count<=counter; count++)
 {
     cudaStreamCreate(&frameStreams[count-1]);
     newFramePyramids[count-1] = createImgPyramid(Ics[count-1],frameStreams[count-1],false);
+    cudaStreamSynchronize(frameStreams[count-1]);
 }
 
     cudaStreamSynchronize(frameStream);

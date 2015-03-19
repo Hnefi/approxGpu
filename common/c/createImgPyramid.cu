@@ -29,7 +29,7 @@ ImagePyramid* createImgPyramid(I2D* imageIn, cudaStream_t d_stream,bool train_se
     int sobelKernel_2[3] = {1,0,-1};
     
     //dim3 nblocks(4,3);
-    dim3 threadsPerBlock(32,32);
+    dim3 threadsPerBlock(16,16);
 
     // dynamically calculate how many thread blocks to launch
     int rowsIn = floor((rows+1)/8);
@@ -38,10 +38,10 @@ ImagePyramid* createImgPyramid(I2D* imageIn, cudaStream_t d_stream,bool train_se
     int resizedRows = floor((rows+1)/2);
     int resizedCols = floor((cols+1)/2);
 
-    int nBlocksWide = colsIn/32;
-    if (colsIn % 32) nBlocksWide++;
-    int nBlocksTall = rowsIn/32;
-    if (rowsIn % 32) nBlocksTall++;
+    int nBlocksWide = colsIn/16;
+    if (colsIn % 16) nBlocksWide++;
+    int nBlocksTall = rowsIn/16;
+    if (rowsIn % 16) nBlocksTall++;
     dim3 nblocks(nBlocksWide,nBlocksTall);
     //printf("Calculated block dimensions as: %d x %d\n",nBlocksWide,nBlocksTall);
 
@@ -54,7 +54,7 @@ ImagePyramid* createImgPyramid(I2D* imageIn, cudaStream_t d_stream,bool train_se
 
     float* threadReads, *threadHashes;
     float* reads, *hashes;
-    int bytesForSmem = 32*32 * 3 * sizeof(float); // each thread gets 3 entries of 4 bytes each
+    int bytesForSmem = 16*16 * 3 * sizeof(float); // each thread gets 3 entries of 4 bytes each
     if(train_set == true) {
         reads = (float*) calloc(5*rows*cols,sizeof(float));
         hashes = (float*) calloc(5*rows*cols,sizeof(float));
@@ -128,26 +128,29 @@ ImagePyramid* createImgPyramid(I2D* imageIn, cudaStream_t d_stream,bool train_se
     cudaMemsetAsync(dyInt_small,0,resizedRows*resizedCols*sizeof(float),d_stream);
 
     /* Kernel call */
-    blurKernel_st1<<<nblocks,threadsPerBlock,bytesForSmem,d_stream>>>(d_inputPixels,d_intermediate,d_weightedKernel,threadHashes,threadReads,cols,rows);
+    //texMark<<<nblocks,threadsPerBlock,bytesForSmem,d_stream>>>(d_intermediate,d_outputPixels,cols,rows,0);
+    for(int i = 0; i < 5; i++)
+        blurKernel_st1<<<nblocks,threadsPerBlock,bytesForSmem,d_stream>>>(d_inputPixels,d_intermediate,d_weightedKernel,threadHashes,threadReads,cols,rows);
+
+    /*
     blurKernel_st2<<<nblocks,threadsPerBlock,bytesForSmem,d_stream>>>(d_outputPixels,d_intermediate,d_weightedKernel,cols,rows);
 
-    /* Call all kernels in one stream (order does not matter as they all read their input from d_outputPixels) */
     resizeKernel_st1<<<nblocks,threadsPerBlock,bytesForSmem,d_stream>>>(d_outputPixels,resizeInt,d_weightedKernel,rows,cols,resizedRows,resizedCols);
     resizeKernel_st2<<<nblocks,threadsPerBlock,bytesForSmem,d_stream>>>(resizeOutput,resizeInt,d_weightedKernel,rows,cols,resizedRows,resizedCols);
 
-    /* Calc dX Sobel filter */
     calcSobel_dX_k1<<<nblocks,threadsPerBlock,bytesForSmem,d_stream>>>(d_outputPixels,dxInt,sobel_kern_1,sobel_kern_2,cols,rows);
     calcSobel_dX_k2<<<nblocks,threadsPerBlock,bytesForSmem,d_stream>>>(dxInt,dxOutput,sobel_kern_1,sobel_kern_2,cols,rows);
 
     calcSobel_dY_k1<<<nblocks,threadsPerBlock,bytesForSmem,d_stream>>>(d_outputPixels,dyInt,sobel_kern_1,sobel_kern_2,cols,rows);
     calcSobel_dY_k2<<<nblocks,threadsPerBlock,bytesForSmem,d_stream>>>(dyInt,dyOutput,sobel_kern_1,sobel_kern_2,cols,rows);
 
-    /* Calc level 2 sobel filter (on resized images) */
     calcSobel_dX_k1<<<nblocks,threadsPerBlock,bytesForSmem,d_stream>>>(resizeOutput,dxInt_small,sobel_kern_1,sobel_kern_2,resizedCols,resizedRows);
     calcSobel_dX_k2<<<nblocks,threadsPerBlock,bytesForSmem,d_stream>>>(dxInt_small,dxOutput_small,sobel_kern_1,sobel_kern_2,resizedCols,resizedRows);
 
     calcSobel_dY_k1<<<nblocks,threadsPerBlock,bytesForSmem,d_stream>>>(resizeOutput,dyInt_small,sobel_kern_1,sobel_kern_2,resizedCols,resizedRows);
     calcSobel_dY_k2<<<nblocks,threadsPerBlock,bytesForSmem,d_stream>>>(dyInt_small,dyOutput_small,sobel_kern_1,sobel_kern_2,resizedCols,resizedRows);
+    */
+    
 
     if(train_set == true) { 
         cudaStreamSynchronize(d_stream); 
