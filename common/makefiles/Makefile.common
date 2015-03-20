@@ -4,8 +4,8 @@
 
 # Define MATLAB-PATH with the path to the MATLAB package
 MATLAB_PATH = /pkg/bin/matlab
-ifeq ($(filter matlab-run,$(MAKECMDGOALS)),matlab-run)
-ifneq ($(wildcard $(MATLAB_PATH)),$(MATLAB_PATH))
+ifeq ($(filter matlab-run,$(MAKECMDGOALS)),matlab-run) 
+ifneq ($(wildcard $(MATLAB_PATH)),$(MATLAB_PATH)) 
 $(error Please set the appropriate MATLAB path in MATLAB_PATH variable)
 endif
 endif
@@ -17,7 +17,10 @@ endif
 endif
 
 CC=nvcc
-override CFLAGS += -arch=sm_20 -w -DGCC -DCHECK -D$(INPUT)
+# TEX ACCESSES PER KERNEL
+TEX = 2
+
+override CFLAGS += -arch=sm_20 -rdc=true -w -DGCC -DCHECK -D$(INPUT) -D NUM_TEX=$(TEX)
 
 COMMON_DIR := $(TOP_DIR)/common/c
 BIN_DIR := $(TOP_DIR)/common/bin
@@ -118,6 +121,9 @@ all: c-run matlab-run mcc-run
 
 clean:
 	@-rm $(BMARK)
+	@echo -e "Cleaning all kernel files..."
+	@-rm -f $(CUDA_DIR)/*.o
+	@-rm -f $(DATA_DIR)/*.o
 
 .PHONY: destroy
 destroy:

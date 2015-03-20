@@ -5,12 +5,12 @@
 
 #include "imageResize_kernel_st2.h"
 #include "ghbFunctions.h"
-#include "texRef.h"
 
 #define RADIUS 2
+#define DIAMETER (2*RADIUS+1)
 #define SINGLEDIMINDEX(i,j,width) ((i)*(width) + (j))
 
-__global__ void resizeKernel_st2(float* outputPixels,float* intermediate, int* weightedKernel,uint height, uint width,uint resizedRows,uint resizedCols/*, other arguments */)
+__global__ void resizeKernel_st2(float* outputPixels,float* intermediate, int* weightedKernel,uint height, uint width,uint resizedRows,uint resizedCols,cudaTextureObject_t tref /*, other arguments */)
 {
     // assign id's
     int i = blockIdx.x * blockDim.x + threadIdx.x;
@@ -55,21 +55,21 @@ __global__ void resizeKernel_st2(float* outputPixels,float* intermediate, int* w
                 int elemToWrite = SINGLEDIMINDEX(jdx,idx,resizedCols);
                 int elemToReadFrom = SINGLEDIMINDEX((jdx*2),idx,resizedCols);
 
-                // loop peel the first iteration for a gmem read
-                // and then approx. the rest of the loads
-                float loaded = intermediate[elemToReadFrom];
-                tmp += loaded * weightedKernel[0];
-                updateGHB(&ghb[my_ghb_index],loaded);
-
-                for (int ii = 1;ii <= 2*RADIUS;ii++) {
+                for(int ii = 0;ii < (DIAMETER - NUM_TEX);ii++) {
                     int location = elemToReadFrom + SINGLEDIMINDEX(ii,0,resizedCols);
                     // bounds check #2 for surrounding pix
-                    if (location < (resizedCols*height) && location >= 0) {
-                        float curValueHash = hashGHB(&ghb[my_ghb_index]);
-                        float texVal = tex1D(tref,curValueHash);
-                        tmp += texVal * weightedKernel[ii];
-                        updateGHB(&ghb[my_ghb_index],texVal);
+                    if (location < (width*height) && location >= 0) {
+                        float loaded = intermediate[location];
+                        tmp += loaded * weightedKernel[ii];
+                        updateGHB(&(ghb[my_ghb_index]),loaded);
                     }
+                }
+
+                // finish up last few values with NUM_TEX reads
+                for(int ii = (DIAMETER-NUM_TEX); ii < DIAMETER;ii++) {
+                    float curValueHash = hashGHB(&ghb[my_ghb_index]);
+                    float texVal = tex1D<float>(tref,curValueHash);
+                    tmp += texVal * weightedKernel[ii];
                 }
                 float avg = tmp / kernelSum;
                 outputPixels[elemToWrite] = avg;

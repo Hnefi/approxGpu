@@ -3,6 +3,9 @@ Author: Sravanthi Kota Venkata
 ********************************/
 
 #include "tracking.h"
+#include <iostream>
+#include <fstream>
+#include <string>
 
 // LVA for interacting with pin
 #ifdef APPROXIMATE
@@ -113,16 +116,13 @@ int main(int argc, char* argv[])
     Ic = readImage(im1);
     rows = Ic->height;
     cols = Ic->width;
-
-    /* Setup texture reference */
-    createTextureReference(rows, cols, inputTexFile);
-
     /* Other frames */
 #define MAX_COUNTER     (4)
     I2D *Ics[MAX_COUNTER];
     ImagePyramid* newFramePyramids[MAX_COUNTER];
     cudaStream_t frameStreams[MAX_COUNTER];
 
+/** Until now, we processed base frame. The following for loop processes other frames **/
 for(count=1; count<=counter; count++)
 {
     /** Read image **/
@@ -135,7 +135,51 @@ for(count=1; count<=counter; count++)
     LVA_BX_INSTRUCTION;
     cudaDeviceReset();
     printf("Input size\t\t- (%dx%d)\n", rows, cols);
+
+    cudaDeviceProp dev_props;
+    // assume device 0
+    HANDLE_ERROR( cudaGetDeviceProperties(&dev_props,0) );
+
+    // print some stuff
+    printf("Current Device compute capability: %d.%d\n",dev_props.major,dev_props.minor);
+    printf("1D texture memory limit (cudaArray): %d\n",dev_props.maxTexture1D);
+
+    // read in the texture training set from the input file
+    float* big_arr = (float*)malloc( dev_props.maxTexture1D * sizeof(float)); 
+    std::ifstream inputStream(inputTexFile.c_str());
+    if ( !inputStream.is_open() ) return false;
+    std::string raw_string;
+    i = 0;
+    while( !inputStream.eof() ) {
+        getline(inputStream,raw_string);
+        float value = atof(raw_string.c_str());
+        //cout << "value: " << value << endl;
+        big_arr[i] = value;
+        i++;
+    }
+    printf("Total size of training input read from file: %d\n", i-1);
     
+    cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc(32, 0, 0, 0, cudaChannelFormatKindFloat); 
+    cudaArray* cuArray; 
+    cudaMallocArray(&cuArray, &channelDesc, i-1); 
+    // Copy to device memory some data located at address h_data in host memory 
+    cudaMemcpyToArray(cuArray, 0, 0, big_arr,(i-1)*sizeof(float),cudaMemcpyHostToDevice); 
+    // Specify texture struct 
+    cudaResourceDesc resDesc; 
+    memset(&resDesc, 0, sizeof(resDesc)); 
+    resDesc.resType = cudaResourceTypeArray; 
+    resDesc.res.array.array = cuArray; 
+    // Specify texture object parameters 
+    struct cudaTextureDesc texDesc; 
+    memset(&texDesc, 0, sizeof(texDesc)); 
+    texDesc.addressMode[0] = cudaAddressModeMirror; 
+    texDesc.filterMode = cudaFilterModeLinear; 
+    texDesc.readMode = cudaReadModeElementType; 
+    texDesc.normalizedCoords = 1; 
+    // Create texture object 
+    cudaTextureObject_t texObj = 0; 
+    cudaCreateTextureObject(&texObj, &resDesc, &texDesc, NULL);
+
     /** Start Timing **/
     start = photonStartTiming();
     
@@ -143,79 +187,16 @@ for(count=1; count<=counter; count++)
 
     /** Blur the image to remove noise - weighted avergae filter **/
 
-    /* MARK: Added code to create all bluured level images in parallel */
-    cudaStream_t frameStream;
-    cudaStreamCreate(&frameStream);
-    //printf("Before calling createImgPyramid...\n");
-    ImagePyramid* preprocessed = createImgPyramid(Ic, frameStream,false); // just need to define a struct to return 4 float* arrays
+    ImagePyramid* preprocessed = createImgPyramid(Ic, 0,&texObj,false); // just need to define a struct to return 4 float* arrays
     //printf("After calling createImgPyramid...\n");
-    cudaStreamSynchronize(frameStream);
 
-/** Fire off streams for other frames **/
-for(count=1; count<=counter; count++)
-{
-    cudaStreamCreate(&frameStreams[count-1]);
-    newFramePyramids[count-1] = createImgPyramid(Ics[count-1],frameStreams[count-1],false);
-    cudaStreamSynchronize(frameStreams[count-1]);
-}
-
-    cudaStreamSynchronize(frameStream);
-    cudaStreamDestroy(frameStream);
-    destroyImgPyramid(Ic, preprocessed);
     blurredImage = preprocessed->blurredImg;
 
     /** Scale down the image to build Image Pyramid. We find features across all scales of the image **/
     blurred_level1 = blurredImage;                   /** Scale 0 **/
     blurred_level2 = preprocessed->resizedImg;     /** Scale 1 **/
-    /*
-    TwoStepKernel* cpu_blur_ret = imageBlur(Ic);
-    TwoStepKernel* cpu_resize_ret = imageResize(cpu_blur_ret->final);
-    blurred_level2 = cpu_resize_ret->final;
-    F2D* blurredImageCPU = cpu_blur_ret->final;
-    F2D* intBlurCPU = cpu_blur_ret->intermediate;
-    F2D* gpuResizeInt = preprocessed->horizEdge;
-    F2D* cpuResizeInt = cpu_resize_ret->intermediate;
-    */
-    //ImagePyramid* preprocessed = createImgPyramid(Ic); // just need to define a struct to return 4 float* arrays
-    //blurredImage = imageBlur(Ic);
-    //blurredImage = preprocessed->blurredImg;
-
-    /** Scale down the image to build Image Pyramid. We find features across all scales of the image **/
-    //blurred_level1 = blurredImage;                   /** Scale 0 **/
-    //blurred_level2 = preprocessed->resizedImg;     /** Scale 1 **/
-    //blurred_level2 = imageResize(blurredImage);
-    //F2D* cpu_level2 = imageResize(blurredImage); 
-    /*for(int i = 0 ;i < 100;i++) {
-        printf("Element # %d of GPU resize: %0.4f\n",i,blurred_level2->data[i]);
-        printf("Element # %d of CPU resize: %0.4f\n",i,cpu_level2->data[i]);
-     }*/
-     
-    /** Edge Images - From pre-processed images, build gradient images, both horizontal and vertical **/
-    /*
-    verticalEdgeImage = calcSobel_dX(blurredImage);
-    TwoStepKernel* dyRet = calcSobel_dY(blurredImage);
-    F2D* horizEdge_CPU = dyRet->final;
-    F2D* horizEdge_int = dyRet->intermediate;
-    F2D* verticalEdgeImage_GPU = preprocessed->vertEdge;
-    F2D* horizontalEdgeImage_GPU = preprocessed->horizEdge;
-    F2D* horizEdge_GPUint = preprocessed->tmp;
-    */
     horizontalEdgeImage = preprocessed->horizEdge;
     verticalEdgeImage = preprocessed->vertEdge;
-   /* 
-     for(int i = 0 ;i < verticalEdgeImage->height * verticalEdgeImage->width ;i++) {
-        //printf("Element # %d of GPU int: %0.8f\n",i,preprocessed->vertEdge->data[i]);
-        //printf("Element # %d of CPU int: %0.8f\n", i,intBlurCPU->data[i]);
-        //printf("Element # %d of GPU blur: %0.8f\n",i,blurred_level1->data[i]);
-        //printf("Element # %d of CPU blur: %0.8f\n",i,blurredImageCPU->data[i]);
-
-        //printf("Element # %d of GPU int: %0.8f\n",i,horizEdge_GPUint->data[i]);
-        //printf("Element # %d of CPU int: %0.8f\n",i,horizEdge_int->data[i]);
-        printf("Element # %d of GPU horiz: %0.8f\n",i,horizontalEdgeImage->data[i]);
-        printf("Element # %d of CPU horiz: %0.8f\n",i,horizEdge_CPU->data[i]);
-     } 
-    */ 
-     
 
     /** Edge images are used for feature detection. So, using the verticalEdgeImage and horizontalEdgeImage images, we compute feature strength
         across all pixels. Lambda matrix is the feature strength matrix returned by calcGoodFeature **/
@@ -252,15 +233,12 @@ for(count=1; count<=counter; count++)
 /** Until now, we processed base frame. The following for loop processes other frames **/
 for(count=1; count<=counter; count++)
 {
-    /** Read image **/
+    newFramePyramids[count-1] = createImgPyramid(Ics[count-1],0,&texObj,false);
+
     Ic = Ics[count-1];
     rows = Ic->height;
     cols = Ic->width;
     
-    cudaStreamSynchronize(frameStreams[count-1]);
-    cudaStreamDestroy(frameStreams[count-1]);
-    destroyImgPyramid(Ics[count-1], newFramePyramids[count-1]);
-
     //printf("Read image %d of dim %dx%d.\n",count,rows,cols);
     /* Start timing */
     //start = photonStartTiming();
@@ -273,24 +251,13 @@ for(count=1; count<=counter; count++)
     /** Blur image to remove noise **/
     previousFrameBlurred_level1 = fDeepCopy(blurred_level1);
     previousFrameBlurred_level2 = fDeepCopy(blurred_level2);
-    
-    fFreeHandle(blurred_level1);
-    fFreeHandle(blurred_level2);
+   
+    //fFreeHandle(blurred_level1);
+    //fFreeHandle(blurred_level2);
 
     /** Image pyramid **/
     blurred_level1 = blurredImage;
     blurred_level2 = newFramePyramids[count-1]->resizedImg;
-
-    /** Gradient image computation, for all scales **/
-    /* 
-    verticalEdge_level1 = calcSobel_dX(blurred_level1);   
-    TwoStepKernel* r1 = calcSobel_dY(blurred_level1); 
-    horizontalEdge_level1 = r1->final;
-    
-    verticalEdge_level2 = calcSobel_dX(blurred_level2); 
-    r1 = calcSobel_dY(blurred_level2);
-    horizontalEdge_level2 = r1->final;
-    */
 
     verticalEdge_level1 = newFramePyramids[count-1]->vertEdge;
     verticalEdge_level2 = newFramePyramids[count-1]->vertEdge_small;
@@ -301,11 +268,15 @@ for(count=1; count<=counter; count++)
         
     /** Based on features computed in the previous frame, find correspondence in the current frame. "status" returns the index of corresponding features **/
     status = calcPyrLKTrack(previousFrameBlurred_level1, previousFrameBlurred_level2, verticalEdge_level1, verticalEdge_level2, horizontalEdge_level1, horizontalEdge_level2, blurred_level1, blurred_level2, features, features->width, WINSZ, accuracy, LK_ITER, newpoints);
-    
+   
+    /*
     fFreeHandle(verticalEdge_level1);
     fFreeHandle(verticalEdge_level2);
     fFreeHandle(horizontalEdge_level1);
     fFreeHandle(horizontalEdge_level2);
+    */
+
+    // left these ones (because they were just alloc'd in this loop
     fFreeHandle(previousFrameBlurred_level1);
     fFreeHandle(previousFrameBlurred_level2);
     
@@ -334,7 +305,7 @@ for(count=1; count<=counter; count++)
     }    
         
     iFreeHandle(status);
-    iFreeHandle(Ic);
+    //iFreeHandle(Ic);
     fFreeHandle(np_temp);
     fFreeHandle(features);
     /** Populate newpoints into features **/
@@ -358,6 +329,7 @@ for(count=1; count<=counter; count++)
     //end roi
     LVA_BX_INSTRUCTION;
 
+
 #ifdef CHECK   
     /* Self checking */
     {
@@ -374,14 +346,13 @@ for(count=1; count<=counter; count++)
     
     photonPrintTiming(elapsed);
 
-    fFreeHandle(blurred_level1);
-    fFreeHandle(blurred_level2);
+    //fFreeHandle(blurred_level1);
+    //fFreeHandle(blurred_level2);
     fFreeHandle(features);
 
     free(elapsed);
-
+    free(big_arr);
     return 0;
-
 }
 
 

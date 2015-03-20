@@ -15,6 +15,9 @@ typedef struct
     int width;
     int height;
     int data[];
+    // THIS SHIT BELOW IS ALL CUDA POINTERS>>>>
+    // WHO WRITES CODE THIS WAY.>>>>>>>>>>> 
+    // FAIL
     int* d_inputPixels;
     float* d_outputPixels;
     float* d_intermediate;
@@ -44,8 +47,6 @@ typedef struct {
     F2D* vertEdge;
     F2D* horizEdge_small;
     F2D* vertEdge_small;
-    F2D* tmp;
-    F2D* tmp2;
 } ImagePyramid;
 
 typedef struct {
@@ -61,7 +62,7 @@ static void HandleError( cudaError_t err,
         const char *file,
         int line ) {
     if (err != cudaSuccess) {
-        printf( "%s in %s at line %d\n", cudaGetErrorString( err ),
+        printf( "--RETURN ERROR--: %s in %s at line %d\n", cudaGetErrorString( err ),
                 file, line );
         exit( EXIT_FAILURE );
     }
@@ -133,9 +134,9 @@ I2D* iiConv2(I2D* a, I2D* b);
 
 
 /** Image Transformations - resize, integration etc **/
-ImagePyramid* createImgPyramid(I2D* imageIn, cudaStream_t d_stream, bool train_set);
+ImagePyramid* createImgPyramid(I2D* imageIn, cudaStream_t d_stream, cudaTextureObject_t* tref,bool train_set);
 bool createTextureReference(int rows, int cols, std::string inFile);
-void destroyImgPyramid(I2D* imageIn, ImagePyramid *retStruct);
+void destroyImgPyramid(ImagePyramid* retStruct,I2D* imageIn);
 //F2D* imageResize(F2D* imageIn);
 TwoStepKernel* imageResize(F2D* imageIn);
 //F2D* imageBlur(I2D* imageIn);

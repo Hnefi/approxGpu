@@ -17,11 +17,12 @@
 #include "../kernels/calcSobel_dX_kernel.h"
 #include "../kernels/calcSobel_dY_kernel.h"
 
-ImagePyramid* createImgPyramid(I2D* imageIn, cudaStream_t d_stream,bool train_set = false)
+ImagePyramid* createImgPyramid(I2D* imageIn, cudaStream_t d_stream, cudaTextureObject_t* texObj, bool train_set)
 {
     int rows, cols;
     rows = imageIn->height;
     cols = imageIn->width;
+    cudaTextureObject_t objToKernel = *texObj;
   
     // setup kernels, thread objects, and GPU memory
     int weightedKernel[5] = {1,4,6,4,1};
@@ -55,18 +56,14 @@ ImagePyramid* createImgPyramid(I2D* imageIn, cudaStream_t d_stream,bool train_se
     float* threadReads, *threadHashes;
     float* reads, *hashes;
     int bytesForSmem = 16*16 * 3 * sizeof(float); // each thread gets 3 entries of 4 bytes each
+    /*
     if(train_set == true) {
         reads = (float*) calloc(5*rows*cols,sizeof(float));
         hashes = (float*) calloc(5*rows*cols,sizeof(float));
         HANDLE_ERROR( cudaMalloc((void**)&threadReads,5*rows*cols*sizeof(float)) );
         HANDLE_ERROR( cudaMalloc((void**)&threadHashes,5*rows*cols*sizeof(float)) );
     }
-
-    //Pin host memory array for greatest speed transfer.
-    HANDLE_ERROR( cudaHostRegister(&(imageIn->data[0]),rows*cols*sizeof(int),cudaHostRegisterPortable) );
-    HANDLE_ERROR( cudaHostRegister(&weightedKernel[0],5*sizeof(int),cudaHostRegisterPortable) ) ;
-    HANDLE_ERROR( cudaHostRegister(&sobelKernel_1[0],3*sizeof(int),cudaHostRegisterPortable) );
-    HANDLE_ERROR( cudaHostRegister(&sobelKernel_2[0],3*sizeof(int),cudaHostRegisterPortable) );
+    */
 
     // SET UP MEMORY - local data
     cudaMalloc((void**)&(imageIn->d_weightedKernel),5*sizeof(int));
@@ -75,10 +72,9 @@ ImagePyramid* createImgPyramid(I2D* imageIn, cudaStream_t d_stream,bool train_se
     d_weightedKernel = imageIn->d_weightedKernel;
     sobel_kern_1 = imageIn->sobel_kern_1;
     sobel_kern_2 = imageIn->sobel_kern_2;
-    cudaMemcpyAsync(d_weightedKernel,&(weightedKernel[0]),5*sizeof(int),cudaMemcpyHostToDevice,d_stream);
-    cudaMemcpyAsync(sobel_kern_1,&(sobelKernel_1[0]),3*sizeof(int),cudaMemcpyHostToDevice,d_stream);
-    cudaMemcpyAsync(sobel_kern_2,&(sobelKernel_2[0]),3*sizeof(int),cudaMemcpyHostToDevice,d_stream);
-    cudaStreamSynchronize(d_stream);
+    cudaMemcpy(d_weightedKernel,&(weightedKernel[0]),5*sizeof(int),cudaMemcpyHostToDevice);
+    cudaMemcpy(sobel_kern_1,&(sobelKernel_1[0]),3*sizeof(int),cudaMemcpyHostToDevice);
+    cudaMemcpy(sobel_kern_2,&(sobelKernel_2[0]),3*sizeof(int),cudaMemcpyHostToDevice);
 
     // SET UP MEMORY
     cudaMalloc((void**)&(imageIn->d_inputPixels),rows*cols*sizeof(int));
@@ -111,49 +107,43 @@ ImagePyramid* createImgPyramid(I2D* imageIn, cudaStream_t d_stream,bool train_se
     dyOutput_small = imageIn->dyOutput_small;
 
     // Copy in input data and input kernels.
-    cudaMemcpyAsync(d_inputPixels,&(imageIn->data[0]),rows*cols*sizeof(int),cudaMemcpyHostToDevice,d_stream);
+    cudaMemcpy(d_inputPixels,&(imageIn->data[0]),rows*cols*sizeof(int),cudaMemcpyHostToDevice);
 
     // clear outputs since we only access some of these pixels, others must be blank 
-    cudaMemsetAsync(d_outputPixels,0,rows*cols*sizeof(float),d_stream);
-    cudaMemsetAsync(d_intermediate,0,rows*cols*sizeof(float),d_stream);
-    cudaMemsetAsync(resizeOutput,0,resizedRows*resizedCols*sizeof(float),d_stream);
-    cudaMemsetAsync(resizeInt,0,rows*resizedCols*sizeof(float),d_stream);
-    cudaMemsetAsync(dxOutput,0,rows*cols*sizeof(float),d_stream);
-    cudaMemsetAsync(dyOutput,0,rows*cols*sizeof(float),d_stream);
-    cudaMemsetAsync(dxInt,0,rows*cols*sizeof(float),d_stream);
-    cudaMemsetAsync(dyInt,0,rows*cols*sizeof(float),d_stream);
-    cudaMemsetAsync(dxOutput_small,0,resizedRows*resizedCols*sizeof(float),d_stream);
-    cudaMemsetAsync(dyOutput_small,0,resizedRows*resizedCols*sizeof(float),d_stream);
-    cudaMemsetAsync(dxInt_small,0,resizedRows*resizedCols*sizeof(float),d_stream);
-    cudaMemsetAsync(dyInt_small,0,resizedRows*resizedCols*sizeof(float),d_stream);
+    cudaMemset(d_outputPixels,0,rows*cols*sizeof(float));
+    cudaMemset(d_intermediate,0,rows*cols*sizeof(float));
+    cudaMemset(resizeOutput,0,resizedRows*resizedCols*sizeof(float));
+    cudaMemset(resizeInt,0,rows*resizedCols*sizeof(float));
+    cudaMemset(dxOutput,0,rows*cols*sizeof(float));
+    cudaMemset(dyOutput,0,rows*cols*sizeof(float));
+    cudaMemset(dxInt,0,rows*cols*sizeof(float));
+    cudaMemset(dyInt,0,rows*cols*sizeof(float));
+    cudaMemset(dxOutput_small,0,resizedRows*resizedCols*sizeof(float));
+    cudaMemset(dyOutput_small,0,resizedRows*resizedCols*sizeof(float));
+    cudaMemset(dxInt_small,0,resizedRows*resizedCols*sizeof(float));
+    cudaMemset(dyInt_small,0,resizedRows*resizedCols*sizeof(float));
 
-    /* Kernel call */
-    //texMark<<<nblocks,threadsPerBlock,bytesForSmem,d_stream>>>(d_intermediate,d_outputPixels,cols,rows,0);
-    for(int i = 0; i < 5; i++)
-        blurKernel_st1<<<nblocks,threadsPerBlock,bytesForSmem,d_stream>>>(d_inputPixels,d_intermediate,d_weightedKernel,threadHashes,threadReads,cols,rows);
+    blurKernel_st1<<<nblocks,threadsPerBlock,bytesForSmem>>>(d_inputPixels,d_intermediate,d_weightedKernel,threadHashes,threadReads,cols,rows,objToKernel);
+    blurKernel_st2<<<nblocks,threadsPerBlock,bytesForSmem>>>(d_outputPixels,d_intermediate,d_weightedKernel,cols,rows,objToKernel);
 
+    resizeKernel_st1<<<nblocks,threadsPerBlock,bytesForSmem>>>(d_outputPixels,resizeInt,d_weightedKernel,rows,cols,resizedRows,resizedCols,objToKernel);
+    resizeKernel_st2<<<nblocks,threadsPerBlock,bytesForSmem>>>(resizeOutput,resizeInt,d_weightedKernel,rows,cols,resizedRows,resizedCols,objToKernel);
+
+    calcSobel_dX_k1<<<nblocks,threadsPerBlock,bytesForSmem>>>(d_outputPixels,dxInt,sobel_kern_1,sobel_kern_2,cols,rows,objToKernel);
+    calcSobel_dX_k2<<<nblocks,threadsPerBlock,bytesForSmem>>>(dxInt,dxOutput,sobel_kern_1,sobel_kern_2,cols,rows,objToKernel);
+
+    calcSobel_dY_k1<<<nblocks,threadsPerBlock,bytesForSmem>>>(d_outputPixels,dyInt,sobel_kern_1,sobel_kern_2,cols,rows,objToKernel);
+    calcSobel_dY_k2<<<nblocks,threadsPerBlock,bytesForSmem>>>(dyInt,dyOutput,sobel_kern_1,sobel_kern_2,cols,rows,objToKernel);
+
+    calcSobel_dX_k1<<<nblocks,threadsPerBlock,bytesForSmem>>>(resizeOutput,dxInt_small,sobel_kern_1,sobel_kern_2,resizedCols,resizedRows,objToKernel);
+    calcSobel_dX_k2<<<nblocks,threadsPerBlock,bytesForSmem>>>(dxInt_small,dxOutput_small,sobel_kern_1,sobel_kern_2,resizedCols,resizedRows,objToKernel);
+
+    calcSobel_dY_k1<<<nblocks,threadsPerBlock,bytesForSmem>>>(resizeOutput,dyInt_small,sobel_kern_1,sobel_kern_2,resizedCols,resizedRows,objToKernel);
+    calcSobel_dY_k2<<<nblocks,threadsPerBlock,bytesForSmem>>>(dyInt_small,dyOutput_small,sobel_kern_1,sobel_kern_2,resizedCols,resizedRows,objToKernel);
+
+    cudaDeviceSynchronize();
     /*
-    blurKernel_st2<<<nblocks,threadsPerBlock,bytesForSmem,d_stream>>>(d_outputPixels,d_intermediate,d_weightedKernel,cols,rows);
-
-    resizeKernel_st1<<<nblocks,threadsPerBlock,bytesForSmem,d_stream>>>(d_outputPixels,resizeInt,d_weightedKernel,rows,cols,resizedRows,resizedCols);
-    resizeKernel_st2<<<nblocks,threadsPerBlock,bytesForSmem,d_stream>>>(resizeOutput,resizeInt,d_weightedKernel,rows,cols,resizedRows,resizedCols);
-
-    calcSobel_dX_k1<<<nblocks,threadsPerBlock,bytesForSmem,d_stream>>>(d_outputPixels,dxInt,sobel_kern_1,sobel_kern_2,cols,rows);
-    calcSobel_dX_k2<<<nblocks,threadsPerBlock,bytesForSmem,d_stream>>>(dxInt,dxOutput,sobel_kern_1,sobel_kern_2,cols,rows);
-
-    calcSobel_dY_k1<<<nblocks,threadsPerBlock,bytesForSmem,d_stream>>>(d_outputPixels,dyInt,sobel_kern_1,sobel_kern_2,cols,rows);
-    calcSobel_dY_k2<<<nblocks,threadsPerBlock,bytesForSmem,d_stream>>>(dyInt,dyOutput,sobel_kern_1,sobel_kern_2,cols,rows);
-
-    calcSobel_dX_k1<<<nblocks,threadsPerBlock,bytesForSmem,d_stream>>>(resizeOutput,dxInt_small,sobel_kern_1,sobel_kern_2,resizedCols,resizedRows);
-    calcSobel_dX_k2<<<nblocks,threadsPerBlock,bytesForSmem,d_stream>>>(dxInt_small,dxOutput_small,sobel_kern_1,sobel_kern_2,resizedCols,resizedRows);
-
-    calcSobel_dY_k1<<<nblocks,threadsPerBlock,bytesForSmem,d_stream>>>(resizeOutput,dyInt_small,sobel_kern_1,sobel_kern_2,resizedCols,resizedRows);
-    calcSobel_dY_k2<<<nblocks,threadsPerBlock,bytesForSmem,d_stream>>>(dyInt_small,dyOutput_small,sobel_kern_1,sobel_kern_2,resizedCols,resizedRows);
-    */
-    
-
     if(train_set == true) { 
-        cudaStreamSynchronize(d_stream); 
         // we are synched here, now we can print out the training set (if we are frame 0)
         HANDLE_ERROR( cudaMemcpy(reads,threadReads,5*rows*cols*sizeof(float),cudaMemcpyDeviceToHost) );
         HANDLE_ERROR( cudaMemcpy(hashes,threadHashes,5*rows*cols*sizeof(float),cudaMemcpyDeviceToHost) );
@@ -168,7 +158,7 @@ ImagePyramid* createImgPyramid(I2D* imageIn, cudaStream_t d_stream,bool train_se
         cudaFree(threadReads);
         free(reads);
         free(hashes);
-    }
+    }*/
 
     // deep copy into the destination F2D structures
     ImagePyramid* retStruct = (ImagePyramid*)malloc(sizeof(ImagePyramid));
@@ -179,41 +169,17 @@ ImagePyramid* createImgPyramid(I2D* imageIn, cudaStream_t d_stream,bool train_se
     retStruct->vertEdge = fSetArray(rows,cols,0);
     retStruct->horizEdge_small = fSetArray(resizedRows,resizedCols,0);
     retStruct->vertEdge_small = fSetArray(resizedRows,resizedCols,0);
-    retStruct->tmp = fSetArray(rows,cols,0);
-    HANDLE_ERROR( cudaHostRegister(&(retStruct->blurredImg->data[0]),rows*cols*sizeof(float),cudaHostRegisterPortable) );
-    HANDLE_ERROR( cudaHostRegister(&(retStruct->resizedImg->data[0]),resizedRows*resizedCols*sizeof(float),cudaHostRegisterPortable) );
-    HANDLE_ERROR( cudaHostRegister(&(retStruct->horizEdge->data[0]),rows*cols*sizeof(float),cudaHostRegisterPortable) );
-    HANDLE_ERROR( cudaHostRegister(&(retStruct->vertEdge->data[0]),rows*cols*sizeof(float),cudaHostRegisterPortable) );
-    HANDLE_ERROR( cudaHostRegister(&(retStruct->horizEdge_small->data[0]),resizedRows*resizedCols*sizeof(float),cudaHostRegisterPortable) );
-    HANDLE_ERROR( cudaHostRegister(&(retStruct->vertEdge_small->data[0]),resizedRows*resizedCols*sizeof(float),cudaHostRegisterPortable) );
 
-    cudaMemcpyAsync((void*)&(retStruct->blurredImg->data[0]),d_outputPixels,rows*cols*sizeof(float),cudaMemcpyDeviceToHost,d_stream);
-    cudaMemcpyAsync((void*)&(retStruct->resizedImg->data[0]),resizeOutput,resizedRows*resizedCols*sizeof(float),cudaMemcpyDeviceToHost,d_stream);
-    cudaMemcpyAsync((void*)&(retStruct->vertEdge->data[0]),dxOutput,rows*cols*sizeof(float),cudaMemcpyDeviceToHost,d_stream);   
-    cudaMemcpyAsync((void*)&(retStruct->horizEdge->data[0]),dyOutput,rows*cols*sizeof(float),cudaMemcpyDeviceToHost,d_stream);   
-    cudaMemcpyAsync((void*)&(retStruct->vertEdge_small->data[0]),dxOutput_small,resizedRows*resizedCols*sizeof(float),cudaMemcpyDeviceToHost,d_stream);   
-    cudaMemcpyAsync((void*)&(retStruct->horizEdge_small->data[0]),dyOutput_small,resizedRows*resizedCols*sizeof(float),cudaMemcpyDeviceToHost,d_stream);   
-
-    // UNSET Host memory pinning - local data
-    cudaHostUnregister(&weightedKernel[0]);
-    cudaHostUnregister(&sobelKernel_1[0]);
-    cudaHostUnregister(&sobelKernel_2[0]);
-
-    return retStruct;
-}
-
-void destroyImgPyramid(I2D* imageIn, ImagePyramid *retStruct)
-{
-    // UNSET Host memory pinning.
-    cudaHostUnregister(&(imageIn->data[0]));
-
-    cudaHostUnregister(&(retStruct->blurredImg->data[0]));
-    cudaHostUnregister(&(retStruct->resizedImg->data[0]));
-    cudaHostUnregister(&(retStruct->horizEdge->data[0]));
-    cudaHostUnregister(&(retStruct->vertEdge->data[0]));
-    cudaHostUnregister(&(retStruct->horizEdge_small->data[0]));
-    cudaHostUnregister(&(retStruct->vertEdge_small->data[0]));
-    cudaHostUnregister(&(retStruct->tmp->data[0]));
+   
+    cudaMemcpy((void*)&(retStruct->blurredImg->data[0]),d_outputPixels,rows*cols*sizeof(float),cudaMemcpyDeviceToHost);
+    cudaMemcpy((void*)&(retStruct->resizedImg->data[0]),resizeOutput,resizedRows*resizedCols*sizeof(float),cudaMemcpyDeviceToHost);
+    printf("addr of vertEdge->data: %p\n",retStruct->vertEdge->data);
+    printf("addr of horizEdge->data: %p\n",retStruct->horizEdge->data);
+    //cudaMemcpy((void*)&(retStruct->vertEdge->data[0]),dxOutput,rows*cols*sizeof(float),cudaMemcpyDeviceToHost);   
+    cudaMemcpy((void*)retStruct->vertEdge->data,dxOutput,rows*cols*sizeof(float),cudaMemcpyDeviceToHost);
+    cudaMemcpy((void*)&(retStruct->horizEdge->data[0]),dyOutput,rows*cols*sizeof(float),cudaMemcpyDeviceToHost);   
+    cudaMemcpy((void*)&(retStruct->vertEdge_small->data[0]),dxOutput_small,resizedRows*resizedCols*sizeof(float),cudaMemcpyDeviceToHost);   
+    cudaMemcpy((void*)&(retStruct->horizEdge_small->data[0]),dyOutput_small,resizedRows*resizedCols*sizeof(float),cudaMemcpyDeviceToHost);   
 
     cudaFree(imageIn->d_weightedKernel);
     cudaFree(imageIn->sobel_kern_1);
@@ -231,5 +197,39 @@ void destroyImgPyramid(I2D* imageIn, ImagePyramid *retStruct)
     cudaFree(imageIn->dyInt_small);
     cudaFree(imageIn->dxOutput_small);
     cudaFree(imageIn->dyOutput_small);
+    
+    return retStruct;
+}
+
+void destroyImgPyramid(ImagePyramid* retStruct,I2D* imageIn)
+{
+    /*
+    fFreeHandle(retStruct->blurredImg);
+    fFreeHandle(retStruct->resizedImg);
+    fFreeHandle(retStruct->horizEdge);
+    fFreeHandle(retStruct->vertEdge);
+    fFreeHandle(retStruct->horizEdge_small);
+    fFreeHandle(retStruct->vertEdge_small);
+    */
+
+    /*
+    if(imageIn) {
+        cudaFree(imageIn->d_weightedKernel);
+        cudaFree(imageIn->sobel_kern_1);
+        cudaFree(imageIn->sobel_kern_2);
+        cudaFree(imageIn->resizeInt);
+        cudaFree(imageIn->dxInt);
+        cudaFree(imageIn->dyInt);
+        cudaFree(imageIn->resizeOutput);
+        cudaFree(imageIn->dxOutput);
+        cudaFree(imageIn->dyOutput);
+        cudaFree(imageIn->d_inputPixels);
+        cudaFree(imageIn->d_outputPixels);
+        cudaFree(imageIn->d_intermediate);
+        cudaFree(imageIn->dxInt_small);
+        cudaFree(imageIn->dyInt_small);
+        cudaFree(imageIn->dxOutput_small);
+        cudaFree(imageIn->dyOutput_small);
+    }*/
 }
 
