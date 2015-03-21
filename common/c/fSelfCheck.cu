@@ -15,7 +15,7 @@ int fSelfCheck(F2D* in1, char* path, float tol)
     r1 = in1->height;
     c1 = in1->width;
 
-    buffer = (float*)malloc(sizeof(float)*r1*c1);
+    buffer = (float*)malloc(sizeof(float)*(r1*c1 + 5));
 
     sprintf(file, "%s/expected_C.txt", path);
     fd = fopen(file, "r");
@@ -36,6 +36,8 @@ int fSelfCheck(F2D* in1, char* path, float tol)
     if(count != (r1*c1))
     {
         printf("Checking error: dimensions mismatch. Expected = %d, Observed = %d \n", count, (r1*c1));
+        fclose(fd);
+        free(buffer);
         return -1;
     }
     
@@ -46,13 +48,15 @@ int fSelfCheck(F2D* in1, char* path, float tol)
         if( (inVal-buffer[i])>tol || (buffer[i]-inVal)>tol )
         {
             printf("Mismatch %d: (%f, %f)\n", i, buffer[i], inVal);
+            fclose(fd);
+            free(buffer);
             return -1;
         }
     }
 
     fclose(fd);
-    printf("Verification\t\t- Successful\n");
     free(buffer);
+    printf("Verification\t\t- Successful\n");
     return ret;
 }
 

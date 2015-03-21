@@ -18,7 +18,7 @@ endif
 
 CC=nvcc
 # TEX ACCESSES PER KERNEL
-TEX = 2
+TEX = 1
 
 override CFLAGS += -arch=sm_20 -rdc=true -w -DGCC -DCHECK -D$(INPUT) -D NUM_TEX=$(TEX)
 

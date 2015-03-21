@@ -4,10 +4,12 @@
 // Calls fast GPU implementations to create the requested GPU images (blur, resize, and sobel X/Y).
 
 #include <stdio.h>
+#include <iostream>
 #include <stdlib.h>
 #include <ctype.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <assert.h>
 
 #include "sdvbs_common.h"
 #include "../kernels/imageBlur_kernel.h"
@@ -16,6 +18,9 @@
 #include "../kernels/imageResize_kernel_st2.h"
 #include "../kernels/calcSobel_dX_kernel.h"
 #include "../kernels/calcSobel_dY_kernel.h"
+
+using std::cout;
+using std::endl;
 
 ImagePyramid* createImgPyramid(I2D* imageIn, cudaStream_t d_stream, cudaTextureObject_t* texObj, bool train_set)
 {
@@ -161,6 +166,7 @@ ImagePyramid* createImgPyramid(I2D* imageIn, cudaStream_t d_stream, cudaTextureO
     }*/
 
     // deep copy into the destination F2D structures
+    //cout << "Creating image pyramid." << endl;
     ImagePyramid* retStruct = (ImagePyramid*)malloc(sizeof(ImagePyramid));
     // alloc these sub-arrays as pinned memory (required for copyAsync)
     retStruct->blurredImg = fSetArray(rows,cols,0);
@@ -173,9 +179,8 @@ ImagePyramid* createImgPyramid(I2D* imageIn, cudaStream_t d_stream, cudaTextureO
    
     cudaMemcpy((void*)&(retStruct->blurredImg->data[0]),d_outputPixels,rows*cols*sizeof(float),cudaMemcpyDeviceToHost);
     cudaMemcpy((void*)&(retStruct->resizedImg->data[0]),resizeOutput,resizedRows*resizedCols*sizeof(float),cudaMemcpyDeviceToHost);
-    printf("addr of vertEdge->data: %p\n",retStruct->vertEdge->data);
-    printf("addr of horizEdge->data: %p\n",retStruct->horizEdge->data);
-    //cudaMemcpy((void*)&(retStruct->vertEdge->data[0]),dxOutput,rows*cols*sizeof(float),cudaMemcpyDeviceToHost);   
+    //printf("addr of vertEdge->data: %p\n",retStruct->vertEdge->data);
+    //printf("addr of horizEdge->data: %p\n",retStruct->horizEdge->data);
     cudaMemcpy((void*)retStruct->vertEdge->data,dxOutput,rows*cols*sizeof(float),cudaMemcpyDeviceToHost);
     cudaMemcpy((void*)&(retStruct->horizEdge->data[0]),dyOutput,rows*cols*sizeof(float),cudaMemcpyDeviceToHost);   
     cudaMemcpy((void*)&(retStruct->vertEdge_small->data[0]),dxOutput_small,resizedRows*resizedCols*sizeof(float),cudaMemcpyDeviceToHost);   
@@ -201,35 +206,17 @@ ImagePyramid* createImgPyramid(I2D* imageIn, cudaStream_t d_stream, cudaTextureO
     return retStruct;
 }
 
-void destroyImgPyramid(ImagePyramid* retStruct,I2D* imageIn)
+void destroyImgPyramid(ImagePyramid* retStruct, int imgNum )
 {
-    /*
+    assert(retStruct != 0);
+    //cout << "Destroying image pyramid for frame " << imgNum << endl;
+
     fFreeHandle(retStruct->blurredImg);
     fFreeHandle(retStruct->resizedImg);
     fFreeHandle(retStruct->horizEdge);
     fFreeHandle(retStruct->vertEdge);
     fFreeHandle(retStruct->horizEdge_small);
     fFreeHandle(retStruct->vertEdge_small);
-    */
-
-    /*
-    if(imageIn) {
-        cudaFree(imageIn->d_weightedKernel);
-        cudaFree(imageIn->sobel_kern_1);
-        cudaFree(imageIn->sobel_kern_2);
-        cudaFree(imageIn->resizeInt);
-        cudaFree(imageIn->dxInt);
-        cudaFree(imageIn->dyInt);
-        cudaFree(imageIn->resizeOutput);
-        cudaFree(imageIn->dxOutput);
-        cudaFree(imageIn->dyOutput);
-        cudaFree(imageIn->d_inputPixels);
-        cudaFree(imageIn->d_outputPixels);
-        cudaFree(imageIn->d_intermediate);
-        cudaFree(imageIn->dxInt_small);
-        cudaFree(imageIn->dyInt_small);
-        cudaFree(imageIn->dxOutput_small);
-        cudaFree(imageIn->dyOutput_small);
-    }*/
+    free(retStruct);
 }
 

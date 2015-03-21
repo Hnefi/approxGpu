@@ -136,7 +136,7 @@ I2D* iiConv2(I2D* a, I2D* b);
 /** Image Transformations - resize, integration etc **/
 ImagePyramid* createImgPyramid(I2D* imageIn, cudaStream_t d_stream, cudaTextureObject_t* tref,bool train_set);
 bool createTextureReference(int rows, int cols, std::string inFile);
-void destroyImgPyramid(ImagePyramid* retStruct,I2D* imageIn);
+void destroyImgPyramid(ImagePyramid* retStruct,int imgNum);
 //F2D* imageResize(F2D* imageIn);
 TwoStepKernel* imageResize(F2D* imageIn);
 //F2D* imageBlur(I2D* imageIn);

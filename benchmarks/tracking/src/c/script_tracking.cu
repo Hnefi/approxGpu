@@ -193,8 +193,8 @@ for(count=1; count<=counter; count++)
     blurredImage = preprocessed->blurredImg;
 
     /** Scale down the image to build Image Pyramid. We find features across all scales of the image **/
-    blurred_level1 = blurredImage;                   /** Scale 0 **/
-    blurred_level2 = preprocessed->resizedImg;     /** Scale 1 **/
+    blurred_level1 = fDeepCopy(preprocessed->blurredImg);                   /** Scale 0 **/
+    blurred_level2 = fDeepCopy(preprocessed->resizedImg);     /** Scale 1 **/
     horizontalEdgeImage = preprocessed->horizEdge;
     verticalEdgeImage = preprocessed->vertEdge;
 
@@ -223,12 +223,15 @@ for(count=1; count<=counter; count++)
             subsref(features,i,j) = subsref(interestPnt,j,i); 
 		}
     } 
+/* commented out these frees to perform one big batch free on the returned image structure
     fFreeHandle(verticalEdgeImage);
     fFreeHandle(horizontalEdgeImage);
+*/
     fFreeHandle(interestPnt);
     fFreeHandle(lambda);
     fFreeHandle(lambdaTemp);
     iFreeHandle(Ic);
+    destroyImgPyramid(preprocessed,0x0);
 
 /** Until now, we processed base frame. The following for loop processes other frames **/
 for(count=1; count<=counter; count++)
@@ -243,21 +246,21 @@ for(count=1; count<=counter; count++)
     /* Start timing */
     //start = photonStartTiming();
 
+
     /** Blur image to remove noise **/
     blurredImage = newFramePyramids[count-1]->blurredImg;
 
-    /** MARK Added: Create the new blurred and resized image**/
-    //ImagePyramid* newFramePyramid = createImgPyramid(Ic); // just need to define a struct to return 4 float* arrays
     /** Blur image to remove noise **/
     previousFrameBlurred_level1 = fDeepCopy(blurred_level1);
     previousFrameBlurred_level2 = fDeepCopy(blurred_level2);
-   
-    //fFreeHandle(blurred_level1);
-    //fFreeHandle(blurred_level2);
+  
+    //MARK - added these because i deep copied into previousFrame, and then can get rid of the old
+    fFreeHandle(blurred_level1);
+    fFreeHandle(blurred_level2);
 
     /** Image pyramid **/
-    blurred_level1 = blurredImage;
-    blurred_level2 = newFramePyramids[count-1]->resizedImg;
+    blurred_level1 = fDeepCopy(blurredImage);
+    blurred_level2 = fDeepCopy(newFramePyramids[count-1]->resizedImg);
 
     verticalEdge_level1 = newFramePyramids[count-1]->vertEdge;
     verticalEdge_level2 = newFramePyramids[count-1]->vertEdge_small;
@@ -268,13 +271,8 @@ for(count=1; count<=counter; count++)
         
     /** Based on features computed in the previous frame, find correspondence in the current frame. "status" returns the index of corresponding features **/
     status = calcPyrLKTrack(previousFrameBlurred_level1, previousFrameBlurred_level2, verticalEdge_level1, verticalEdge_level2, horizontalEdge_level1, horizontalEdge_level2, blurred_level1, blurred_level2, features, features->width, WINSZ, accuracy, LK_ITER, newpoints);
-   
-    /*
-    fFreeHandle(verticalEdge_level1);
-    fFreeHandle(verticalEdge_level2);
-    fFreeHandle(horizontalEdge_level1);
-    fFreeHandle(horizontalEdge_level2);
-    */
+
+    destroyImgPyramid(newFramePyramids[count-1], count);
 
     // left these ones (because they were just alloc'd in this loop
     fFreeHandle(previousFrameBlurred_level1);
@@ -305,7 +303,7 @@ for(count=1; count<=counter; count++)
     }    
         
     iFreeHandle(status);
-    //iFreeHandle(Ic);
+    iFreeHandle(Ic);
     fFreeHandle(np_temp);
     fFreeHandle(features);
     /** Populate newpoints into features **/
@@ -343,17 +341,18 @@ for(count=1; count<=counter; count++)
             printf("Error in Tracking Map\n");
     }
 #endif
+
     
     photonPrintTiming(elapsed);
 
-    //fFreeHandle(blurred_level1);
-    //fFreeHandle(blurred_level2);
+    fFreeHandle(blurred_level1);
+    fFreeHandle(blurred_level2);
     fFreeHandle(features);
 
     free(elapsed);
     free(big_arr);
+    //free texture reference
+    cudaFreeArray(cuArray);
+    cudaDeviceReset();
     return 0;
 }
-
-
-
