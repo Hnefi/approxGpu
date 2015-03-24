@@ -71,9 +71,9 @@ class ValueReader
         void processLine(std::string &in) {
             if(in.empty()) return;
             // use boost algos to find the thread idx: value between two [ ] exprs
-            boost::regex thrNumReg("(\\[\\d+\\.\\d+\\])",boost::regex::egrep);
+            boost::regex thrNumReg("(\\[(-)?\\d+\\.\\d+\\])",boost::regex::egrep);
             boost::iterator_range<std::string::iterator> ret = find_regex(in,thrNumReg);
-            //std::cout << "reg result: " << ret << std::endl;
+            std::cout << "reg result: " << ret << std::endl;
             std::string filtered(ret.begin(),ret.end());
             boost::algorithm::erase_all(filtered,"[");
             boost::algorithm::erase_all(filtered,"]");
@@ -84,9 +84,9 @@ class ValueReader
 
             // use boost algos to find what's after the colon (float)
             boost::algorithm::erase_all(in," ");
-            boost::regex fp("(:\\d+\\.\\d+)",boost::regex::egrep);
+            boost::regex fp("(:(-)?\\d+\\.\\d+)",boost::regex::egrep);
             ret = find_regex(in,fp);
-            //std::cout << "reg result: " << ret << std::endl;
+            std::cout << "reg result: " << ret << std::endl;
             filtered = std::string(ret.begin(),ret.end());
             boost::algorithm::erase_all(filtered,":");
             float val = atof(filtered.c_str());
