@@ -72,6 +72,7 @@ static void HandleError( cudaError_t err,
 /** Image read and write **/
 I2D* readImage(const char* pathName);;
 F2D* readFile(unsigned char* fileName);
+void writeImgToFile(F2D* imgOut,const char* inName, const char* outName);
 
 
 /** Memory allocation functions **/
