@@ -6,7 +6,7 @@ Author: Sravanthi Kota Venkata
 #include <stdlib.h>
 #include "sdvbs_common.h"
 
-I2D* readImage(const char* pathName)
+I2D* readImage(const char* pathName,int rgb)
 {
     // Reading BMP image
     char signature[2];   
@@ -95,8 +95,17 @@ I2D* readImage(const char* pathName)
                     fread(&tempb,sizeof(unsigned char),1,input);
                     fread(&tempg,sizeof(unsigned char),1,input);
                     fread(&tempr,sizeof(unsigned char),1,input);
-                    ta = (3*tempr + 6*tempg + tempb)/10;
-                    ta = tempg;
+                    //ta = (3*tempr + 6*tempg + tempb)/10;
+                    switch(rgb) {
+                        case 2:
+                            ta = tempb;
+                            break;
+                        case 1:
+                            ta = tempg;
+                            break;
+                        case 0:
+                            ta = tempr;
+                    }
                     subsref(srcImage,nI,nJ) = (int)ta;
                 }
             }

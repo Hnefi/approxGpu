@@ -18,7 +18,7 @@
 #define IMG_DATA_OFFSET_POS 10
 #define BITS_PER_PIXEL_POS 28
 
-void writeImgToFile(F2D* imgOut, const char* inputName, const char* outputName)
+void writeImgToFile(F2D* imgB,F2D* imgG, F2D* imgR, const char* inputName, const char* outputName)
 {
     // Reading BMP image
 	int i;
@@ -59,16 +59,44 @@ void writeImgToFile(F2D* imgOut, const char* inputName, const char* outputName)
 	char* p = &(fdata[*data_pos]);
 
     // iterate through each float and write it as an unsigned char..... UGLY
-    int numPix = imgOut->height * imgOut->width;
+    int numPix = imgR->height * imgR->width;
     char* buf = (char*) malloc(numPix*3);
+    int wdx = 0;
+    for(int nI = (imgR->height)-1;nI >= 0; nI--) {
+        for(int nJ = 0; nJ < imgR->width; nJ++) {
+            int rdx = (nI * imgR->width) + nJ;
+
+            int cast = (int) imgB->data[rdx];
+            assert( (char)cast < 255);
+            buf[wdx++] = (char) cast;
+
+            cast = (int) imgG->data[rdx];
+            assert( (char)cast < 255);
+            buf[wdx++] = (char)cast;
+
+            cast = (int) imgR->data[rdx];
+            assert( (char)cast < 255);
+            buf[wdx++] = (char)cast;
+        }
+    }
+    /*
     int j = 0;
     for(int i = 0; i < numPix*3; i+=3) {
-        buf[i] = (char) 0;
-        int cast = (int) imgOut->data[j++];
+        int cast = (int) imgB->data[j];
+        assert( (char)cast < 255);
+        buf[i] = (char) cast;
+
+        cast = (int) imgG->data[j];
         assert( (char)cast < 255);
         buf[i+1] = (char)cast;
-        buf[i+2] = (char)0;
+
+        cast = (int) imgR->data[j];
+        assert( (char)cast < 255);
+        buf[i+2] = (char)cast;
+
+        j++;
     }
+    */
     memcpy(&(fdata[*data_pos]),buf,numPix*3);
 
 	FILE *writeFile; 

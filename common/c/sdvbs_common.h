@@ -70,9 +70,9 @@ static void HandleError( cudaError_t err,
 #define HANDLE_ERROR( err ) (HandleError( err, __FILE__, __LINE__ ))
 
 /** Image read and write **/
-I2D* readImage(const char* pathName);;
+I2D* readImage(const char* pathName,int rgb = 1);
 F2D* readFile(unsigned char* fileName);
-void writeImgToFile(F2D* imgOut,const char* inName, const char* outName);
+void writeImgToFile(F2D* imgR,F2D* imgB, F2D* imgG,const char* inName, const char* outName);
 
 
 /** Memory allocation functions **/
@@ -136,11 +136,11 @@ I2D* iiConv2(I2D* a, I2D* b);
 
 /** Image Transformations - resize, integration etc **/
 ImagePyramid* createImgPyramid(I2D* imageIn, cudaStream_t d_stream, cudaTextureObject_t* tref,bool train_set);
+ImagePyramid* createOutputImages(I2D* imageIn, cudaTextureObject_t* tref);
+
 bool createTextureReference(int rows, int cols, std::string inFile);
 void destroyImgPyramid(ImagePyramid* retStruct,int imgNum);
-//F2D* imageResize(F2D* imageIn);
 TwoStepKernel* imageResize(F2D* imageIn);
-//F2D* imageBlur(I2D* imageIn);
 TwoStepKernel* imageBlur(I2D* imageIn);
 
 

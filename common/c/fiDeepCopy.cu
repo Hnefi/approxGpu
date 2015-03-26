@@ -17,7 +17,7 @@ F2D* fiDeepCopy(I2D* in)
     
     for(i=0; i<rows; i++)
         for(j=0; j<cols; j++)
-            subsref(out,i,j) = subsref(in,i,j) + 0.0;
+            subsref(out,i,j) = (float)subsref(in,i,j) + 0.0;
     
     return out;
 }
