@@ -226,7 +226,7 @@ int main(int argc, char* argv[])
 
     /** Blur the image to remove noise - weighted avergae filter **/
 
-    ImagePyramid* preprocessed = createImgPyramid(Ic, 0,&texObj,false); // just need to define a struct to return 4 float* arrays
+    ImagePyramid* preprocessed = createImgPyramid(Ic, 0,&texObj,true); // just need to define a struct to return 4 float* arrays
     //printf("After calling createImgPyramid...\n");
 
     blurredImage = preprocessed->blurredImg;

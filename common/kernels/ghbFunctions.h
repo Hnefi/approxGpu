@@ -4,7 +4,7 @@ __device__ __forceinline__ void updateGHB(float* mem_arr,float new_val)
 {
     mem_arr[0] = mem_arr[1];
     mem_arr[1] = mem_arr[2];
-    mem_arr[2] = (new_val / 225.0);
+    mem_arr[2] = (new_val);
 }
 
 __device__ __forceinline__ float hashGHB(float* mem_arr)

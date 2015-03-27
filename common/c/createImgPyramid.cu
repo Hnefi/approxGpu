@@ -53,6 +53,7 @@ ImagePyramid* createImgPyramid(I2D* imageIn, cudaStream_t d_stream, cudaTextureO
 
     int* d_inputPixels;
     float* d_outputPixels;
+    float* d_origInput;
     float* d_intermediate;
     int* d_weightedKernel,*sobel_kern_1,*sobel_kern_2;
     float* resizeInt, *dxInt, *dyInt, *dyInt_small, *dxInt_small;
@@ -61,14 +62,14 @@ ImagePyramid* createImgPyramid(I2D* imageIn, cudaStream_t d_stream, cudaTextureO
     float* threadReads, *threadHashes;
     float* reads, *hashes;
     int bytesForSmem = 16*16 * 3 * sizeof(float); // each thread gets 3 entries of 4 bytes each
-    /*
     if(train_set == true) {
-        reads = (float*) calloc(5*rows*cols,sizeof(float));
-        hashes = (float*) calloc(5*rows*cols,sizeof(float));
-        HANDLE_ERROR( cudaMalloc((void**)&threadReads,5*rows*cols*sizeof(float)) );
-        HANDLE_ERROR( cudaMalloc((void**)&threadHashes,5*rows*cols*sizeof(float)) );
+        reads = (float*) calloc(3*rows*cols,sizeof(float));
+        hashes = (float*) calloc(3*rows*cols,sizeof(float));
+        HANDLE_ERROR( cudaMalloc((void**)&threadReads,3*rows*cols*sizeof(float)) );
+        HANDLE_ERROR( cudaMalloc((void**)&threadHashes,3*rows*cols*sizeof(float)) );
+        cudaMemset(threadReads,0xff,3*rows*cols*sizeof(float));
+        cudaMemset(threadHashes,0xff,3*rows*cols*sizeof(float));
     }
-    */
 
     // SET UP MEMORY - local data
     cudaMalloc((void**)&(imageIn->d_weightedKernel),5*sizeof(int));
@@ -97,6 +98,8 @@ ImagePyramid* createImgPyramid(I2D* imageIn, cudaStream_t d_stream, cudaTextureO
     cudaMalloc((void**)&(imageIn->dxInt_small),resizedRows*resizedCols*sizeof(float));
     cudaMalloc((void**)&(imageIn->dyInt_small),resizedRows*resizedCols*sizeof(float));
     
+    cudaMalloc((void**)&d_origInput,rows*cols*sizeof(float));
+
     d_inputPixels = imageIn->d_inputPixels;
     d_outputPixels = imageIn->d_outputPixels;
     d_intermediate = imageIn->d_intermediate;
@@ -111,8 +114,12 @@ ImagePyramid* createImgPyramid(I2D* imageIn, cudaStream_t d_stream, cudaTextureO
     dxOutput_small = imageIn->dxOutput_small;
     dyOutput_small = imageIn->dyOutput_small;
 
+
+    F2D* origPixelInput = fiDeepCopy(imageIn);
+
     // Copy in input data and input kernels.
     cudaMemcpy(d_inputPixels,&(imageIn->data[0]),rows*cols*sizeof(int),cudaMemcpyHostToDevice);
+    cudaMemcpy(d_origInput,&(origPixelInput->data),rows*cols*sizeof(float),cudaMemcpyHostToDevice);
 
     // clear outputs since we only access some of these pixels, others must be blank 
     cudaMemset(d_outputPixels,0,rows*cols*sizeof(float));
@@ -134,36 +141,43 @@ ImagePyramid* createImgPyramid(I2D* imageIn, cudaStream_t d_stream, cudaTextureO
     resizeKernel_st1<<<nblocks,threadsPerBlock,bytesForSmem>>>(d_outputPixels,resizeInt,d_weightedKernel,rows,cols,resizedRows,resizedCols,objToKernel);
     resizeKernel_st2<<<nblocks,threadsPerBlock,bytesForSmem>>>(resizeOutput,resizeInt,d_weightedKernel,rows,cols,resizedRows,resizedCols,objToKernel);
 
-    calcSobel_dX_k1<<<nblocks,threadsPerBlock,bytesForSmem>>>(d_outputPixels,dxInt,sobel_kern_1,sobel_kern_2,cols,rows,objToKernel);
+    //TODO: this is outputting a training set.
+    calcSobel_dX_k1<<<nblocks,threadsPerBlock,bytesForSmem>>>(d_origInput,dxInt,threadHashes,threadReads,sobel_kern_1,sobel_kern_2,cols,rows,objToKernel);
     calcSobel_dX_k2<<<nblocks,threadsPerBlock,bytesForSmem>>>(dxInt,dxOutput,sobel_kern_1,sobel_kern_2,cols,rows,objToKernel);
 
     calcSobel_dY_k1<<<nblocks,threadsPerBlock,bytesForSmem>>>(d_outputPixels,dyInt,sobel_kern_1,sobel_kern_2,cols,rows,objToKernel);
     calcSobel_dY_k2<<<nblocks,threadsPerBlock,bytesForSmem>>>(dyInt,dyOutput,sobel_kern_1,sobel_kern_2,cols,rows,objToKernel);
 
-    calcSobel_dX_k1<<<nblocks,threadsPerBlock,bytesForSmem>>>(resizeOutput,dxInt_small,sobel_kern_1,sobel_kern_2,resizedCols,resizedRows,objToKernel);
+    //calcSobel_dX_k1<<<nblocks,threadsPerBlock,bytesForSmem>>>(resizeOutput,dxInt_small,sobel_kern_1,sobel_kern_2,resizedCols,resizedRows,objToKernel);
     calcSobel_dX_k2<<<nblocks,threadsPerBlock,bytesForSmem>>>(dxInt_small,dxOutput_small,sobel_kern_1,sobel_kern_2,resizedCols,resizedRows,objToKernel);
 
     calcSobel_dY_k1<<<nblocks,threadsPerBlock,bytesForSmem>>>(resizeOutput,dyInt_small,sobel_kern_1,sobel_kern_2,resizedCols,resizedRows,objToKernel);
     calcSobel_dY_k2<<<nblocks,threadsPerBlock,bytesForSmem>>>(dyInt_small,dyOutput_small,sobel_kern_1,sobel_kern_2,resizedCols,resizedRows,objToKernel);
 
     cudaDeviceSynchronize();
-    /*
     if(train_set == true) { 
         // we are synched here, now we can print out the training set (if we are frame 0)
-        HANDLE_ERROR( cudaMemcpy(reads,threadReads,5*rows*cols*sizeof(float),cudaMemcpyDeviceToHost) );
-        HANDLE_ERROR( cudaMemcpy(hashes,threadHashes,5*rows*cols*sizeof(float),cudaMemcpyDeviceToHost) );
-        for(int i = 0;i < 5*rows*cols;i+=5) {
-            printf("Global history hash [%0.5f], value: %0.5f\n",hashes[i],reads[i]);
-            printf("Global history hash [%0.5f], value: %0.5f\n",hashes[i+1],reads[i+1]);
-            printf("Global history hash [%0.5f], value: %0.5f\n",hashes[i+2],reads[i+2]);
+        HANDLE_ERROR( cudaMemcpy(reads,threadReads,3*rows*cols*sizeof(float),cudaMemcpyDeviceToHost) );
+        HANDLE_ERROR( cudaMemcpy(hashes,threadHashes,3*rows*cols*sizeof(float),cudaMemcpyDeviceToHost) );
+        for(int i = 0;i < 3*rows*cols;i+=3) {
+            /*
+            if(!(reads[i] != reads[i]))
+                printf("Global history hash [%0.5f], value: %0.5f\n",hashes[i],reads[i]);
+            if(!(reads[i+1] != reads[i+1]))
+                printf("Global history hash [%0.5f], value: %0.5f\n",hashes[i+1],reads[i+1]);
+                */
+            if(!(reads[i+2] != reads[i+2]))
+                printf("Global history hash [%0.5f], value: %0.5f\n",hashes[i+2],reads[i+2]);
+            /*
             printf("Global history hash [%0.5f], value: %0.5f\n",hashes[i+3],reads[i+3]);
             printf("Global history hash [%0.5f], value: %0.5f\n",hashes[i+4],reads[i+4]);
+            */
         }
         cudaFree(threadHashes);
         cudaFree(threadReads);
         free(reads);
         free(hashes);
-    }*/
+    }
 
     // deep copy into the destination F2D structures
     //cout << "Creating image pyramid." << endl;
@@ -202,6 +216,10 @@ ImagePyramid* createImgPyramid(I2D* imageIn, cudaStream_t d_stream, cudaTextureO
     cudaFree(imageIn->dyInt_small);
     cudaFree(imageIn->dxOutput_small);
     cudaFree(imageIn->dyOutput_small);
+
+
+    cudaFree(d_origInput);    
+    fFreeHandle(origPixelInput);
     
     return retStruct;
 }
