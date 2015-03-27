@@ -210,6 +210,8 @@ int main(int argc, char* argv[])
     {
         /** Read image **/
         sprintf(im1, "%s/bug_frames/%d.bmp", argv[1], count);
+        printf("Calculating pix difference for img: %d....\n",count);
+        pixDiff(img1Name,im1);
         Ics[count-1] = readImage(im1);
     }
 
