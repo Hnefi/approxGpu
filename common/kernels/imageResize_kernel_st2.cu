@@ -69,7 +69,7 @@ __global__ void resizeKernel_st2(float* outputPixels,float* intermediate, int* w
                 for(int ii = (DIAMETER-NUM_TEX); ii < DIAMETER;ii++) {
                     float curValueHash = hashGHB(&ghb[my_ghb_index]);
                     float texVal = tex1D<float>(tref,curValueHash);
-                    tmp += texVal * weightedKernel[ii];
+                    tmp += (ghb[my_ghb_index+2] + texVal) * weightedKernel[ii];
                 }
                 float avg = tmp / kernelSum;
                 outputPixels[elemToWrite] = avg;

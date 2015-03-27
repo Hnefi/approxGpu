@@ -76,7 +76,7 @@ __global__ void blurKernel_st1(int* inputPixels, float* intermediate, int* weigh
                           filterWeightLoc = RADIUS + ii;
                           float curValueHash = hashGHB(&ghb[my_ghb_index]);
                           float texVal = tex1D<float>(tref,curValueHash);
-                          tmp += texVal * weightedKernel[filterWeightLoc];
+                          tmp += (ghb[my_ghb_index+2] + texVal) * weightedKernel[filterWeightLoc];
                       }
                   }
                 float avg = (float)tmp / kernelSum;
