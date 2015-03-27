@@ -35,6 +35,15 @@ LVAData::GenerateUniqueValueSet(unsigned int max_size)
         cout << sorted[i].second->at(0) << endl;
         */
 
+    float max_k = -1000.0, min_k = 1000.0;
+    for(int i = 0; i < prev_size;i++) {
+        float cur_k = sorted[i].first;
+        if(cur_k > max_k) max_k = cur_k;
+        if(cur_k < min_k) min_k = cur_k;
+    }
+
+    cout << "Min_Key: " << min_k << "\tMax_Key: " << max_k << endl;
+
     // copy the first max_size-1 values
     FloatVector approxSet(max_size);
     for(int i = 0;i < max_size && i < prev_size;i++) {
@@ -54,7 +63,7 @@ LVAData::GenerateUniqueValueSet(unsigned int max_size)
         DqPtr d = sorted[i].second;
         float valToAvg = d->at(0);
         int i_prime = boost::math::iround( (float)i * mult_fac );
-        cout << "i: " << i << ", i_prime: " << i_prime << endl;
+        //cout << "i: " << i << ", i_prime: " << i_prime << endl;
         //int i_prime = ( i % max_size );
         assert(i_prime < max_size);
         approxSet[i_prime] = (approxSet[i_prime] + valToAvg) / 2.0;

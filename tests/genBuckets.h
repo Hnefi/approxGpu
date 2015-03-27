@@ -73,7 +73,7 @@ class ValueReader
             // use boost algos to find the thread idx: value between two [ ] exprs
             boost::regex thrNumReg("(\\[(-)?\\d+\\.\\d+\\])",boost::regex::egrep);
             boost::iterator_range<std::string::iterator> ret = find_regex(in,thrNumReg);
-            std::cout << "reg result: " << ret << std::endl;
+            //std::cout << "reg result: " << ret << std::endl;
             std::string filtered(ret.begin(),ret.end());
             boost::algorithm::erase_all(filtered,"[");
             boost::algorithm::erase_all(filtered,"]");
@@ -86,7 +86,7 @@ class ValueReader
             boost::algorithm::erase_all(in," ");
             boost::regex fp("(:(-)?\\d+\\.\\d+)",boost::regex::egrep);
             ret = find_regex(in,fp);
-            std::cout << "reg result: " << ret << std::endl;
+            //std::cout << "reg result: " << ret << std::endl;
             filtered = std::string(ret.begin(),ret.end());
             boost::algorithm::erase_all(filtered,":");
             float val = atof(filtered.c_str());
@@ -129,7 +129,7 @@ class ValueReader
                     std::pair<float,DqPtr> v = *it;
                     std::cout << "Key: " << v.first << std::endl;
                     DqPtr this_dq = v.second;
-                    for(int i = 0; i < this_dq->size() ; i++)
+                    for(int i = 0; i < this_dq->size() ; i++) 
                         std::cout << "\tval[" << i << "] = " << this_dq->at(i) << std::endl;
                 }
             }
@@ -143,7 +143,7 @@ class ValueReader
                 DqPtr this_dq = v.second;
                 if(this_dq->size() == 1) continue; // no need to reduce
                 else {
-                    std::cout << "In reduce ave, key: " << v.first << " has " << this_dq->size() << " elements." << std::endl;
+                    //std::cout << "In reduce ave, key: " << v.first << " has " << this_dq->size() << " elements." << std::endl;
                     float run_sum = 0.0;
                     float num_elem = (float) this_dq->size();
                     for(int i = this_dq->size()-1; i >= 0; i--) {
@@ -155,8 +155,8 @@ class ValueReader
                     }
                     float write = run_sum / num_elem;
                     this_dq->push_back(write);
-                    std::cout << "\trun_sum = " << run_sum << std::endl;
-                    std::cout << "\tWriting to make key/v pair: [" << v.first << "," << this_dq->at(0) << "]" << std::endl;
+                    //std::cout << "\trun_sum = " << run_sum << std::endl;
+                    //std::cout << "\tWriting to make key/v pair: [" << v.first << "," << this_dq->at(0) << "]" << std::endl;
                     //assert(this_dq->at(0) < 1.0);
                 }
             }
