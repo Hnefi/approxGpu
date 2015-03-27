@@ -73,7 +73,7 @@ static void HandleError( cudaError_t err,
 I2D* readImage(const char* pathName,int rgb = 1);
 F2D* readFile(unsigned char* fileName);
 void writeImgToFile(F2D* imgR,F2D* imgB, F2D* imgG,const char* inName, const char* outName);
-
+void pixDiff(const char* gold, const char* approx);
 
 /** Memory allocation functions **/
 I2D* iMallocHandle(int rows, int cols);

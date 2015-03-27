@@ -67,16 +67,16 @@ void writeImgToFile(F2D* imgB,F2D* imgG, F2D* imgR, const char* inputName, const
             int rdx = (nI * imgR->width) + nJ;
 
             int cast = (int) imgB->data[rdx];
-            assert( (char)cast < 255);
-            buf[wdx++] = (char) cast;
+            assert( (unsigned char)cast <= 256 && (unsigned char) cast >= 0);
+            buf[wdx++] = (unsigned char) cast;
 
             cast = (int) imgG->data[rdx];
-            assert( (char)cast < 255);
-            buf[wdx++] = (char)cast;
+            assert( (unsigned char)cast <= 256 && (unsigned char) cast >= 0);
+            buf[wdx++] = (unsigned char)cast;
 
             cast = (int) imgR->data[rdx];
-            assert( (char)cast < 255);
-            buf[wdx++] = (char)cast;
+            assert( (unsigned char)cast <= 256 && (unsigned char) cast >= 0);
+            buf[wdx++] = (unsigned char)cast;
         }
     }
     /*
