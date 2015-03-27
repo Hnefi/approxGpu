@@ -115,11 +115,11 @@ ImagePyramid* createImgPyramid(I2D* imageIn, cudaStream_t d_stream, cudaTextureO
     dyOutput_small = imageIn->dyOutput_small;
 
 
-    F2D* origPixelInput = fiDeepCopy(imageIn);
+    //F2D* origPixelInput = fiDeepCopy(imageIn);
 
     // Copy in input data and input kernels.
     cudaMemcpy(d_inputPixels,&(imageIn->data[0]),rows*cols*sizeof(int),cudaMemcpyHostToDevice);
-    cudaMemcpy(d_origInput,&(origPixelInput->data),rows*cols*sizeof(float),cudaMemcpyHostToDevice);
+    //cudaMemcpy(d_origInput,&(origPixelInput->data),rows*cols*sizeof(float),cudaMemcpyHostToDevice);
 
     // clear outputs since we only access some of these pixels, others must be blank 
     cudaMemset(d_outputPixels,0,rows*cols*sizeof(float));
@@ -148,7 +148,7 @@ ImagePyramid* createImgPyramid(I2D* imageIn, cudaStream_t d_stream, cudaTextureO
     calcSobel_dY_k1<<<nblocks,threadsPerBlock,bytesForSmem>>>(d_outputPixels,dyInt,sobel_kern_1,sobel_kern_2,cols,rows,objToKernel);
     calcSobel_dY_k2<<<nblocks,threadsPerBlock,bytesForSmem>>>(dyInt,dyOutput,sobel_kern_1,sobel_kern_2,cols,rows,objToKernel);
 
-    //calcSobel_dX_k1<<<nblocks,threadsPerBlock,bytesForSmem>>>(resizeOutput,dxInt_small,sobel_kern_1,sobel_kern_2,resizedCols,resizedRows,objToKernel);
+    calcSobel_dX_k1<<<nblocks,threadsPerBlock,bytesForSmem>>>(resizeOutput,dxInt_small,threadHashes,threadReads,sobel_kern_1,sobel_kern_2,resizedCols,resizedRows,objToKernel);
     calcSobel_dX_k2<<<nblocks,threadsPerBlock,bytesForSmem>>>(dxInt_small,dxOutput_small,sobel_kern_1,sobel_kern_2,resizedCols,resizedRows,objToKernel);
 
     calcSobel_dY_k1<<<nblocks,threadsPerBlock,bytesForSmem>>>(resizeOutput,dyInt_small,sobel_kern_1,sobel_kern_2,resizedCols,resizedRows,objToKernel);
@@ -218,8 +218,8 @@ ImagePyramid* createImgPyramid(I2D* imageIn, cudaStream_t d_stream, cudaTextureO
     cudaFree(imageIn->dyOutput_small);
 
 
-    cudaFree(d_origInput);    
-    fFreeHandle(origPixelInput);
+    //cudaFree(d_origInput);    
+    //fFreeHandle(origPixelInput);
     
     return retStruct;
 }

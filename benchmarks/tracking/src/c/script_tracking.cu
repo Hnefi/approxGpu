@@ -190,10 +190,10 @@ int main(int argc, char* argv[])
     }
 
     // write out the first image frame.
-    writeImgToFile(blurs[2],blurs[1],blurs[0],img1Name,"blur_out.bmp");
-    writeImgToFile(resizes[2],resizes[1],resizes[0],img1Name,"resize_out.bmp");
-    writeImgToFile(sobelx[2],sobelx[1],sobelx[0],img1Name,"sobelx_out.bmp");
-    writeImgToFile(sobely[2],sobely[1],sobely[0],img1Name,"sobely_out.bmp");
+    writeImgToFile(blurs[2],blurs[1],blurs[0],img1Name,"blur_1.bmp");
+    writeImgToFile(resizes[2],resizes[1],resizes[0],img1Name,"resize_1.bmp");
+    writeImgToFile(sobelx[2],sobelx[1],sobelx[0],img1Name,"sobelx_1.bmp");
+    writeImgToFile(sobely[2],sobely[1],sobely[0],img1Name,"sobely_1.bmp");
 
     /** Read input image **/
     Ic = readImage(im1);
@@ -226,7 +226,7 @@ int main(int argc, char* argv[])
 
     /** Blur the image to remove noise - weighted avergae filter **/
 
-    ImagePyramid* preprocessed = createImgPyramid(Ic, 0,&texObj,true); // just need to define a struct to return 4 float* arrays
+    ImagePyramid* preprocessed = createImgPyramid(Ic, 0,&texObj,false); // just need to define a struct to return 4 float* arrays
     //printf("After calling createImgPyramid...\n");
 
     blurredImage = preprocessed->blurredImg;

@@ -79,7 +79,7 @@ class ValueReader
             boost::algorithm::erase_all(filtered,"]");
             // convert to int
             float hash = atof(filtered.c_str());
-            hash /= (float)225.0;
+            //hash /= (float)225.0;
             //assert(hash < 1.0);
 
             // use boost algos to find what's after the colon (float)

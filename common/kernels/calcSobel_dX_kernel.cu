@@ -70,8 +70,8 @@ __global__ void calcSobel_dX_k1(float* inputPixels, float* intermediate,
                           // bounds check #2 for surrounding pix
                           if (location < (width*height) && location >= 0) {
                               float loaded = inputPixels[location];
-                              hashes[scaled+filterWeightLoc] = ghb[my_ghb_index+2] - ghb[my_ghb_index+1];
-                              threadReads[scaled+filterWeightLoc] = loaded - ghb[my_ghb_index+2];
+                              //hashes[scaled+filterWeightLoc] = ghb[my_ghb_index+2] - ghb[my_ghb_index+1];
+                              //threadReads[scaled+filterWeightLoc] = loaded - ghb[my_ghb_index+2];
                               tmp += loaded * kernel_2[filterWeightLoc];
                               updateGHB(&(ghb[my_ghb_index]),loaded);
                           }

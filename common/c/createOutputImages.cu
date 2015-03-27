@@ -129,12 +129,12 @@ ImagePyramid* createOutputImages(I2D* imageIn,cudaTextureObject_t* texObj)
     resizeKernel_st1<<<nblocks,threadsPerBlock,bytesForSmem>>>(d_origInput,resizeInt,d_weightedKernel,rows,cols,resizedRows,resizedCols,objToKernel);
     resizeKernel_st2<<<nblocks,threadsPerBlock,bytesForSmem>>>(resizeOutput,resizeInt,d_weightedKernel,rows,cols,resizedRows,resizedCols,objToKernel);
 
-/*
-    calcSobel_dX_k1<<<nblocks,threadsPerBlock,bytesForSmem>>>(d_origInput,dxInt,sobel_kern_1,sobel_kern_2,cols,rows,objToKernel);
+    calcSobel_dX_k1<<<nblocks,threadsPerBlock,bytesForSmem>>>(d_origInput,dxInt,threadHashes,threadReads,sobel_kern_1,sobel_kern_2,cols,rows,objToKernel);
     calcSobel_dX_k2<<<nblocks,threadsPerBlock,bytesForSmem>>>(dxInt,dxOutput,sobel_kern_1,sobel_kern_2,cols,rows,objToKernel);
 
     calcSobel_dY_k1<<<nblocks,threadsPerBlock,bytesForSmem>>>(d_origInput,dyInt,sobel_kern_1,sobel_kern_2,cols,rows,objToKernel);
     calcSobel_dY_k2<<<nblocks,threadsPerBlock,bytesForSmem>>>(dyInt,dyOutput,sobel_kern_1,sobel_kern_2,cols,rows,objToKernel);
+/*
     calcSobel_dX_k1<<<nblocks,threadsPerBlock,bytesForSmem>>>(resizeOutput,dxInt_small,sobel_kern_1,sobel_kern_2,resizedCols,resizedRows,objToKernel);
     calcSobel_dX_k2<<<nblocks,threadsPerBlock,bytesForSmem>>>(dxInt_small,dxOutput_small,sobel_kern_1,sobel_kern_2,resizedCols,resizedRows,objToKernel);
 
