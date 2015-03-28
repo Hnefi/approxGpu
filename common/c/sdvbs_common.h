@@ -12,18 +12,15 @@ Author: Sravanthi Kota Venkata
 
 typedef struct
 {
-    int width;
-    int height;
-    int data[];
-    // THIS SHIT BELOW IS ALL CUDA POINTERS>>>>
-    // WHO WRITES CODE THIS WAY.>>>>>>>>>>> 
-    // FAIL
     int* d_inputPixels;
     float* d_outputPixels;
     float* d_intermediate;
     int* d_weightedKernel,*sobel_kern_1,*sobel_kern_2;
     float* resizeInt, *dxInt, *dyInt, *dyInt_small, *dxInt_small;
     float* resizeOutput, *dxOutput, *dyOutput, *dxOutput_small, *dyOutput_small;
+    int width;
+    int height;
+    int data[];
 }I2D;
 
 typedef struct

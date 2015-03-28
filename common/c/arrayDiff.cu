@@ -15,7 +15,7 @@ float arrayDiff(F2D* gold, F2D* approx)
     int rows = gold->height;
     int cols = gold->width;
     for(int i=0;i<rows*cols;i++) {
-        int gdiff = abs( gold->data[i] - approx->data[i] );
+        float gdiff = abs( gold->data[i] - approx->data[i] );
         total += gdiff;
     }
     float numelem = (float)rows*(float)cols;
