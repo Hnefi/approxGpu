@@ -136,7 +136,7 @@ I2D* iiConv2(I2D* a, I2D* b);
 
 
 /** Image Transformations - resize, integration etc **/
-ImagePyramid* createImgPyramid(I2D* imageIn, cudaTextureObject_t* tref,bool train_set,int tex_num);
+ImagePyramid* createImgPyramid(I2D* imageIn, cudaTextureObject_t* tref,bool train_set,int tex_num,bool precise);
 ImagePyramid* createOutputImages(I2D* imageIn, cudaTextureObject_t* tref,int loadsTorePlace);
 
 bool createTextureReference(int rows, int cols, std::string inFile);

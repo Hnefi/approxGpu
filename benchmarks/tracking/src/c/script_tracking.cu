@@ -237,7 +237,7 @@ int main(int argc, char* argv[])
 
     /** Blur the image to remove noise - weighted avergae filter **/
 
-    ImagePyramid* preprocessed = createImgPyramid(Ic,&texObj,false,TEX_LOADS); // just need to define a struct to return 4 float* arrays
+    ImagePyramid* preprocessed = createImgPyramid(Ic,&texObj,false,TEX_LOADS,false); // just need to define a struct to return 4 float* arrays
     //printf("After calling createImgPyramid...\n");
 
     blurredImage = preprocessed->blurredImg;
@@ -255,7 +255,7 @@ int main(int argc, char* argv[])
     writeImgToFile(NULL,horizontalEdgeImage,NULL,img1Name,"sobelx_1_approx.bmp");
     writeImgToFile(NULL,verticalEdgeImage,NULL,img1Name,"sobely_1_approx.bmp");
 
-    ImagePyramid* f1_exact = createImgPyramid(Ic,&texObj,false,0); // just need to define a struct to return 4 float* arrays
+    ImagePyramid* f1_exact = createImgPyramid(Ic,&texObj,false,0,true); // just need to define a struct to return 4 float* arrays
     //printf("After calling createImgPyramid...\n");
 
     exact_blurredImage = f1_exact->blurredImg;
@@ -275,8 +275,8 @@ int main(int argc, char* argv[])
 
     avg_blurdiff[0] =  arrayDiff(exact_blurredImage,blurred_level1);
     avg_resdiff[0] = arrayDiff(exact_blurred_level2,blurred_level2);
-    avg_sobxdiff[0] = arrayDiff(exact_horizontalEdgeImage,horizontalEdgeImage);
-    avg_sobydiff[0] = arrayDiff(exact_verticalEdgeImage,verticalEdgeImage);
+    avg_sobydiff[0] = arrayDiff(exact_horizontalEdgeImage,horizontalEdgeImage);
+    avg_sobxdiff[0] = arrayDiff(exact_verticalEdgeImage,verticalEdgeImage);
 
     /** Edge images are used for feature detection. So, using the verticalEdgeImage and horizontalEdgeImage images, we compute feature strength
       across all pixels. Lambda matrix is the feature strength matrix returned by calcGoodFeature **/
@@ -318,8 +318,8 @@ int main(int argc, char* argv[])
     for(count=1; count<=counter; count++)
     {
         printf("---Image %d---\n",count);
-        newFramePyramids[count-1] = createImgPyramid(Ics[count-1],&texObj,false,TEX_LOADS);
-        exactFramePyramids[count-1] = createImgPyramid(Ics[count-1],&texObj,false,0);
+        newFramePyramids[count-1] = createImgPyramid(Ics[count-1],&texObj,false,TEX_LOADS,false);
+        exactFramePyramids[count-1] = createImgPyramid(Ics[count-1],&texObj,false,0,true);
 
         Ic = Ics[count-1];
         rows = Ic->height;
@@ -359,8 +359,10 @@ int main(int argc, char* argv[])
 
         avg_blurdiff[count-1] =  arrayDiff(exact_blurredImage,blurredImage);
         avg_resdiff[count-1] = arrayDiff(exact_blurred_level2,blurred_level2);
-        avg_sobxdiff[count-1] = arrayDiff(exact_horizontalEdgeImage,horizontalEdge_level1);
-        avg_sobydiff[count-1] = arrayDiff(exact_verticalEdgeImage,verticalEdge_level1);
+        avg_sobxdiff[count-1] = arrayDiff(exact_verticalEdgeImage,verticalEdge_level1);
+        avg_sobydiff[count-1] = arrayDiff(exact_horizontalEdgeImage,horizontalEdge_level1);
+        destroyImgPyramid(newFramePyramids[count-1], count);
+        destroyImgPyramid(exactFramePyramids[count-1], count);
         /*
         newpoints = fSetArray(2, features->width, 0);
 
