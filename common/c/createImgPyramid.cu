@@ -64,12 +64,12 @@ ImagePyramid* createImgPyramid(I2D* imageIn, cudaTextureObject_t* texObj, bool t
     float* reads, *hashes;
     int bytesForSmem = 16*16 * 3 * sizeof(float); // each thread gets 3 entries of 4 bytes each
     if(train_set == true) {
-        reads = (float*) calloc(3*rows*cols,sizeof(float));
-        hashes = (float*) calloc(3*rows*cols,sizeof(float));
-        HANDLE_ERROR( cudaMalloc((void**)&threadReads,3*rows*cols*sizeof(float)) );
-        HANDLE_ERROR( cudaMalloc((void**)&threadHashes,3*rows*cols*sizeof(float)) );
-        cudaMemset(threadReads,0xff,3*rows*cols*sizeof(float));
-        cudaMemset(threadHashes,0xff,3*rows*cols*sizeof(float));
+        reads = (float*) calloc(5*rows*cols,sizeof(float));
+        hashes = (float*) calloc(5*rows*cols,sizeof(float));
+        HANDLE_ERROR( cudaMalloc((void**)&threadReads,5*rows*cols*sizeof(float)) );
+        HANDLE_ERROR( cudaMalloc((void**)&threadHashes,5*rows*cols*sizeof(float)) );
+        cudaMemset(threadReads,0xff,5*rows*cols*sizeof(float));
+        cudaMemset(threadHashes,0xff,5*rows*cols*sizeof(float));
     }
 
     // SET UP MEMORY - local data
@@ -183,21 +183,21 @@ ImagePyramid* createImgPyramid(I2D* imageIn, cudaTextureObject_t* texObj, bool t
     cudaDeviceSynchronize();
     if(train_set == true) { 
         // we are synched here, now we can print out the training set (if we are frame 0)
-        HANDLE_ERROR( cudaMemcpy(reads,threadReads,3*rows*cols*sizeof(float),cudaMemcpyDeviceToHost) );
-        HANDLE_ERROR( cudaMemcpy(hashes,threadHashes,3*rows*cols*sizeof(float),cudaMemcpyDeviceToHost) );
-        for(int i = 0;i < 3*rows*cols;i+=3) {
+        HANDLE_ERROR( cudaMemcpy(reads,threadReads,5*rows*cols*sizeof(float),cudaMemcpyDeviceToHost) );
+        HANDLE_ERROR( cudaMemcpy(hashes,threadHashes,5*rows*cols*sizeof(float),cudaMemcpyDeviceToHost) );
+        for(int i = 0;i < 5*rows*cols;i+=5) {
             /*
             if(!(reads[i] != reads[i]))
                 printf("Global history hash [%0.5f], value: %0.5f\n",hashes[i],reads[i]);
             if(!(reads[i+1] != reads[i+1]))
                 printf("Global history hash [%0.5f], value: %0.5f\n",hashes[i+1],reads[i+1]);
-                */
             if(!(reads[i+2] != reads[i+2]))
                 printf("Global history hash [%0.5f], value: %0.5f\n",hashes[i+2],reads[i+2]);
-            /*
-            printf("Global history hash [%0.5f], value: %0.5f\n",hashes[i+3],reads[i+3]);
-            printf("Global history hash [%0.5f], value: %0.5f\n",hashes[i+4],reads[i+4]);
-            */
+            if(!(reads[i+3] != reads[i+3]))
+                printf("Global history hash [%0.5f], value: %0.5f\n",hashes[i+3],reads[i+3]);
+                */
+            if(!(reads[i+4] != reads[i+4]))
+                printf("Global history hash [%0.5f], value: %0.5f\n",hashes[i+4],reads[i+4]);
         }
         cudaFree(threadHashes);
         cudaFree(threadReads);

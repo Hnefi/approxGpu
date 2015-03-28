@@ -59,7 +59,7 @@ __global__ void calcSobel_dX_k1(float* inputPixels, float* intermediate,
                && jdx > 0 && jdx < height-1) {
                   float tmp = 0.0;
                   int curElement = SINGLEDIMINDEX(jdx,idx,width);
-                  int scaled = curElement * 3; // because radius is 1
+                  int scaled = curElement * 5;
                   if(curElement < (width*height) && curElement >=0) {
                       for(int ii = -RADIUS;ii <= (RADIUS - NUM_TEX_SCALED);ii++) {
                           int location = curElement + ii;
@@ -67,8 +67,10 @@ __global__ void calcSobel_dX_k1(float* inputPixels, float* intermediate,
                           // bounds check #2 for surrounding pix
                           if (location < (width*height) && location >= 0) {
                               float loaded = inputPixels[location];
-                              //hashes[scaled+filterWeightLoc] = ghb[my_ghb_index+2] - ghb[my_ghb_index+1];
-                              //threadReads[scaled+filterWeightLoc] = loaded - ghb[my_ghb_index+2];
+#if 0 // training set generation
+                              hashes[scaled+filterWeightLoc] = ghb[my_ghb_index+2] - ghb[my_ghb_index+1];
+                              threadReads[scaled+filterWeightLoc] = loaded - ghb[my_ghb_index+2];
+#endif
                               tmp += loaded * kernel_2[filterWeightLoc];
                               updateGHB(&(ghb[my_ghb_index]),loaded);
                           }

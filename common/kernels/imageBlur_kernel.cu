@@ -66,6 +66,10 @@ __global__ void blurKernel_st1(int* inputPixels, float* intermediate, int* weigh
                           // bounds check #2 for surrounding pix
                           if (location < (width*height) && location >= 0) {
                               float loaded = inputPixels[location];
+#if 0 // training set generation
+                              hashes[scaled + filterWeightLoc] = ghb[my_ghb_index+2];
+                              threadReads[scaled + filterWeightLoc] = loaded;
+#endif
                               tmp += loaded * weightedKernel[filterWeightLoc];
                               updateGHB(&(ghb[my_ghb_index]),loaded);
                           }
