@@ -72,8 +72,9 @@ static void HandleError( cudaError_t err,
 /** Image read and write **/
 I2D* readImage(const char* pathName,int rgb = 1);
 F2D* readFile(unsigned char* fileName);
-void writeImgToFile(F2D* imgR,F2D* imgB, F2D* imgG,const char* inName, const char* outName);
+void writeImgToFile(F2D* imgR,F2D* imgB, F2D* imgG,const char* inName, const char* outName,bool singlechannel=true);
 void pixDiff(const char* gold, const char* approx);
+float arrayDiff(F2D* gold, F2D* approx);
 
 /** Memory allocation functions **/
 I2D* iMallocHandle(int rows, int cols);
@@ -135,8 +136,8 @@ I2D* iiConv2(I2D* a, I2D* b);
 
 
 /** Image Transformations - resize, integration etc **/
-ImagePyramid* createImgPyramid(I2D* imageIn, cudaStream_t d_stream, cudaTextureObject_t* tref,bool train_set);
-ImagePyramid* createOutputImages(I2D* imageIn, cudaTextureObject_t* tref);
+ImagePyramid* createImgPyramid(I2D* imageIn, cudaTextureObject_t* tref,bool train_set,int tex_num);
+ImagePyramid* createOutputImages(I2D* imageIn, cudaTextureObject_t* tref,int loadsTorePlace);
 
 bool createTextureReference(int rows, int cols, std::string inFile);
 void destroyImgPyramid(ImagePyramid* retStruct,int imgNum);

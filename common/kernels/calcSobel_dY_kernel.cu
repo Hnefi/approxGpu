@@ -9,16 +9,13 @@
 #define SINGLEDIMINDEX(i,j,width) ((i)*(width) + (j))
 #define RADIUS 1
 
-// because these kernels are smaller, max # of tex reads is 3
-#if(NUM_TEX > 2)
-#define NUM_TEX_SCALED 2
-#else
-#define NUM_TEX_SCALED (NUM_TEX)
-#endif
-
 __global__ void calcSobel_dY_k1(float* inputPixels, float* intermediate, 
-                                    int* kernel_1,int* kernel_2, uint width, uint height,cudaTextureObject_t tref)
+                                    int* kernel_1,int* kernel_2, uint width, uint height,cudaTextureObject_t tref,int NUM_TEX)
 {
+    int NUM_TEX_SCALED = NUM_TEX;
+    if(NUM_TEX > 2)
+        NUM_TEX_SCALED = 2;
+
     // assign id's
     int i = blockIdx.x * blockDim.x + threadIdx.x;
     int j = blockIdx.y * blockDim.y + threadIdx.y;
@@ -87,11 +84,15 @@ __global__ void calcSobel_dY_k1(float* inputPixels, float* intermediate,
 }
 
 __global__ void calcSobel_dY_k2(float* intermediate, float* outputPixels, 
-                                    int* kernel_1,int* kernel_2, uint width, uint height,cudaTextureObject_t tref)
+                                    int* kernel_1,int* kernel_2, uint width, uint height,cudaTextureObject_t tref,int NUM_TEX)
 {
     // assign id's
     int i = blockIdx.x * blockDim.x + threadIdx.x;
     int j = blockIdx.y * blockDim.y + threadIdx.y;
+
+    int NUM_TEX_SCALED = NUM_TEX;
+    if(NUM_TEX > 2)
+        NUM_TEX_SCALED = 2;
 
     int totalX = gridDim.x * blockDim.x;
     int totalY = gridDim.y * blockDim.y;

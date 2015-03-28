@@ -7,6 +7,8 @@ Author: Sravanthi Kota Venkata
 #include <fstream>
 #include <string>
 
+#define TEX_LOADS (1) // change this to see how many texture cache loads we will replace 
+
 // LVA for interacting with pin
 #ifdef APPROXIMATE
 extern void LVA_FUNCTION(int type,void* start, void* end, int self) __attribute__ ((noinline));
@@ -26,7 +28,9 @@ int main(int argc, char* argv[])
     int i, j, k, N_FEA, WINSZ, LK_ITER, rows, cols;
     int endR, endC;
     F2D *blurredImage, *previousFrameBlurred_level1, *previousFrameBlurred_level2, *blurred_level1, *blurred_level2;
+    F2D *exact_blurredImage, *exact_blurred_level1, *exact_blurred_level2;
     F2D *verticalEdgeImage, *horizontalEdgeImage, *verticalEdge_level1, *verticalEdge_level2, *horizontalEdge_level1, *horizontalEdge_level2, *interestPnt;
+    F2D *exact_verticalEdgeImage, *exact_horizontalEdgeImage;
     F2D *lambda, *lambdaTemp, *features;
     I2D *Ic, *status;
     float SUPPRESION_RADIUS;
@@ -110,7 +114,7 @@ int main(int argc, char* argv[])
     WINSZ = 48;
     N_FEA = 500;
     LK_ITER = 20;
-    counter = 4;
+    counter = 16;
 #endif
 
     cudaDeviceReset();
@@ -160,24 +164,40 @@ int main(int argc, char* argv[])
     cudaTextureObject_t texObj = 0; 
     cudaCreateTextureObject(&texObj, &resDesc, &texDesc, NULL);
 
+    /** Read input image **/
+    Ic = readImage(im1);
+    rows = Ic->height;
+    cols = Ic->width;
+    /* Other frames */
+#define MAX_COUNTER     (16)
+    I2D *Ics[MAX_COUNTER];
+    ImagePyramid* newFramePyramids[MAX_COUNTER];
+    ImagePyramid* exactFramePyramids[MAX_COUNTER];
+    cudaStream_t frameStreams[MAX_COUNTER];
 
-    F2D* blurs[3];
-    F2D* resizes[3];
-    F2D* sobelx[3];
-    F2D* sobely[3];
+    /** Until now, we processed base frame. The following for loop processes other frames **/
+    for(count=1; count<=counter; count++)
+    {
+        sprintf(im1, "%s/bug_frames/%d.bmp", argv[1], count);
+        //printf("Calculating pix difference for img: %d....\n",count);
+        //pixDiff(img1Name,im1);
+        Ics[count-1] = readImage(im1);
+    }
 
+    F2D* blurs[MAX_COUNTER];
+    F2D* resizes[MAX_COUNTER];
+    F2D* sobelx[MAX_COUNTER];
+    F2D* sobely[MAX_COUNTER];
+
+    /*
     // do this for all the rgb channels
     for(int arg = 2;arg >= 0;arg--) {
         Ic = readImage(im1,arg);
         rows = Ic->height;
         cols = Ic->width;
         ImagePyramid* preprocessed = createOutputImages(Ic,&texObj); // just need to define a struct to return 4 float* arrays
-        //printf("After calling createImgPyramid...\n");
-        //writeImgToFile(blurredImage,img1Name,"test.bmp");
-
-        /** Scale down the image to build Image Pyramid. We find features across all scales of the image **/
-        blurred_level1 = preprocessed->blurredImg;                   /** Scale 0 **/
-        blurred_level2 = preprocessed->resizedImg;     /** Scale 1 **/
+        blurred_level1 = preprocessed->blurredImg;                   
+        blurred_level2 = preprocessed->resizedImg;   
         horizontalEdgeImage = preprocessed->horizEdge;
         verticalEdgeImage = preprocessed->vertEdge;
 
@@ -194,39 +214,30 @@ int main(int argc, char* argv[])
     writeImgToFile(resizes[2],resizes[1],resizes[0],img1Name,"resize_1.bmp");
     writeImgToFile(sobelx[2],sobelx[1],sobelx[0],img1Name,"sobelx_1.bmp");
     writeImgToFile(sobely[2],sobely[1],sobely[0],img1Name,"sobely_1.bmp");
-
-    /** Read input image **/
-    Ic = readImage(im1);
-    rows = Ic->height;
-    cols = Ic->width;
-    /* Other frames */
-#define MAX_COUNTER     (4)
-    I2D *Ics[MAX_COUNTER];
-    ImagePyramid* newFramePyramids[MAX_COUNTER];
-    cudaStream_t frameStreams[MAX_COUNTER];
-
-    /** Until now, we processed base frame. The following for loop processes other frames **/
-    for(count=1; count<=counter; count++)
-    {
-        /** Read image **/
-        sprintf(im1, "%s/bug_frames/%d.bmp", argv[1], count);
-        printf("Calculating pix difference for img: %d....\n",count);
-        pixDiff(img1Name,im1);
-        Ics[count-1] = readImage(im1);
-    }
+    */
 
     //start roi
+
+    // WORKFLOW OF DATA-GATHERING version of script_tracking
+    //  - for each image (up to 16) ONLY green channel
+    //      run the exact kernels, write out to files.
+    //      run the approx kernels, write out to files.
+    //      calc average green pixel difference
+
     LVA_BX_INSTRUCTION;
     LVA_BX_INSTRUCTION;
 
     /** Start Timing **/
     start = photonStartTiming();
 
-    /** IMAGE PRE-PROCESSING **/
+    float avg_blurdiff[MAX_COUNTER];
+    float avg_resdiff[MAX_COUNTER];
+    float avg_sobxdiff[MAX_COUNTER];
+    float avg_sobydiff[MAX_COUNTER];
 
     /** Blur the image to remove noise - weighted avergae filter **/
 
-    ImagePyramid* preprocessed = createImgPyramid(Ic, 0,&texObj,false); // just need to define a struct to return 4 float* arrays
+    ImagePyramid* preprocessed = createImgPyramid(Ic,&texObj,false,TEX_LOADS); // just need to define a struct to return 4 float* arrays
     //printf("After calling createImgPyramid...\n");
 
     blurredImage = preprocessed->blurredImg;
@@ -238,7 +249,34 @@ int main(int argc, char* argv[])
     horizontalEdgeImage = preprocessed->horizEdge;
     verticalEdgeImage = preprocessed->vertEdge;
 
-    // copy the first image into the "saved pixels" to merge later
+    // copy the image into the "saved pixels" to check for error later
+    writeImgToFile(NULL,blurred_level1,NULL,img1Name,"blur_1_approx.bmp");
+    writeImgToFile(NULL,blurred_level2,NULL,img1Name,"resize_1_approx.bmp");
+    writeImgToFile(NULL,horizontalEdgeImage,NULL,img1Name,"sobelx_1_approx.bmp");
+    writeImgToFile(NULL,verticalEdgeImage,NULL,img1Name,"sobely_1_approx.bmp");
+
+    ImagePyramid* f1_exact = createImgPyramid(Ic,&texObj,false,0); // just need to define a struct to return 4 float* arrays
+    //printf("After calling createImgPyramid...\n");
+
+    exact_blurredImage = f1_exact->blurredImg;
+    //writeImgToFile(blurredImage,img1Name,"test.bmp");
+
+    /** Scale down the image to build Image Pyramid. We find features across all scales of the image **/
+    exact_blurred_level1 = f1_exact->blurredImg;                   /** Scale 0 **/
+    exact_blurred_level2 = f1_exact->resizedImg;     /** Scale 1 **/
+    exact_horizontalEdgeImage = f1_exact->horizEdge;
+    exact_verticalEdgeImage = f1_exact->vertEdge;
+
+    // copy the image into the "saved pixels" to check for error later
+    writeImgToFile(NULL,exact_blurred_level1,NULL,img1Name,"blur_1_exact.bmp");
+    writeImgToFile(NULL,exact_blurred_level2,NULL,img1Name,"resize_1_exact.bmp");
+    writeImgToFile(NULL,exact_horizontalEdgeImage,NULL,img1Name,"sobelx_1_exact.bmp");
+    writeImgToFile(NULL,exact_verticalEdgeImage,NULL,img1Name,"sobely_1_exact.bmp");
+
+    avg_blurdiff[0] =  arrayDiff(exact_blurredImage,blurred_level1);
+    avg_resdiff[0] = arrayDiff(exact_blurred_level2,blurred_level2);
+    avg_sobxdiff[0] = arrayDiff(exact_horizontalEdgeImage,horizontalEdgeImage);
+    avg_sobydiff[0] = arrayDiff(exact_verticalEdgeImage,verticalEdgeImage);
 
     /** Edge images are used for feature detection. So, using the verticalEdgeImage and horizontalEdgeImage images, we compute feature strength
       across all pixels. Lambda matrix is the feature strength matrix returned by calcGoodFeature **/
@@ -274,11 +312,14 @@ int main(int argc, char* argv[])
     fFreeHandle(lambdaTemp);
     iFreeHandle(Ic);
     destroyImgPyramid(preprocessed,0x0);
+    destroyImgPyramid(f1_exact,0x0);
 
     /** Until now, we processed base frame. The following for loop processes other frames **/
     for(count=1; count<=counter; count++)
     {
-        newFramePyramids[count-1] = createImgPyramid(Ics[count-1],0,&texObj,false);
+        printf("---Image %d---\n",count);
+        newFramePyramids[count-1] = createImgPyramid(Ics[count-1],&texObj,false,TEX_LOADS);
+        exactFramePyramids[count-1] = createImgPyramid(Ics[count-1],&texObj,false,0);
 
         Ic = Ics[count-1];
         rows = Ic->height;
@@ -309,18 +350,29 @@ int main(int argc, char* argv[])
         horizontalEdge_level1 = newFramePyramids[count-1]->horizEdge;
         horizontalEdge_level2 = newFramePyramids[count-1]->horizEdge_small;
 
+        /** Exact image pyramid **/
+        exact_blurredImage = exactFramePyramids[count-1]->blurredImg;
+        exact_blurred_level1 = exactFramePyramids[count-1]->blurredImg;
+        exact_blurred_level2 = exactFramePyramids[count-1]->resizedImg;
+        exact_horizontalEdgeImage = exactFramePyramids[count-1]->horizEdge;
+        exact_verticalEdgeImage = exactFramePyramids[count-1]->vertEdge;
+
+        avg_blurdiff[count-1] =  arrayDiff(exact_blurredImage,blurredImage);
+        avg_resdiff[count-1] = arrayDiff(exact_blurred_level2,blurred_level2);
+        avg_sobxdiff[count-1] = arrayDiff(exact_horizontalEdgeImage,horizontalEdge_level1);
+        avg_sobydiff[count-1] = arrayDiff(exact_verticalEdgeImage,verticalEdge_level1);
+        /*
         newpoints = fSetArray(2, features->width, 0);
 
-        /** Based on features computed in the previous frame, find correspondence in the current frame. "status" returns the index of corresponding features **/
-        status = calcPyrLKTrack(previousFrameBlurred_level1, previousFrameBlurred_level2, verticalEdge_level1, verticalEdge_level2, horizontalEdge_level1, horizontalEdge_level2, blurred_level1, blurred_level2, features, features->width, WINSZ, accuracy, LK_ITER, newpoints);
+        //status = calcPyrLKTrack(previousFrameBlurred_level1, previousFrameBlurred_level2, verticalEdge_level1, verticalEdge_level2, horizontalEdge_level1, horizontalEdge_level2, blurred_level1, blurred_level2, features, features->width, WINSZ, accuracy, LK_ITER, newpoints);
 
         destroyImgPyramid(newFramePyramids[count-1], count);
+        destroyImgPyramid(exactFramePyramids[count-1], count);
 
         // left these ones (because they were just alloc'd in this loop
         fFreeHandle(previousFrameBlurred_level1);
         fFreeHandle(previousFrameBlurred_level2);
 
-        /** Populate newpoints with features that had correspondence with previous frame features **/
         np_temp = fDeepCopy(newpoints);
         if(status->width > 0 )
         {
@@ -348,17 +400,10 @@ int main(int argc, char* argv[])
         iFreeHandle(Ic);
         fFreeHandle(np_temp);
         fFreeHandle(features);
-        /** Populate newpoints into features **/
         features = fDeepCopy(newpoints);
-        //printf("Printing features...\n");
-        /*for(i = 0;i<features->height;i++) {
-          for(j=0;j<features->width;j++) {
-          printf("%f\t",subsref(features,i,j));
-          }
-          printf("\n");
-          }*/
 
         fFreeHandle(newpoints);
+        */
     }
     /* Timing utils */
     end = photonEndTiming();
@@ -389,6 +434,10 @@ int main(int argc, char* argv[])
     fFreeHandle(blurred_level1);
     fFreeHandle(blurred_level2);
     fFreeHandle(features);
+
+    for(int j = 0;j<MAX_COUNTER;j++) {
+        printf("Mean error for frame=%d was: blur=%0.5f, resize=%0.5f, sobx=%0.5f, soby=%0.5f\n",j+1,avg_blurdiff[j],avg_resdiff[j],avg_sobxdiff[j],avg_sobydiff[j]);
+    }
 
     free(elapsed);
     free(big_arr);

@@ -10,7 +10,7 @@
 #define RADIUS 2
 #define SINGLEDIMINDEX(i,j,width) ((i)*(width) + (j))
 
-__global__ void blurKernel_st2(float* outputPixels,float* intermediate, int* weightedKernel,uint width, uint height,cudaTextureObject_t tref /*, other arguments */)
+__global__ void blurKernel_st2(float* outputPixels,float* intermediate, int* weightedKernel,uint width, uint height,cudaTextureObject_t tref,int NUM_TEX /*, other arguments */)
 {
     // assign id's
     int i = blockIdx.x * blockDim.x + threadIdx.x;

@@ -9,18 +9,15 @@
 #define RADIUS 1
 #define SINGLEDIMINDEX(i,j,width) ((i)*(width) + (j))
 
-//because these kernels are smaller
-#if(NUM_TEX > 2)
-#define NUM_TEX_SCALED 2
-#else
-#define NUM_TEX_SCALED (NUM_TEX)
-#endif
-
 __global__ void calcSobel_dX_k1(float* inputPixels, float* intermediate,
                                 float* hashes, float* threadReads,
                                 int* kernel_1,int* kernel_2, uint width, uint height,
-                                cudaTextureObject_t tref)
+                                cudaTextureObject_t tref,int NUM_TEX)
 {
+    int NUM_TEX_SCALED = NUM_TEX;
+    if(NUM_TEX > 2)
+        NUM_TEX_SCALED = 2;
+
     // assign id's
     int i = blockIdx.x * blockDim.x + threadIdx.x;
     int j = blockIdx.y * blockDim.y + threadIdx.y;
@@ -93,9 +90,12 @@ __global__ void calcSobel_dX_k1(float* inputPixels, float* intermediate,
 }
 
 __global__ void calcSobel_dX_k2(float* intermediate, float* outputPixels, 
-                                    int* kernel_1,int* kernel_2, uint width, uint height,cudaTextureObject_t tref)
+                                    int* kernel_1,int* kernel_2, uint width, uint height,cudaTextureObject_t tref,int NUM_TEX)
 {
     // assign id's
+    int NUM_TEX_SCALED = NUM_TEX;
+    if(NUM_TEX > 2)
+        NUM_TEX_SCALED = 2;
     int i = blockIdx.x * blockDim.x + threadIdx.x;
     int j = blockIdx.y * blockDim.y + threadIdx.y;
 

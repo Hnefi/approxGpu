@@ -10,7 +10,7 @@
 #define DIAMETER (2*RADIUS+1)
 #define SINGLEDIMINDEX(i,j,width) ((i)*(width) + (j))
 
-__global__ void resizeKernel_st2(float* outputPixels,float* intermediate, int* weightedKernel,uint height, uint width,uint resizedRows,uint resizedCols,cudaTextureObject_t tref /*, other arguments */)
+__global__ void resizeKernel_st2(float* outputPixels,float* intermediate, int* weightedKernel,uint height, uint width,uint resizedRows,uint resizedCols,cudaTextureObject_t tref,int NUM_TEX /*, other arguments */)
 {
     // assign id's
     int i = blockIdx.x * blockDim.x + threadIdx.x;
