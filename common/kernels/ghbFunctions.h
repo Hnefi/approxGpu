@@ -7,11 +7,17 @@ __device__ __forceinline__ void updateGHB(float* mem_arr,float new_val)
     mem_arr[2] = (new_val);
 }
 
-#define NORM_MIN    (-53.0)
-#define NORM_MAX    (55.0)
 __device__ __forceinline__ float hashGHB(float* mem_arr)
 {
+    // delta approximation
+#define NORM_MIN    (-53.0)
+#define NORM_MAX    (55.0)
     return ((mem_arr[2] - mem_arr[1]) - NORM_MIN) / (NORM_MAX - NORM_MIN);
+    // value approximation
+#define NORM_MIN    (9.0)
+#define NORM_MAX    (255.0)
+    return ((mem_arr[2]) - NORM_MIN) / (NORM_MAX - NORM_MIN);
+    // old
     float sum = mem_arr[0] + mem_arr[1] + mem_arr[2];
     sum /= 3.0;
     /*
