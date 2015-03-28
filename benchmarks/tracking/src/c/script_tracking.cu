@@ -252,8 +252,8 @@ int main(int argc, char* argv[])
     // copy the image into the "saved pixels" to check for error later
     writeImgToFile(NULL,blurred_level1,NULL,img1Name,"blur_1_approx.bmp");
     writeImgToFile(NULL,blurred_level2,NULL,img1Name,"resize_1_approx.bmp");
-    writeImgToFile(NULL,horizontalEdgeImage,NULL,img1Name,"sobelx_1_approx.bmp");
-    writeImgToFile(NULL,verticalEdgeImage,NULL,img1Name,"sobely_1_approx.bmp");
+    writeImgToFile(NULL,horizontalEdgeImage,NULL,img1Name,"sobely_1_approx.bmp");
+    writeImgToFile(NULL,verticalEdgeImage,NULL,img1Name,"sobelx_1_approx.bmp");
 
     ImagePyramid* f1_exact = createImgPyramid(Ic,&texObj,false,0,true); // just need to define a struct to return 4 float* arrays
     //printf("After calling createImgPyramid...\n");
@@ -270,8 +270,8 @@ int main(int argc, char* argv[])
     // copy the image into the "saved pixels" to check for error later
     writeImgToFile(NULL,exact_blurred_level1,NULL,img1Name,"blur_1_exact.bmp");
     writeImgToFile(NULL,exact_blurred_level2,NULL,img1Name,"resize_1_exact.bmp");
-    writeImgToFile(NULL,exact_horizontalEdgeImage,NULL,img1Name,"sobelx_1_exact.bmp");
-    writeImgToFile(NULL,exact_verticalEdgeImage,NULL,img1Name,"sobely_1_exact.bmp");
+    writeImgToFile(NULL,exact_horizontalEdgeImage,NULL,img1Name,"sobely_1_exact.bmp");
+    writeImgToFile(NULL,exact_verticalEdgeImage,NULL,img1Name,"sobelx_1_exact.bmp");
 
     avg_blurdiff[0] =  arrayDiff(exact_blurredImage,blurred_level1);
     avg_resdiff[0] = arrayDiff(exact_blurred_level2,blurred_level2);

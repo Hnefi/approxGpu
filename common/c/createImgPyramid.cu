@@ -161,22 +161,23 @@ ImagePyramid* createImgPyramid(I2D* imageIn, cudaTextureObject_t* texObj, bool t
         blurKernel_st1_Precise<<<nblocks,threadsPerBlock,bytesForSmem>>>(d_inputPixels,d_intermediate,d_weightedKernel,threadHashes,threadReads,cols,rows,objToKernel);
         blurKernel_st2_Precise<<<nblocks,threadsPerBlock,bytesForSmem>>>(d_outputPixels,d_intermediate,d_weightedKernel,cols,rows,objToKernel);
 
-        resizeKernel_st1_Precise<<<nblocks,threadsPerBlock,bytesForSmem>>>(d_outputPixels,resizeInt,d_weightedKernel,rows,cols,resizedRows,resizedCols,objToKernel);
+        resizeKernel_st1_Precise<<<nblocks,threadsPerBlock,bytesForSmem>>>(d_origInput,resizeInt,d_weightedKernel,rows,cols,resizedRows,resizedCols,objToKernel);
         resizeKernel_st2_Precise<<<nblocks,threadsPerBlock,bytesForSmem>>>(resizeOutput,resizeInt,d_weightedKernel,rows,cols,resizedRows,resizedCols,objToKernel);
 
         //TODO: this is reading origInput rather than d_outputPixels
-        calcSobel_dX_k1_Precise<<<nblocks,threadsPerBlock,bytesForSmem>>>(d_outputPixels,dxInt,threadHashes,threadReads,sobel_kern_1,sobel_kern_2,cols,rows,objToKernel);
+        calcSobel_dX_k1_Precise<<<nblocks,threadsPerBlock,bytesForSmem>>>(d_origInput,dxInt,threadHashes,threadReads,sobel_kern_1,sobel_kern_2,cols,rows,objToKernel);
         calcSobel_dX_k2_Precise<<<nblocks,threadsPerBlock,bytesForSmem>>>(dxInt,dxOutput,sobel_kern_1,sobel_kern_2,cols,rows,objToKernel);
 
-        calcSobel_dY_k1_Precise<<<nblocks,threadsPerBlock,bytesForSmem>>>(d_outputPixels,dyInt,sobel_kern_1,sobel_kern_2,cols,rows,objToKernel);
+        calcSobel_dY_k1_Precise<<<nblocks,threadsPerBlock,bytesForSmem>>>(d_origInput,dyInt,sobel_kern_1,sobel_kern_2,cols,rows,objToKernel);
         calcSobel_dY_k2_Precise<<<nblocks,threadsPerBlock,bytesForSmem>>>(dyInt,dyOutput,sobel_kern_1,sobel_kern_2,cols,rows,objToKernel);
 
+        /*
         calcSobel_dX_k1_Precise<<<nblocks,threadsPerBlock,bytesForSmem>>>(resizeOutput,dxInt_small,threadHashes,threadReads,sobel_kern_1,sobel_kern_2,resizedCols,resizedRows,objToKernel);
         calcSobel_dX_k2_Precise<<<nblocks,threadsPerBlock,bytesForSmem>>>(dxInt_small,dxOutput_small,sobel_kern_1,sobel_kern_2,resizedCols,resizedRows,objToKernel);
 
         calcSobel_dY_k1_Precise<<<nblocks,threadsPerBlock,bytesForSmem>>>(resizeOutput,dyInt_small,sobel_kern_1,sobel_kern_2,resizedCols,resizedRows,objToKernel);
         calcSobel_dY_k2_Precise<<<nblocks,threadsPerBlock,bytesForSmem>>>(dyInt_small,dyOutput_small,sobel_kern_1,sobel_kern_2,resizedCols,resizedRows,objToKernel);
-
+        */
     }
 
     cudaDeviceSynchronize();
