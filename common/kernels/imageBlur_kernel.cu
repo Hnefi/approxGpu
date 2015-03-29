@@ -36,7 +36,7 @@ __global__ void blurKernel_st1(int* inputPixels, float* intermediate, int* weigh
     }
     float kernelSum = 16.0;
     
-    extern __shared__ float ghb[]; // for per-thread local history
+    extern __shared__ int ghb[]; // for per-thread local history
     int my_ghb_index = ((threadIdx.y * blockDim.x) + threadIdx.x) * 3;
 
     // still check for this in case of small img, not all threads need execute
@@ -78,9 +78,9 @@ __global__ void blurKernel_st1(int* inputPixels, float* intermediate, int* weigh
                       // finish up last few values with NUM_TEX reads
                       for(int ii = (RADIUS-NUM_TEX+1); ii <= RADIUS;ii++) {
                           filterWeightLoc = RADIUS + ii;
-                          float curValueHash = hashGHB(&ghb[my_ghb_index]);
-                          float texVal = tex1D<float>(tref,curValueHash);
-                          tmp += (ghb[my_ghb_index+2] + texVal) * weightedKernel[filterWeightLoc];
+                          int curValueHash = hashGHB(&ghb[my_ghb_index]);
+                          int texVal = tex1D<int>(tref,curValueHash);
+                          tmp += (float)(ghb[my_ghb_index+2] + texVal) * weightedKernel[filterWeightLoc];
                       }
                   }
                 float avg = (float)tmp / kernelSum;

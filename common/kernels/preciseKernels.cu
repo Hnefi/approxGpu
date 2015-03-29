@@ -37,7 +37,7 @@ __global__ void calcSobel_dY_k1_Precise(float* inputPixels, float* intermediate,
     }
     float kernelSum_1 = 4.0;
     float kernelSum_2 = 2.0;
-    extern __shared__ float ghb[]; // for per-thread local history
+    extern __shared__ int ghb[]; // for per-thread local history
     int my_ghb_index = ((threadIdx.y * blockDim.x) + threadIdx.x) * 3;
 
     // still check for this in case of small img, not all threads need execute
@@ -67,9 +67,9 @@ __global__ void calcSobel_dY_k1_Precise(float* inputPixels, float* intermediate,
                     // finish up last few values with NUM_TEX reads
                     for(int ii = (SOBEL_RADIUS-NUM_TEX_SCALED+1); ii <= SOBEL_RADIUS;ii++) {
                         int filterWeightLoc = SOBEL_RADIUS + ii;
-                        float curValueHash = hashGHB(&ghb[my_ghb_index]);
-                        float texVal = tex1D<float>(tref,curValueHash);
-                        tmp += (ghb[my_ghb_index+2] + texVal) * kernel_2[filterWeightLoc];
+                        int curValueHash = hashGHB(&ghb[my_ghb_index]);
+                        int texVal = tex1D<int>(tref,curValueHash);
+                        tmp += (float)(ghb[my_ghb_index+2] + texVal) * kernel_2[filterWeightLoc];
                     }
                     float avg = (float)tmp / kernelSum_2;
                     intermediate[curElement] = avg;
@@ -109,7 +109,7 @@ __global__ void calcSobel_dY_k2_Precise(float* intermediate, float* outputPixels
     }
     float kernelSum_1 = 4;
     float kernelSum_2 = 2;
-    extern __shared__ float ghb[]; // for per-thread local history
+    extern __shared__ int ghb[]; // for per-thread local history
     int my_ghb_index = ((threadIdx.y * blockDim.x) + threadIdx.x) * 3;
 
     // still check for this in case of small img, not all threads need execute
@@ -139,9 +139,9 @@ __global__ void calcSobel_dY_k2_Precise(float* intermediate, float* outputPixels
                     // finish up last few values with NUM_TEX reads
                     for(int ii = (SOBEL_RADIUS-NUM_TEX_SCALED+1); ii <= SOBEL_RADIUS;ii++) {
                         int filterWeightLoc = SOBEL_RADIUS + ii;
-                        float curValueHash = hashGHB(&ghb[my_ghb_index]);
-                        float texVal = tex1D<float>(tref,curValueHash);
-                        tmp += (ghb[my_ghb_index+2] + texVal) * kernel_1[filterWeightLoc];
+                        int curValueHash = hashGHB(&ghb[my_ghb_index]);
+                        int texVal = tex1D<int>(tref,curValueHash);
+                        tmp += (float)(ghb[my_ghb_index+2] + texVal) * kernel_1[filterWeightLoc];
                     }
                     float avg = (float)tmp / kernelSum_1;
                     outputPixels[curElement] = avg;
@@ -186,7 +186,7 @@ __global__ void calcSobel_dX_k1_Precise(float* inputPixels, float* intermediate,
     float kernelSum_1 = 4;
     float kernelSum_2 = 2;
 
-    extern __shared__ float ghb[]; // for per-thread local history
+    extern __shared__ int ghb[]; // for per-thread local history
     int my_ghb_index = ((threadIdx.y * blockDim.x) + threadIdx.x) * 3;
 
     // still check for this in case of small img, not all threads need execute
@@ -219,9 +219,9 @@ __global__ void calcSobel_dX_k1_Precise(float* inputPixels, float* intermediate,
                       // finish up last few values with NUM_TEX reads
                       for(int ii = (SOBEL_RADIUS-NUM_TEX_SCALED+1); ii <= SOBEL_RADIUS;ii++) {
                           int filterWeightLoc = SOBEL_RADIUS + ii;
-                          float curValueHash = hashGHB(&ghb[my_ghb_index]);
-                          float texVal = tex1D<float>(tref,curValueHash);
-                          tmp += (ghb[my_ghb_index+2] + texVal) * kernel_2[filterWeightLoc];
+                          int curValueHash = hashGHB(&ghb[my_ghb_index]);
+                          int texVal = tex1D<int>(tref,curValueHash);
+                          tmp += (float)(ghb[my_ghb_index+2] + texVal) * kernel_2[filterWeightLoc];
                       }
                       float avg = (float)tmp / kernelSum_2;
                       intermediate[curElement] = avg;
@@ -260,7 +260,7 @@ __global__ void calcSobel_dX_k2_Precise(float* intermediate, float* outputPixels
     }
     float kernelSum_1 = 4;
     float kernelSum_2 = 2;
-    extern __shared__ float ghb[]; // for per-thread local history
+    extern __shared__ int ghb[]; // for per-thread local history
     int my_ghb_index = ((threadIdx.y * blockDim.x) + threadIdx.x) * 3;
 
     // still check for this in case of small img, not all threads need execute
@@ -290,9 +290,9 @@ __global__ void calcSobel_dX_k2_Precise(float* intermediate, float* outputPixels
                     // finish up last few values with NUM_TEX reads
                     for(int ii = (SOBEL_RADIUS-NUM_TEX+1); ii <= SOBEL_RADIUS;ii++) {
                         int filterWeightLoc = SOBEL_RADIUS + ii;
-                        float curValueHash = hashGHB(&ghb[my_ghb_index]);
-                        float texVal = tex1D<float>(tref,curValueHash);
-                        tmp += (ghb[my_ghb_index+2] + texVal) * kernel_1[filterWeightLoc];
+                        int curValueHash = hashGHB(&ghb[my_ghb_index]);
+                        int texVal = tex1D<int>(tref,curValueHash);
+                        tmp += (float)(ghb[my_ghb_index+2] + texVal) * kernel_1[filterWeightLoc];
                     }
                     float avg = (float)tmp / kernelSum_1;
                     outputPixels[curElement] = avg;
@@ -332,7 +332,7 @@ __global__ void blurKernel_st1_Precise(int* inputPixels, float* intermediate, in
     }
     float kernelSum = 16.0;
     
-    extern __shared__ float ghb[]; // for per-thread local history
+    extern __shared__ int ghb[]; // for per-thread local history
     int my_ghb_index = ((threadIdx.y * blockDim.x) + threadIdx.x) * 3;
 
     // still check for this in case of small img, not all threads need execute
@@ -370,9 +370,9 @@ __global__ void blurKernel_st1_Precise(int* inputPixels, float* intermediate, in
                       // finish up last few values with NUM_TEX reads
                       for(int ii = (BLUR_RADIUS-NUM_TEX+1); ii <= BLUR_RADIUS;ii++) {
                           filterWeightLoc = BLUR_RADIUS + ii;
-                          float curValueHash = hashGHB(&ghb[my_ghb_index]);
-                          float texVal = tex1D<float>(tref,curValueHash);
-                          tmp += (ghb[my_ghb_index+2] + texVal) * weightedKernel[filterWeightLoc];
+                          int curValueHash = hashGHB(&ghb[my_ghb_index]);
+                          int texVal = tex1D<int>(tref,curValueHash);
+                          tmp += (float)(ghb[my_ghb_index+2] + texVal) * weightedKernel[filterWeightLoc];
                       }
                   }
                 float avg = (float)tmp / kernelSum;
@@ -410,7 +410,7 @@ __global__ void blurKernel_st2_Precise(float* outputPixels,float* intermediate, 
         j *= yScale;
     }
     float kernelSum = 16.0;
-    extern __shared__ float ghb[]; // for per-thread local history
+    extern __shared__ int ghb[]; // for per-thread local history
     int my_ghb_index = ((threadIdx.y * blockDim.x) + threadIdx.x) * 3;
 
     // still check for this in case of small img, not all threads need execute
@@ -439,9 +439,9 @@ __global__ void blurKernel_st2_Precise(float* outputPixels,float* intermediate, 
                   // finish up last few values with NUM_TEX reads
                   for(int ii = (BLUR_RADIUS-NUM_TEX+1); ii <= BLUR_RADIUS;ii++) {
                       int filterWeightLoc = BLUR_RADIUS + ii;
-                      float curValueHash = hashGHB(&ghb[my_ghb_index]);
-                      float texVal = tex1D<float>(tref,curValueHash);
-                      tmp += (ghb[my_ghb_index+2] + texVal) * weightedKernel[filterWeightLoc];
+                      int curValueHash = hashGHB(&ghb[my_ghb_index]);
+                      int texVal = tex1D<int>(tref,curValueHash);
+                      tmp += (float)(ghb[my_ghb_index+2] + texVal) * weightedKernel[filterWeightLoc];
                   }
                 float avg = tmp / kernelSum;
                 outputPixels[curElement] = avg;
@@ -482,7 +482,7 @@ __global__ void resizeKernel_st1_Precise(float* inputPixels,float* intermediate,
 
     float kernelSum = 16.0;
 
-    extern __shared__ float ghb[]; // for per-thread local history
+    extern __shared__ int ghb[]; // for per-thread local history
     int my_ghb_index = ((threadIdx.y * blockDim.x) + threadIdx.x) * 3;
 
     // still check for this in case of small img, not all threads need execute
@@ -513,9 +513,9 @@ __global__ void resizeKernel_st1_Precise(float* inputPixels,float* intermediate,
 
                 // finish up last few values with NUM_TEX reads
                 for(int ii = (DIAMETER-NUM_TEX); ii < DIAMETER;ii++) {
-                    float curValueHash = hashGHB(&ghb[my_ghb_index]);
-                    float texVal = tex1D<float>(tref,curValueHash);
-                    tmp += (ghb[my_ghb_index+2] + texVal) * weightedKernel[ii];
+                    int curValueHash = hashGHB(&ghb[my_ghb_index]);
+                    int texVal = tex1D<int>(tref,curValueHash);
+                    tmp += (float)(ghb[my_ghb_index+2] + texVal) * weightedKernel[ii];
                 }
                 float avg = tmp / kernelSum;
                 intermediate[elemToWrite] = avg;
@@ -556,7 +556,7 @@ __global__ void resizeKernel_st2_Precise(float* outputPixels,float* intermediate
     }
 
     float kernelSum = 16.0;
-    extern __shared__ float ghb[]; // for per-thread local history
+    extern __shared__ int ghb[]; // for per-thread local history
     int my_ghb_index = ((threadIdx.y * blockDim.x) + threadIdx.x) * 3;
     
     for (int idx = i; idx < (i + xScale); idx++) {
@@ -584,9 +584,9 @@ __global__ void resizeKernel_st2_Precise(float* outputPixels,float* intermediate
 
                 // finish up last few values with NUM_TEX reads
                 for(int ii = (DIAMETER-NUM_TEX); ii < DIAMETER;ii++) {
-                    float curValueHash = hashGHB(&ghb[my_ghb_index]);
-                    float texVal = tex1D<float>(tref,curValueHash);
-                    tmp += (ghb[my_ghb_index+2] + texVal) * weightedKernel[ii];
+                    int curValueHash = hashGHB(&ghb[my_ghb_index]);
+                    int texVal = tex1D<int>(tref,curValueHash);
+                    tmp += (float)(ghb[my_ghb_index+2] + texVal) * weightedKernel[ii];
                 }
                 float avg = tmp / kernelSum;
                 outputPixels[elemToWrite] = avg;

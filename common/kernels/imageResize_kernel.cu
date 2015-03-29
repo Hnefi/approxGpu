@@ -38,7 +38,7 @@ __global__ void resizeKernel_st1(float* inputPixels,float* intermediate, int* we
 
     float kernelSum = 16.0;
 
-    extern __shared__ float ghb[]; // for per-thread local history
+    extern __shared__ int ghb[]; // for per-thread local history
     int my_ghb_index = ((threadIdx.y * blockDim.x) + threadIdx.x) * 3;
 
     // still check for this in case of small img, not all threads need execute
@@ -69,9 +69,9 @@ __global__ void resizeKernel_st1(float* inputPixels,float* intermediate, int* we
 
                 // finish up last few values with NUM_TEX reads
                 for(int ii = (DIAMETER-NUM_TEX); ii < DIAMETER;ii++) {
-                    float curValueHash = hashGHB(&ghb[my_ghb_index]);
-                    float texVal = tex1D<float>(tref,curValueHash);
-                    tmp += (ghb[my_ghb_index+2] + texVal) * weightedKernel[ii];
+                    int curValueHash = hashGHB(&ghb[my_ghb_index]);
+                    int texVal = tex1D<int>(tref,curValueHash);
+                    tmp += (float)(ghb[my_ghb_index+2] + texVal) * weightedKernel[ii];
                 }
                 float avg = tmp / kernelSum;
                 intermediate[elemToWrite] = avg;
