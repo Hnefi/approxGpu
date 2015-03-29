@@ -39,9 +39,9 @@ __global__ void calcSobel_dY_k1(int* inputPixels, int* intermediate,
     if (yScale > 1) { // same thing in y dimension
         j *= yScale;
     }
-    int kernelSum_1 = 4.0;
-    int kernelSum_2 = 2.0;
-    extern __shared__ int ghb[]; // for per-thread local history
+    int kernelSum_1 = 4;
+    int kernelSum_2 = 2;
+    int ghb0 = 0; int ghb1 = 0; extern __shared__ int sharedghb[]; // for per-thread local history
     int my_ghb_index = ((threadIdx.y * blockDim.x) + threadIdx.x) * 3;
 
     // still check for this in case of small img, not all threads need execute
@@ -64,16 +64,16 @@ __global__ void calcSobel_dY_k1(int* inputPixels, int* intermediate,
                         if (location < (width*height) && location >= 0) {
                             int loaded = inputPixels[location];
                             tmp += loaded * kernel_2[filterWeightLoc];
-                            updateGHB(&(ghb[my_ghb_index]),loaded);
+                            ghb0 = ghb1; ghb1 = loaded;
                         }
                     }
 
                     // finish up last few values with NUM_TEX reads
                     for(int ii = (RADIUS-NUM_TEX_SCALED+1); ii <= RADIUS;ii++) {
                         int filterWeightLoc = RADIUS + ii;
-                        int curValueHash = hashGHB(&ghb[my_ghb_index]);
+                        int curValueHash = (ghb1 - ghb0) - NORM_MIN;
                         int texVal = tex1D<int>(tref,curValueHash);
-                        tmp += (int)(ghb[my_ghb_index+2] + texVal) * kernel_2[filterWeightLoc];
+                        tmp += (int)(ghb1 + texVal) * kernel_2[filterWeightLoc];
                     }
                     int avg = (int)tmp / kernelSum_2;
                     intermediate[curElement] = avg;
@@ -115,7 +115,7 @@ __global__ void calcSobel_dY_k2(int* intermediate, int* outputPixels,
     }
     int kernelSum_1 = 4;
     int kernelSum_2 = 2;
-    extern __shared__ int ghb[]; // for per-thread local history
+    int ghb0 = 0; int ghb1 = 0; extern __shared__ int sharedghb[]; // for per-thread local history
     int my_ghb_index = ((threadIdx.y * blockDim.x) + threadIdx.x) * 3;
 
     // still check for this in case of small img, not all threads need execute
@@ -138,16 +138,16 @@ __global__ void calcSobel_dY_k2(int* intermediate, int* outputPixels,
                         if (location < (width*height) && location >= 0) {
                             int loaded = intermediate[location];
                             tmp += loaded * kernel_1[filterWeightLoc];
-                            updateGHB(&(ghb[my_ghb_index]),loaded);
+                            ghb0 = ghb1; ghb1 = loaded;
                         }
                     }
 
                     // finish up last few values with NUM_TEX reads
                     for(int ii = (RADIUS-NUM_TEX_SCALED+1); ii <= RADIUS;ii++) {
                         int filterWeightLoc = RADIUS + ii;
-                        int curValueHash = hashGHB(&ghb[my_ghb_index]);
+                        int curValueHash = (ghb1 - ghb0) - NORM_MIN;
                         int texVal = tex1D<int>(tref,curValueHash);
-                        tmp += (int)(ghb[my_ghb_index+2] + texVal) * kernel_1[filterWeightLoc];
+                        tmp += (int)(ghb1 + texVal) * kernel_1[filterWeightLoc];
                     }
                     int avg = (int)tmp / kernelSum_1;
                     outputPixels[curElement] = avg;

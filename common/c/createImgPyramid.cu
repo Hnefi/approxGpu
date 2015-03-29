@@ -55,6 +55,8 @@ ImagePyramid* createImgPyramid(I2D* imageIn, cudaTextureObject_t* texObj, bool t
     int* d_inputPixels;
     int* d_outputPixels;
     int* d_origInput;
+    int* d_origInput2;
+    int* d_origInput3;
     int* d_intermediate;
     int* d_weightedKernel,*sobel_kern_1,*sobel_kern_2;
     int* resizeInt, *dxInt, *dyInt, *dyInt_small, *dxInt_small;
@@ -100,6 +102,8 @@ ImagePyramid* createImgPyramid(I2D* imageIn, cudaTextureObject_t* texObj, bool t
     cudaMalloc((void**)&(imageIn->dyInt_small),resizedRows*resizedCols*sizeof(int));
     
     cudaMalloc((void**)&d_origInput,rows*cols*sizeof(int));
+    cudaMalloc((void**)&d_origInput2,rows*cols*sizeof(int));
+    cudaMalloc((void**)&d_origInput3,rows*cols*sizeof(int));
 
     d_inputPixels = imageIn->d_inputPixels;
     d_outputPixels = imageIn->d_outputPixels;
@@ -121,6 +125,8 @@ ImagePyramid* createImgPyramid(I2D* imageIn, cudaTextureObject_t* texObj, bool t
     // Copy in input data and input kernels.
     cudaMemcpy(d_inputPixels,&(imageIn->data[0]),rows*cols*sizeof(int),cudaMemcpyHostToDevice);
     cudaMemcpy(d_origInput,&(origPixelInput->data),rows*cols*sizeof(int),cudaMemcpyHostToDevice);
+    cudaMemcpy(d_origInput2,&(origPixelInput->data),rows*cols*sizeof(int),cudaMemcpyHostToDevice);
+    cudaMemcpy(d_origInput3,&(origPixelInput->data),rows*cols*sizeof(int),cudaMemcpyHostToDevice);
 
     // clear outputs since we only access some of these pixels, others must be blank 
     cudaMemset(d_outputPixels,0,rows*cols*sizeof(int));
@@ -144,10 +150,10 @@ ImagePyramid* createImgPyramid(I2D* imageIn, cudaTextureObject_t* texObj, bool t
         resizeKernel_st2<<<nblocks,threadsPerBlock,bytesForSmem>>>(resizeOutput,resizeInt,d_weightedKernel,rows,cols,resizedRows,resizedCols,objToKernel,loadsToReplace*2);
 
         //TODO: this is reading origInput rather than d_outputPixels
-        calcSobel_dX_k1<<<nblocks,threadsPerBlock,bytesForSmem>>>(d_origInput,dxInt,threadHashes,threadReads,sobel_kern_1,sobel_kern_2,cols,rows,objToKernel,loadsToReplace);
+        calcSobel_dX_k1<<<nblocks,threadsPerBlock,bytesForSmem>>>(d_origInput2,dxInt,threadHashes,threadReads,sobel_kern_1,sobel_kern_2,cols,rows,objToKernel,loadsToReplace);
         calcSobel_dX_k2<<<nblocks,threadsPerBlock,bytesForSmem>>>(dxInt,dxOutput,sobel_kern_1,sobel_kern_2,cols,rows,objToKernel,loadsToReplace);
 
-        calcSobel_dY_k1<<<nblocks,threadsPerBlock,bytesForSmem>>>(d_origInput,dyInt,sobel_kern_1,sobel_kern_2,cols,rows,objToKernel,loadsToReplace);
+        calcSobel_dY_k1<<<nblocks,threadsPerBlock,bytesForSmem>>>(d_origInput3,dyInt,sobel_kern_1,sobel_kern_2,cols,rows,objToKernel,loadsToReplace);
         calcSobel_dY_k2<<<nblocks,threadsPerBlock,bytesForSmem>>>(dyInt,dyOutput,sobel_kern_1,sobel_kern_2,cols,rows,objToKernel,loadsToReplace);
 
         /*
@@ -165,10 +171,10 @@ ImagePyramid* createImgPyramid(I2D* imageIn, cudaTextureObject_t* texObj, bool t
         resizeKernel_st2_Precise<<<nblocks,threadsPerBlock,bytesForSmem>>>(resizeOutput,resizeInt,d_weightedKernel,rows,cols,resizedRows,resizedCols,objToKernel);
 
         //TODO: this is reading origInput rather than d_outputPixels
-        calcSobel_dX_k1_Precise<<<nblocks,threadsPerBlock,bytesForSmem>>>(d_origInput,dxInt,threadHashes,threadReads,sobel_kern_1,sobel_kern_2,cols,rows,objToKernel);
+        calcSobel_dX_k1_Precise<<<nblocks,threadsPerBlock,bytesForSmem>>>(d_origInput2,dxInt,threadHashes,threadReads,sobel_kern_1,sobel_kern_2,cols,rows,objToKernel);
         calcSobel_dX_k2_Precise<<<nblocks,threadsPerBlock,bytesForSmem>>>(dxInt,dxOutput,sobel_kern_1,sobel_kern_2,cols,rows,objToKernel);
 
-        calcSobel_dY_k1_Precise<<<nblocks,threadsPerBlock,bytesForSmem>>>(d_origInput,dyInt,sobel_kern_1,sobel_kern_2,cols,rows,objToKernel);
+        calcSobel_dY_k1_Precise<<<nblocks,threadsPerBlock,bytesForSmem>>>(d_origInput3,dyInt,sobel_kern_1,sobel_kern_2,cols,rows,objToKernel);
         calcSobel_dY_k2_Precise<<<nblocks,threadsPerBlock,bytesForSmem>>>(dyInt,dyOutput,sobel_kern_1,sobel_kern_2,cols,rows,objToKernel);
 
         /*
@@ -244,6 +250,8 @@ ImagePyramid* createImgPyramid(I2D* imageIn, cudaTextureObject_t* texObj, bool t
     cudaFree(imageIn->dyOutput_small);
     
     cudaFree(d_origInput);
+    cudaFree(d_origInput2);
+    cudaFree(d_origInput3);
     iFreeHandle(origPixelInput);
 
     return retStruct;
