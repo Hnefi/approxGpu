@@ -157,7 +157,7 @@ int main(int argc, char* argv[])
     struct cudaTextureDesc texDesc; 
     memset(&texDesc, 0, sizeof(texDesc)); 
     texDesc.addressMode[0] = cudaAddressModeMirror; 
-    texDesc.filterMode = cudaFilterModeLinear; 
+    texDesc.filterMode = cudaFilterModePoint; 
     texDesc.readMode = cudaReadModeElementType; 
     texDesc.normalizedCoords = 0; 
     // Create texture object 
