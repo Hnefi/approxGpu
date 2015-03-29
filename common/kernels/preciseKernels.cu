@@ -7,7 +7,7 @@
 #define DIAMETER (2*BLUR_RADIUS + 1)
 
 
-__global__ void calcSobel_dY_k1_Precise(float* inputPixels, float* intermediate, 
+__global__ void calcSobel_dY_k1_Precise(int* inputPixels, int* intermediate, 
                                     int* kernel_1,int* kernel_2, uint width, uint height,cudaTextureObject_t tref)
 {
     int NUM_TEX_SCALED = 0;
@@ -35,8 +35,8 @@ __global__ void calcSobel_dY_k1_Precise(float* inputPixels, float* intermediate,
     if (yScale > 1) { // same thing in y dimension
         j *= yScale;
     }
-    float kernelSum_1 = 4.0;
-    float kernelSum_2 = 2.0;
+    int kernelSum_1 = 4.0;
+    int kernelSum_2 = 2.0;
     extern __shared__ int ghb[]; // for per-thread local history
     int my_ghb_index = ((threadIdx.y * blockDim.x) + threadIdx.x) * 3;
 
@@ -50,7 +50,7 @@ __global__ void calcSobel_dY_k1_Precise(float* inputPixels, float* intermediate,
 
             if( idx > 0 && idx < width-1
                     && jdx > 0 && jdx < height-1) {
-                float tmp = 0.0;
+                int tmp = 0;
                 int curElement = SINGLEDIMINDEX(jdx,idx,width);
                 if(curElement < (width*height) && curElement >=0) {
                     for(int ii = -SOBEL_RADIUS;ii <= (SOBEL_RADIUS - NUM_TEX_SCALED);ii++) {
@@ -58,7 +58,7 @@ __global__ void calcSobel_dY_k1_Precise(float* inputPixels, float* intermediate,
                         int filterWeightLoc = SOBEL_RADIUS + ii;
                         // bounds check #2 for surrounding pix
                         if (location < (width*height) && location >= 0) {
-                            float loaded = inputPixels[location];
+                            int loaded = inputPixels[location];
                             tmp += loaded * kernel_2[filterWeightLoc];
                             updateGHB(&(ghb[my_ghb_index]),loaded);
                         }
@@ -69,9 +69,9 @@ __global__ void calcSobel_dY_k1_Precise(float* inputPixels, float* intermediate,
                         int filterWeightLoc = SOBEL_RADIUS + ii;
                         int curValueHash = hashGHB(&ghb[my_ghb_index]);
                         int texVal = tex1D<int>(tref,curValueHash);
-                        tmp += (float)(ghb[my_ghb_index+2] + texVal) * kernel_2[filterWeightLoc];
+                        tmp += (int)(ghb[my_ghb_index+2] + texVal) * kernel_2[filterWeightLoc];
                     }
-                    float avg = (float)tmp / kernelSum_2;
+                    int avg = (int)tmp / kernelSum_2;
                     intermediate[curElement] = avg;
                 }
             }
@@ -79,7 +79,7 @@ __global__ void calcSobel_dY_k1_Precise(float* inputPixels, float* intermediate,
     }
 }
 
-__global__ void calcSobel_dY_k2_Precise(float* intermediate, float* outputPixels, 
+__global__ void calcSobel_dY_k2_Precise(int* intermediate, int* outputPixels, 
                                     int* kernel_1,int* kernel_2, uint width, uint height,cudaTextureObject_t tref)
 {
     // assign id's
@@ -107,8 +107,8 @@ __global__ void calcSobel_dY_k2_Precise(float* intermediate, float* outputPixels
     if (yScale > 1) { // same thing in y dimension
         j *= yScale;
     }
-    float kernelSum_1 = 4;
-    float kernelSum_2 = 2;
+    int kernelSum_1 = 4;
+    int kernelSum_2 = 2;
     extern __shared__ int ghb[]; // for per-thread local history
     int my_ghb_index = ((threadIdx.y * blockDim.x) + threadIdx.x) * 3;
 
@@ -122,7 +122,7 @@ __global__ void calcSobel_dY_k2_Precise(float* intermediate, float* outputPixels
 
             if( idx > 0 && idx < width-1
                     && jdx > 0 && jdx < height-1) {
-                float tmp = 0.0;
+                int tmp = 0;
                 int curElement = SINGLEDIMINDEX(jdx,idx,width);
                 if(curElement < (width*height) && curElement >=0) {
                     for(int ii = -SOBEL_RADIUS;ii <= (SOBEL_RADIUS - NUM_TEX_SCALED);ii++) {
@@ -130,7 +130,7 @@ __global__ void calcSobel_dY_k2_Precise(float* intermediate, float* outputPixels
                         int filterWeightLoc = SOBEL_RADIUS + ii;
                         // bounds check #2 for surrounding pix
                         if (location < (width*height) && location >= 0) {
-                            float loaded = intermediate[location];
+                            int loaded = intermediate[location];
                             tmp += loaded * kernel_1[filterWeightLoc];
                             updateGHB(&(ghb[my_ghb_index]),loaded);
                         }
@@ -141,9 +141,9 @@ __global__ void calcSobel_dY_k2_Precise(float* intermediate, float* outputPixels
                         int filterWeightLoc = SOBEL_RADIUS + ii;
                         int curValueHash = hashGHB(&ghb[my_ghb_index]);
                         int texVal = tex1D<int>(tref,curValueHash);
-                        tmp += (float)(ghb[my_ghb_index+2] + texVal) * kernel_1[filterWeightLoc];
+                        tmp += (int)(ghb[my_ghb_index+2] + texVal) * kernel_1[filterWeightLoc];
                     }
-                    float avg = (float)tmp / kernelSum_1;
+                    int avg = (int)tmp / kernelSum_1;
                     outputPixels[curElement] = avg;
                 }
             }
@@ -153,8 +153,8 @@ __global__ void calcSobel_dY_k2_Precise(float* intermediate, float* outputPixels
 
 
 
-__global__ void calcSobel_dX_k1_Precise(float* inputPixels, float* intermediate,
-                                float* hashes, float* threadReads,
+__global__ void calcSobel_dX_k1_Precise(int* inputPixels, int* intermediate,
+                                int* hashes, int* threadReads,
                                 int* kernel_1,int* kernel_2, uint width, uint height,
                                 cudaTextureObject_t tref)
 {
@@ -183,8 +183,8 @@ __global__ void calcSobel_dX_k1_Precise(float* inputPixels, float* intermediate,
     if (yScale > 1) { // same thing in y dimension
         j *= yScale;
     }
-    float kernelSum_1 = 4;
-    float kernelSum_2 = 2;
+    int kernelSum_1 = 4;
+    int kernelSum_2 = 2;
 
     extern __shared__ int ghb[]; // for per-thread local history
     int my_ghb_index = ((threadIdx.y * blockDim.x) + threadIdx.x) * 3;
@@ -199,7 +199,7 @@ __global__ void calcSobel_dX_k1_Precise(float* inputPixels, float* intermediate,
 
               if( idx > 0 && idx < width-1
                && jdx > 0 && jdx < height-1) {
-                  float tmp = 0.0;
+                  int tmp = 0;
                   int curElement = SINGLEDIMINDEX(jdx,idx,width);
                   int scaled = curElement * 3; // because radius is 1
                   if(curElement < (width*height) && curElement >=0) {
@@ -208,7 +208,7 @@ __global__ void calcSobel_dX_k1_Precise(float* inputPixels, float* intermediate,
                           int filterWeightLoc = SOBEL_RADIUS + ii;
                           // bounds check #2 for surrounding pix
                           if (location < (width*height) && location >= 0) {
-                              float loaded = inputPixels[location];
+                              int loaded = inputPixels[location];
                               //hashes[scaled+filterWeightLoc] = ghb[my_ghb_index+2] - ghb[my_ghb_index+1];
                               //threadReads[scaled+filterWeightLoc] = loaded - ghb[my_ghb_index+2];
                               tmp += loaded * kernel_2[filterWeightLoc];
@@ -221,9 +221,9 @@ __global__ void calcSobel_dX_k1_Precise(float* inputPixels, float* intermediate,
                           int filterWeightLoc = SOBEL_RADIUS + ii;
                           int curValueHash = hashGHB(&ghb[my_ghb_index]);
                           int texVal = tex1D<int>(tref,curValueHash);
-                          tmp += (float)(ghb[my_ghb_index+2] + texVal) * kernel_2[filterWeightLoc];
+                          tmp += (int)(ghb[my_ghb_index+2] + texVal) * kernel_2[filterWeightLoc];
                       }
-                      float avg = (float)tmp / kernelSum_2;
+                      int avg = (int)tmp / kernelSum_2;
                       intermediate[curElement] = avg;
                   }
             }
@@ -231,7 +231,7 @@ __global__ void calcSobel_dX_k1_Precise(float* inputPixels, float* intermediate,
     }
 }
 
-__global__ void calcSobel_dX_k2_Precise(float* intermediate, float* outputPixels, 
+__global__ void calcSobel_dX_k2_Precise(int* intermediate, int* outputPixels, 
                                     int* kernel_1,int* kernel_2, uint width, uint height,cudaTextureObject_t tref)
 {
     // assign id's
@@ -258,8 +258,8 @@ __global__ void calcSobel_dX_k2_Precise(float* intermediate, float* outputPixels
     if (yScale > 1) { // same thing in y dimension
         j *= yScale;
     }
-    float kernelSum_1 = 4;
-    float kernelSum_2 = 2;
+    int kernelSum_1 = 4;
+    int kernelSum_2 = 2;
     extern __shared__ int ghb[]; // for per-thread local history
     int my_ghb_index = ((threadIdx.y * blockDim.x) + threadIdx.x) * 3;
 
@@ -273,7 +273,7 @@ __global__ void calcSobel_dX_k2_Precise(float* intermediate, float* outputPixels
 
               if( idx > 0 && idx < width-1
                && jdx > 0 && jdx < height-1) {
-                float tmp = 0.0;
+                int tmp = 0;
                 int curElement = SINGLEDIMINDEX(jdx,idx,width);
                 if(curElement < (width*height) && curElement >=0) {
                     for(int ii = -SOBEL_RADIUS;ii <= (SOBEL_RADIUS - NUM_TEX);ii++) {
@@ -281,7 +281,7 @@ __global__ void calcSobel_dX_k2_Precise(float* intermediate, float* outputPixels
                         int filterWeightLoc = SOBEL_RADIUS + ii;
                         // bounds check #2 for surrounding pix
                         if (location < (width*height) && location >= 0) {
-                            float loaded = intermediate[location];
+                            int loaded = intermediate[location];
                             tmp += loaded * kernel_1[filterWeightLoc];
                             updateGHB(&(ghb[my_ghb_index]),loaded);
                         }
@@ -292,9 +292,9 @@ __global__ void calcSobel_dX_k2_Precise(float* intermediate, float* outputPixels
                         int filterWeightLoc = SOBEL_RADIUS + ii;
                         int curValueHash = hashGHB(&ghb[my_ghb_index]);
                         int texVal = tex1D<int>(tref,curValueHash);
-                        tmp += (float)(ghb[my_ghb_index+2] + texVal) * kernel_1[filterWeightLoc];
+                        tmp += (int)(ghb[my_ghb_index+2] + texVal) * kernel_1[filterWeightLoc];
                     }
-                    float avg = (float)tmp / kernelSum_1;
+                    int avg = (int)tmp / kernelSum_1;
                     outputPixels[curElement] = avg;
                 }
             }
@@ -304,7 +304,7 @@ __global__ void calcSobel_dX_k2_Precise(float* intermediate, float* outputPixels
 
 
 
-__global__ void blurKernel_st1_Precise(int* inputPixels, float* intermediate, int* weightedKernel,float* hashes, float* threadReads,uint width, uint height,cudaTextureObject_t tref/*, other arguments */)
+__global__ void blurKernel_st1_Precise(int* inputPixels, int* intermediate, int* weightedKernel,int* hashes, int* threadReads,uint width, uint height,cudaTextureObject_t tref/*, other arguments */)
 {
     int NUM_TEX = 0;
     // assign id's
@@ -330,7 +330,7 @@ __global__ void blurKernel_st1_Precise(int* inputPixels, float* intermediate, in
     if (yScale > 1) { // same thing in y dimension
         j *= yScale;
     }
-    float kernelSum = 16.0;
+    int kernelSum = 16.0;
     
     extern __shared__ int ghb[]; // for per-thread local history
     int my_ghb_index = ((threadIdx.y * blockDim.x) + threadIdx.x) * 3;
@@ -342,7 +342,7 @@ __global__ void blurKernel_st1_Precise(int* inputPixels, float* intermediate, in
         for (int jdx = j; jdx < (j + yScale); jdx++) { // over each element to proc
             if( ((jdx == j + yScale) && ymod == 0) ||
                 ((jdx == j + yScale) && height <= totalY)) break; // same corner case
-            float tmp = 0.0;
+            int tmp = 0;
 
               if( jdx < height-2 && jdx > 1
                 && idx < width-2 && idx > 1 ){
@@ -361,7 +361,7 @@ __global__ void blurKernel_st1_Precise(int* inputPixels, float* intermediate, in
                           filterWeightLoc = BLUR_RADIUS + ii;
                           // bounds check #2 for surrounding pix
                           if (location < (width*height) && location >= 0) {
-                              float loaded = inputPixels[location];
+                              int loaded = inputPixels[location];
                               tmp += loaded * weightedKernel[filterWeightLoc];
                               updateGHB(&(ghb[my_ghb_index]),loaded);
                           }
@@ -372,10 +372,10 @@ __global__ void blurKernel_st1_Precise(int* inputPixels, float* intermediate, in
                           filterWeightLoc = BLUR_RADIUS + ii;
                           int curValueHash = hashGHB(&ghb[my_ghb_index]);
                           int texVal = tex1D<int>(tref,curValueHash);
-                          tmp += (float)(ghb[my_ghb_index+2] + texVal) * weightedKernel[filterWeightLoc];
+                          tmp += (int)(ghb[my_ghb_index+2] + texVal) * weightedKernel[filterWeightLoc];
                       }
                   }
-                float avg = (float)tmp / kernelSum;
+                int avg = (int)tmp / kernelSum;
                 intermediate[curElement] = avg;
             }
         }
@@ -383,7 +383,7 @@ __global__ void blurKernel_st1_Precise(int* inputPixels, float* intermediate, in
 }
 
 
-__global__ void blurKernel_st2_Precise(float* outputPixels,float* intermediate, int* weightedKernel,uint width, uint height,cudaTextureObject_t tref/*, other arguments */)
+__global__ void blurKernel_st2_Precise(int* outputPixels,int* intermediate, int* weightedKernel,uint width, uint height,cudaTextureObject_t tref/*, other arguments */)
 {
     int NUM_TEX = 0;
     // assign id's
@@ -409,7 +409,7 @@ __global__ void blurKernel_st2_Precise(float* outputPixels,float* intermediate, 
     if (yScale > 1) { // same thing in y dimension
         j *= yScale;
     }
-    float kernelSum = 16.0;
+    int kernelSum = 16.0;
     extern __shared__ int ghb[]; // for per-thread local history
     int my_ghb_index = ((threadIdx.y * blockDim.x) + threadIdx.x) * 3;
 
@@ -420,7 +420,7 @@ __global__ void blurKernel_st2_Precise(float* outputPixels,float* intermediate, 
         for (int jdx = j; jdx < (j + yScale); jdx++) { // over each element to proc
             if( ((jdx == j + yScale) && ymod == 0) ||
                 ((jdx == j + yScale) && height <= totalY)) break; // same corner case
-            float tmp = 0.0;
+            int tmp = 0;
 
             if(idx < width-2 && idx > 1
                && jdx < height-2 && jdx > 1) { // bounds check #1
@@ -430,7 +430,7 @@ __global__ void blurKernel_st2_Precise(float* outputPixels,float* intermediate, 
                       int filterWeightLoc = BLUR_RADIUS + ii;
                       // bounds check #2 for surrounding pix
                       if (location < (width*height) && location >= 0) {
-                          float loaded = intermediate[location];
+                          int loaded = intermediate[location];
                           tmp += loaded * weightedKernel[filterWeightLoc];
                           updateGHB(&(ghb[my_ghb_index]),loaded);
                       }
@@ -441,9 +441,9 @@ __global__ void blurKernel_st2_Precise(float* outputPixels,float* intermediate, 
                       int filterWeightLoc = BLUR_RADIUS + ii;
                       int curValueHash = hashGHB(&ghb[my_ghb_index]);
                       int texVal = tex1D<int>(tref,curValueHash);
-                      tmp += (float)(ghb[my_ghb_index+2] + texVal) * weightedKernel[filterWeightLoc];
+                      tmp += (int)(ghb[my_ghb_index+2] + texVal) * weightedKernel[filterWeightLoc];
                   }
-                float avg = tmp / kernelSum;
+                int avg = tmp / kernelSum;
                 outputPixels[curElement] = avg;
             }
         }
@@ -453,7 +453,7 @@ __global__ void blurKernel_st2_Precise(float* outputPixels,float* intermediate, 
 
 
 
-__global__ void resizeKernel_st1_Precise(float* inputPixels,float* intermediate, int* weightedKernel,uint height, uint width,uint resizedRows,uint resizedCols,cudaTextureObject_t tref/*, other arguments */)
+__global__ void resizeKernel_st1_Precise(int* inputPixels,int* intermediate, int* weightedKernel,uint height, uint width,uint resizedRows,uint resizedCols,cudaTextureObject_t tref/*, other arguments */)
 {
     int NUM_TEX = 0;
     // assign id's
@@ -480,7 +480,7 @@ __global__ void resizeKernel_st1_Precise(float* inputPixels,float* intermediate,
         j *= yScale;
     }
 
-    float kernelSum = 16.0;
+    int kernelSum = 16.0;
 
     extern __shared__ int ghb[]; // for per-thread local history
     int my_ghb_index = ((threadIdx.y * blockDim.x) + threadIdx.x) * 3;
@@ -495,7 +495,7 @@ __global__ void resizeKernel_st1_Precise(float* inputPixels,float* intermediate,
             if( ((jdx == j + yScale) && ymod == 0) ||
                 ((jdx == j + yScale) && height <= totalY)) break; // same corner cas
 
-            float tmp = 0.0;
+            int tmp = 0;
             if(jdx < height-2 && jdx >= 2
             && idx < resizedCols-2 && idx >= 0) { // bounds check #1
                 int elemToWrite = SINGLEDIMINDEX(jdx,idx,resizedCols);
@@ -505,7 +505,7 @@ __global__ void resizeKernel_st1_Precise(float* inputPixels,float* intermediate,
                     int location = elemToReadFrom + ii;
                     // bounds check #2 for surrounding pix
                     if (location < (width*height) && location >= 0) {
-                        float loaded = inputPixels[location];
+                        int loaded = inputPixels[location];
                         tmp += loaded * weightedKernel[ii];
                         updateGHB(&(ghb[my_ghb_index]),loaded);
                     }
@@ -515,9 +515,9 @@ __global__ void resizeKernel_st1_Precise(float* inputPixels,float* intermediate,
                 for(int ii = (DIAMETER-NUM_TEX); ii < DIAMETER;ii++) {
                     int curValueHash = hashGHB(&ghb[my_ghb_index]);
                     int texVal = tex1D<int>(tref,curValueHash);
-                    tmp += (float)(ghb[my_ghb_index+2] + texVal) * weightedKernel[ii];
+                    tmp += (int)(ghb[my_ghb_index+2] + texVal) * weightedKernel[ii];
                 }
-                float avg = tmp / kernelSum;
+                int avg = tmp / kernelSum;
                 intermediate[elemToWrite] = avg;
             }
         }
@@ -526,7 +526,7 @@ __global__ void resizeKernel_st1_Precise(float* inputPixels,float* intermediate,
 
 
 
-__global__ void resizeKernel_st2_Precise(float* outputPixels,float* intermediate, int* weightedKernel,uint height, uint width,uint resizedRows,uint resizedCols,cudaTextureObject_t tref/*, other arguments */)
+__global__ void resizeKernel_st2_Precise(int* outputPixels,int* intermediate, int* weightedKernel,uint height, uint width,uint resizedRows,uint resizedCols,cudaTextureObject_t tref/*, other arguments */)
 {
     int NUM_TEX = 0;
     // assign id's
@@ -555,7 +555,7 @@ __global__ void resizeKernel_st2_Precise(float* outputPixels,float* intermediate
         j *= yScale;
     }
 
-    float kernelSum = 16.0;
+    int kernelSum = 16.0;
     extern __shared__ int ghb[]; // for per-thread local history
     int my_ghb_index = ((threadIdx.y * blockDim.x) + threadIdx.x) * 3;
     
@@ -565,7 +565,7 @@ __global__ void resizeKernel_st2_Precise(float* outputPixels,float* intermediate
         for (int jdx = j; jdx < (j + yScale); jdx++) { // over each element to proc
             if( ((jdx == j + yScale) && ymod == 0) ||
                 ((jdx == j + yScale) && height <= totalY)) break; // same corner case*/
-            float tmp = 0.0;
+            int tmp = 0;
 
             if(idx >=0 && idx < resizedCols
             && jdx >= 0 && jdx < resizedRows-2 ) { // over all row/col
@@ -576,7 +576,7 @@ __global__ void resizeKernel_st2_Precise(float* outputPixels,float* intermediate
                     int location = elemToReadFrom + SINGLEDIMINDEX(ii,0,resizedCols);
                     // bounds check #2 for surrounding pix
                     if (location < (width*height) && location >= 0) {
-                        float loaded = intermediate[location];
+                        int loaded = intermediate[location];
                         tmp += loaded * weightedKernel[ii];
                         updateGHB(&(ghb[my_ghb_index]),loaded);
                     }
@@ -586,9 +586,9 @@ __global__ void resizeKernel_st2_Precise(float* outputPixels,float* intermediate
                 for(int ii = (DIAMETER-NUM_TEX); ii < DIAMETER;ii++) {
                     int curValueHash = hashGHB(&ghb[my_ghb_index]);
                     int texVal = tex1D<int>(tref,curValueHash);
-                    tmp += (float)(ghb[my_ghb_index+2] + texVal) * weightedKernel[ii];
+                    tmp += (int)(ghb[my_ghb_index+2] + texVal) * weightedKernel[ii];
                 }
-                float avg = tmp / kernelSum;
+                int avg = tmp / kernelSum;
                 outputPixels[elemToWrite] = avg;
             }
         }

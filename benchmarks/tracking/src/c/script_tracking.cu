@@ -27,10 +27,10 @@ int main(int argc, char* argv[])
 {
     int i, j, k, N_FEA, WINSZ, LK_ITER, rows, cols;
     int endR, endC;
-    F2D *blurredImage, *previousFrameBlurred_level1, *previousFrameBlurred_level2, *blurred_level1, *blurred_level2;
-    F2D *exact_blurredImage, *exact_blurred_level1, *exact_blurred_level2;
-    F2D *verticalEdgeImage, *horizontalEdgeImage, *verticalEdge_level1, *verticalEdge_level2, *horizontalEdge_level1, *horizontalEdge_level2, *interestPnt;
-    F2D *exact_verticalEdgeImage, *exact_horizontalEdgeImage;
+    I2D *blurredImage, *previousFrameBlurred_level1, *previousFrameBlurred_level2, *blurred_level1, *blurred_level2;
+    I2D *exact_blurredImage, *exact_blurred_level1, *exact_blurred_level2;
+    I2D *verticalEdgeImage, *horizontalEdgeImage, *verticalEdge_level1, *verticalEdge_level2, *horizontalEdge_level1, *horizontalEdge_level2, *interestPnt;
+    I2D *exact_verticalEdgeImage, *exact_horizontalEdgeImage;
     F2D *lambda, *lambdaTemp, *features;
     I2D *Ic, *status;
     float SUPPRESION_RADIUS;
@@ -184,10 +184,10 @@ int main(int argc, char* argv[])
         Ics[count-1] = readImage(im1);
     }
 
-    F2D* blurs[MAX_COUNTER];
-    F2D* resizes[MAX_COUNTER];
-    F2D* sobelx[MAX_COUNTER];
-    F2D* sobely[MAX_COUNTER];
+    I2D* blurs[MAX_COUNTER];
+    I2D* resizes[MAX_COUNTER];
+    I2D* sobelx[MAX_COUNTER];
+    I2D* sobely[MAX_COUNTER];
 
     /*
     // do this for all the rgb channels
@@ -244,8 +244,8 @@ int main(int argc, char* argv[])
     //writeImgToFile(blurredImage,img1Name,"test.bmp");
 
     /** Scale down the image to build Image Pyramid. We find features across all scales of the image **/
-    blurred_level1 = fDeepCopy(preprocessed->blurredImg);                   /** Scale 0 **/
-    blurred_level2 = fDeepCopy(preprocessed->resizedImg);     /** Scale 1 **/
+    blurred_level1 = iDeepCopy(preprocessed->blurredImg);                   /** Scale 0 **/
+    blurred_level2 = iDeepCopy(preprocessed->resizedImg);     /** Scale 1 **/
     horizontalEdgeImage = preprocessed->horizEdge;
     verticalEdgeImage = preprocessed->vertEdge;
 
@@ -278,6 +278,7 @@ int main(int argc, char* argv[])
     avg_sobydiff[0] = arrayDiff(exact_horizontalEdgeImage,horizontalEdgeImage);
     avg_sobxdiff[0] = arrayDiff(exact_verticalEdgeImage,verticalEdgeImage);
 
+#if 0
     /** Edge images are used for feature detection. So, using the verticalEdgeImage and horizontalEdgeImage images, we compute feature strength
       across all pixels. Lambda matrix is the feature strength matrix returned by calcGoodFeature **/
 
@@ -310,6 +311,7 @@ int main(int argc, char* argv[])
     fFreeHandle(interestPnt);
     fFreeHandle(lambda);
     fFreeHandle(lambdaTemp);
+#endif
     iFreeHandle(Ic);
     destroyImgPyramid(preprocessed,0x0);
     destroyImgPyramid(f1_exact,0x0);
@@ -334,16 +336,16 @@ int main(int argc, char* argv[])
         blurredImage = newFramePyramids[count-1]->blurredImg;
 
         /** Blur image to remove noise **/
-        previousFrameBlurred_level1 = fDeepCopy(blurred_level1);
-        previousFrameBlurred_level2 = fDeepCopy(blurred_level2);
+        previousFrameBlurred_level1 = iDeepCopy(blurred_level1);
+        previousFrameBlurred_level2 = iDeepCopy(blurred_level2);
 
         //MARK - added these because i deep copied into previousFrame, and then can get rid of the old
-        fFreeHandle(blurred_level1);
-        fFreeHandle(blurred_level2);
+        iFreeHandle(blurred_level1);
+        iFreeHandle(blurred_level2);
 
         /** Image pyramid **/
-        blurred_level1 = fDeepCopy(blurredImage);
-        blurred_level2 = fDeepCopy(newFramePyramids[count-1]->resizedImg);
+        blurred_level1 = iDeepCopy(blurredImage);
+        blurred_level2 = iDeepCopy(newFramePyramids[count-1]->resizedImg);
 
         verticalEdge_level1 = newFramePyramids[count-1]->vertEdge;
         verticalEdge_level2 = newFramePyramids[count-1]->vertEdge_small;
@@ -417,6 +419,7 @@ int main(int argc, char* argv[])
     LVA_BX_INSTRUCTION;
 
 
+#if 0
 #ifdef CHECK   
     /* Self checking */
     {
@@ -430,12 +433,13 @@ int main(int argc, char* argv[])
             printf("Error in Tracking Map\n");
     }
 #endif
+#endif
 
     photonPrintTiming(elapsed);
 
-    fFreeHandle(blurred_level1);
-    fFreeHandle(blurred_level2);
-    fFreeHandle(features);
+    iFreeHandle(blurred_level1);
+    iFreeHandle(blurred_level2);
+    //fFreeHandle(features);
 
     for(int j = 0;j<MAX_COUNTER;j++) {
         printf("Mean error for frame=%d was: blur=%0.5f, resize=%0.5f, sobx=%0.5f, soby=%0.5f\n",j+1,avg_blurdiff[j],avg_resdiff[j],avg_sobxdiff[j],avg_sobydiff[j]);

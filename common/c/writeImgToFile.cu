@@ -18,7 +18,7 @@
 #define IMG_DATA_OFFSET_POS 10
 #define BITS_PER_PIXEL_POS 28
 
-void writeImgToFile(F2D* imgB,F2D* imgG, F2D* imgR, const char* inputName, const char* outputName,bool singlechannel)
+void writeImgToFile(I2D* imgB,I2D* imgG, I2D* imgR, const char* inputName, const char* outputName,bool singlechannel)
 {
     // Reading BMP image
 	int i;

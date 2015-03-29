@@ -53,23 +53,23 @@ ImagePyramid* createImgPyramid(I2D* imageIn, cudaTextureObject_t* texObj, bool t
     //printf("Calculated block dimensions as: %d x %d\n",nBlocksWide,nBlocksTall);
 
     int* d_inputPixels;
-    float* d_outputPixels;
-    float* d_origInput;
-    float* d_intermediate;
+    int* d_outputPixels;
+    int* d_origInput;
+    int* d_intermediate;
     int* d_weightedKernel,*sobel_kern_1,*sobel_kern_2;
-    float* resizeInt, *dxInt, *dyInt, *dyInt_small, *dxInt_small;
-    float* resizeOutput, *dxOutput, *dyOutput, *dxOutput_small, *dyOutput_small;
+    int* resizeInt, *dxInt, *dyInt, *dyInt_small, *dxInt_small;
+    int* resizeOutput, *dxOutput, *dyOutput, *dxOutput_small, *dyOutput_small;
 
-    float* threadReads, *threadHashes;
-    float* reads, *hashes;
-    int bytesForSmem = 16*16 * 3 * sizeof(float); // each thread gets 3 entries of 4 bytes each
+    int* threadReads, *threadHashes;
+    int* reads, *hashes;
+    int bytesForSmem = 16*16 * 3 * sizeof(int); // each thread gets 3 entries of 4 bytes each
     if(train_set == true) {
-        reads = (float*) calloc(5*rows*cols,sizeof(float));
-        hashes = (float*) calloc(5*rows*cols,sizeof(float));
-        HANDLE_ERROR( cudaMalloc((void**)&threadReads,5*rows*cols*sizeof(float)) );
-        HANDLE_ERROR( cudaMalloc((void**)&threadHashes,5*rows*cols*sizeof(float)) );
-        cudaMemset(threadReads,0xff,5*rows*cols*sizeof(float));
-        cudaMemset(threadHashes,0xff,5*rows*cols*sizeof(float));
+        reads = (int*) calloc(5*rows*cols,sizeof(int));
+        hashes = (int*) calloc(5*rows*cols,sizeof(int));
+        HANDLE_ERROR( cudaMalloc((void**)&threadReads,5*rows*cols*sizeof(int)) );
+        HANDLE_ERROR( cudaMalloc((void**)&threadHashes,5*rows*cols*sizeof(int)) );
+        cudaMemset(threadReads,0xff,5*rows*cols*sizeof(int));
+        cudaMemset(threadHashes,0xff,5*rows*cols*sizeof(int));
     }
 
     // SET UP MEMORY - local data
@@ -85,21 +85,21 @@ ImagePyramid* createImgPyramid(I2D* imageIn, cudaTextureObject_t* texObj, bool t
 
     // SET UP MEMORY
     cudaMalloc((void**)&(imageIn->d_inputPixels),rows*cols*sizeof(int));
-    cudaMalloc((void**)&(imageIn->d_outputPixels),rows*cols*sizeof(float));
-    cudaMalloc((void**)&(imageIn->d_intermediate),rows*cols*sizeof(float));
-    cudaMalloc((void**)&(imageIn->resizeInt),rows*resizedCols*sizeof(float));
-    cudaMalloc((void**)&(imageIn->dxInt),rows*cols*sizeof(float));
-    cudaMalloc((void**)&(imageIn->dyInt),rows*cols*sizeof(float));
-    cudaMalloc((void**)&(imageIn->resizeOutput),resizedRows*resizedCols*sizeof(float));
-    cudaMalloc((void**)&(imageIn->dxOutput),rows*cols*sizeof(float));
-    cudaMalloc((void**)&(imageIn->dyOutput),rows*cols*sizeof(float));
+    cudaMalloc((void**)&(imageIn->d_outputPixels),rows*cols*sizeof(int));
+    cudaMalloc((void**)&(imageIn->d_intermediate),rows*cols*sizeof(int));
+    cudaMalloc((void**)&(imageIn->resizeInt),rows*resizedCols*sizeof(int));
+    cudaMalloc((void**)&(imageIn->dxInt),rows*cols*sizeof(int));
+    cudaMalloc((void**)&(imageIn->dyInt),rows*cols*sizeof(int));
+    cudaMalloc((void**)&(imageIn->resizeOutput),resizedRows*resizedCols*sizeof(int));
+    cudaMalloc((void**)&(imageIn->dxOutput),rows*cols*sizeof(int));
+    cudaMalloc((void**)&(imageIn->dyOutput),rows*cols*sizeof(int));
 
-    cudaMalloc((void**)&(imageIn->dxOutput_small),resizedRows*resizedCols*sizeof(float));
-    cudaMalloc((void**)&(imageIn->dyOutput_small),resizedRows*resizedCols*sizeof(float));
-    cudaMalloc((void**)&(imageIn->dxInt_small),resizedRows*resizedCols*sizeof(float));
-    cudaMalloc((void**)&(imageIn->dyInt_small),resizedRows*resizedCols*sizeof(float));
+    cudaMalloc((void**)&(imageIn->dxOutput_small),resizedRows*resizedCols*sizeof(int));
+    cudaMalloc((void**)&(imageIn->dyOutput_small),resizedRows*resizedCols*sizeof(int));
+    cudaMalloc((void**)&(imageIn->dxInt_small),resizedRows*resizedCols*sizeof(int));
+    cudaMalloc((void**)&(imageIn->dyInt_small),resizedRows*resizedCols*sizeof(int));
     
-    cudaMalloc((void**)&d_origInput,rows*cols*sizeof(float));
+    cudaMalloc((void**)&d_origInput,rows*cols*sizeof(int));
 
     d_inputPixels = imageIn->d_inputPixels;
     d_outputPixels = imageIn->d_outputPixels;
@@ -116,32 +116,32 @@ ImagePyramid* createImgPyramid(I2D* imageIn, cudaTextureObject_t* texObj, bool t
     dyOutput_small = imageIn->dyOutput_small;
 
 
-    F2D* origPixelInput = fiDeepCopy(imageIn);
+    I2D* origPixelInput = iDeepCopy(imageIn);
 
     // Copy in input data and input kernels.
     cudaMemcpy(d_inputPixels,&(imageIn->data[0]),rows*cols*sizeof(int),cudaMemcpyHostToDevice);
-    cudaMemcpy(d_origInput,&(origPixelInput->data),rows*cols*sizeof(float),cudaMemcpyHostToDevice);
+    cudaMemcpy(d_origInput,&(origPixelInput->data),rows*cols*sizeof(int),cudaMemcpyHostToDevice);
 
     // clear outputs since we only access some of these pixels, others must be blank 
-    cudaMemset(d_outputPixels,0,rows*cols*sizeof(float));
-    cudaMemset(d_intermediate,0,rows*cols*sizeof(float));
-    cudaMemset(resizeOutput,0,resizedRows*resizedCols*sizeof(float));
-    cudaMemset(resizeInt,0,rows*resizedCols*sizeof(float));
-    cudaMemset(dxOutput,0,rows*cols*sizeof(float));
-    cudaMemset(dyOutput,0,rows*cols*sizeof(float));
-    cudaMemset(dxInt,0,rows*cols*sizeof(float));
-    cudaMemset(dyInt,0,rows*cols*sizeof(float));
-    cudaMemset(dxOutput_small,0,resizedRows*resizedCols*sizeof(float));
-    cudaMemset(dyOutput_small,0,resizedRows*resizedCols*sizeof(float));
-    cudaMemset(dxInt_small,0,resizedRows*resizedCols*sizeof(float));
-    cudaMemset(dyInt_small,0,resizedRows*resizedCols*sizeof(float));
+    cudaMemset(d_outputPixels,0,rows*cols*sizeof(int));
+    cudaMemset(d_intermediate,0,rows*cols*sizeof(int));
+    cudaMemset(resizeOutput,0,resizedRows*resizedCols*sizeof(int));
+    cudaMemset(resizeInt,0,rows*resizedCols*sizeof(int));
+    cudaMemset(dxOutput,0,rows*cols*sizeof(int));
+    cudaMemset(dyOutput,0,rows*cols*sizeof(int));
+    cudaMemset(dxInt,0,rows*cols*sizeof(int));
+    cudaMemset(dyInt,0,rows*cols*sizeof(int));
+    cudaMemset(dxOutput_small,0,resizedRows*resizedCols*sizeof(int));
+    cudaMemset(dyOutput_small,0,resizedRows*resizedCols*sizeof(int));
+    cudaMemset(dxInt_small,0,resizedRows*resizedCols*sizeof(int));
+    cudaMemset(dyInt_small,0,resizedRows*resizedCols*sizeof(int));
 
     if(!precise) {
-        blurKernel_st1<<<nblocks,threadsPerBlock,bytesForSmem>>>(d_inputPixels,d_intermediate,d_weightedKernel,threadHashes,threadReads,cols,rows,objToKernel,loadsToReplace);
-        blurKernel_st2<<<nblocks,threadsPerBlock,bytesForSmem>>>(d_outputPixels,d_intermediate,d_weightedKernel,cols,rows,objToKernel,loadsToReplace);
+        blurKernel_st1<<<nblocks,threadsPerBlock,bytesForSmem>>>(d_inputPixels,d_intermediate,d_weightedKernel,threadHashes,threadReads,cols,rows,objToKernel,loadsToReplace*2);
+        blurKernel_st2<<<nblocks,threadsPerBlock,bytesForSmem>>>(d_outputPixels,d_intermediate,d_weightedKernel,cols,rows,objToKernel,loadsToReplace*2);
 
-        resizeKernel_st1<<<nblocks,threadsPerBlock,bytesForSmem>>>(d_origInput,resizeInt,d_weightedKernel,rows,cols,resizedRows,resizedCols,objToKernel,loadsToReplace);
-        resizeKernel_st2<<<nblocks,threadsPerBlock,bytesForSmem>>>(resizeOutput,resizeInt,d_weightedKernel,rows,cols,resizedRows,resizedCols,objToKernel,loadsToReplace);
+        resizeKernel_st1<<<nblocks,threadsPerBlock,bytesForSmem>>>(d_origInput,resizeInt,d_weightedKernel,rows,cols,resizedRows,resizedCols,objToKernel,loadsToReplace*2);
+        resizeKernel_st2<<<nblocks,threadsPerBlock,bytesForSmem>>>(resizeOutput,resizeInt,d_weightedKernel,rows,cols,resizedRows,resizedCols,objToKernel,loadsToReplace*2);
 
         //TODO: this is reading origInput rather than d_outputPixels
         calcSobel_dX_k1<<<nblocks,threadsPerBlock,bytesForSmem>>>(d_origInput,dxInt,threadHashes,threadReads,sobel_kern_1,sobel_kern_2,cols,rows,objToKernel,loadsToReplace);
@@ -183,21 +183,21 @@ ImagePyramid* createImgPyramid(I2D* imageIn, cudaTextureObject_t* texObj, bool t
     cudaDeviceSynchronize();
     if(train_set == true) { 
         // we are synched here, now we can print out the training set (if we are frame 0)
-        HANDLE_ERROR( cudaMemcpy(reads,threadReads,5*rows*cols*sizeof(float),cudaMemcpyDeviceToHost) );
-        HANDLE_ERROR( cudaMemcpy(hashes,threadHashes,5*rows*cols*sizeof(float),cudaMemcpyDeviceToHost) );
+        HANDLE_ERROR( cudaMemcpy(reads,threadReads,5*rows*cols*sizeof(int),cudaMemcpyDeviceToHost) );
+        HANDLE_ERROR( cudaMemcpy(hashes,threadHashes,5*rows*cols*sizeof(int),cudaMemcpyDeviceToHost) );
         for(int i = 0;i < 5*rows*cols;i+=5) {
             /*
             if(!(reads[i] != reads[i]))
-                printf("Global history hash [%0.5f], value: %0.5f\n",hashes[i],reads[i]);
+                printf("Global history hash [%d], value: %d\n",hashes[i],reads[i]);
             if(!(reads[i+1] != reads[i+1]))
-                printf("Global history hash [%0.5f], value: %0.5f\n",hashes[i+1],reads[i+1]);
+                printf("Global history hash [%d], value: %d\n",hashes[i+1],reads[i+1]);
             if(!(reads[i+2] != reads[i+2]))
-                printf("Global history hash [%0.5f], value: %0.5f\n",hashes[i+2],reads[i+2]);
+                printf("Global history hash [%d], value: %d\n",hashes[i+2],reads[i+2]);
             if(!(reads[i+3] != reads[i+3]))
-                printf("Global history hash [%0.5f], value: %0.5f\n",hashes[i+3],reads[i+3]);
+                printf("Global history hash [%d], value: %d\n",hashes[i+3],reads[i+3]);
                 */
             if(!(reads[i+4] != reads[i+4]))
-                printf("Global history hash [%0.5f], value: %0.5f\n",hashes[i+4],reads[i+4]);
+                printf("Global history hash [%d], value: %d\n",hashes[i+4],reads[i+4]);
         }
         cudaFree(threadHashes);
         cudaFree(threadReads);
@@ -209,22 +209,22 @@ ImagePyramid* createImgPyramid(I2D* imageIn, cudaTextureObject_t* texObj, bool t
     //cout << "Creating image pyramid." << endl;
     ImagePyramid* retStruct = (ImagePyramid*)malloc(sizeof(ImagePyramid));
     // alloc these sub-arrays as pinned memory (required for copyAsync)
-    retStruct->blurredImg = fSetArray(rows,cols,0);
-    retStruct->resizedImg = fSetArray(resizedRows,resizedCols,0);
-    retStruct->horizEdge = fSetArray(rows,cols,0);
-    retStruct->vertEdge = fSetArray(rows,cols,0);
-    retStruct->horizEdge_small = fSetArray(resizedRows,resizedCols,0);
-    retStruct->vertEdge_small = fSetArray(resizedRows,resizedCols,0);
+    retStruct->blurredImg = iSetArray(rows,cols,0);
+    retStruct->resizedImg = iSetArray(resizedRows,resizedCols,0);
+    retStruct->horizEdge = iSetArray(rows,cols,0);
+    retStruct->vertEdge = iSetArray(rows,cols,0);
+    retStruct->horizEdge_small = iSetArray(resizedRows,resizedCols,0);
+    retStruct->vertEdge_small = iSetArray(resizedRows,resizedCols,0);
 
    
-    cudaMemcpy((void*)&(retStruct->blurredImg->data[0]),d_outputPixels,rows*cols*sizeof(float),cudaMemcpyDeviceToHost);
-    cudaMemcpy((void*)&(retStruct->resizedImg->data[0]),resizeOutput,resizedRows*resizedCols*sizeof(float),cudaMemcpyDeviceToHost);
+    cudaMemcpy((void*)&(retStruct->blurredImg->data[0]),d_outputPixels,rows*cols*sizeof(int),cudaMemcpyDeviceToHost);
+    cudaMemcpy((void*)&(retStruct->resizedImg->data[0]),resizeOutput,resizedRows*resizedCols*sizeof(int),cudaMemcpyDeviceToHost);
     //printf("addr of vertEdge->data: %p\n",retStruct->vertEdge->data);
     //printf("addr of horizEdge->data: %p\n",retStruct->horizEdge->data);
-    cudaMemcpy((void*)retStruct->vertEdge->data,dxOutput,rows*cols*sizeof(float),cudaMemcpyDeviceToHost);
-    cudaMemcpy((void*)&(retStruct->horizEdge->data[0]),dyOutput,rows*cols*sizeof(float),cudaMemcpyDeviceToHost);   
-    cudaMemcpy((void*)&(retStruct->vertEdge_small->data[0]),dxOutput_small,resizedRows*resizedCols*sizeof(float),cudaMemcpyDeviceToHost);   
-    cudaMemcpy((void*)&(retStruct->horizEdge_small->data[0]),dyOutput_small,resizedRows*resizedCols*sizeof(float),cudaMemcpyDeviceToHost);   
+    cudaMemcpy((void*)retStruct->vertEdge->data,dxOutput,rows*cols*sizeof(int),cudaMemcpyDeviceToHost);
+    cudaMemcpy((void*)&(retStruct->horizEdge->data[0]),dyOutput,rows*cols*sizeof(int),cudaMemcpyDeviceToHost);   
+    cudaMemcpy((void*)&(retStruct->vertEdge_small->data[0]),dxOutput_small,resizedRows*resizedCols*sizeof(int),cudaMemcpyDeviceToHost);   
+    cudaMemcpy((void*)&(retStruct->horizEdge_small->data[0]),dyOutput_small,resizedRows*resizedCols*sizeof(int),cudaMemcpyDeviceToHost);   
 
     cudaFree(imageIn->d_weightedKernel);
     cudaFree(imageIn->sobel_kern_1);
@@ -244,7 +244,7 @@ ImagePyramid* createImgPyramid(I2D* imageIn, cudaTextureObject_t* texObj, bool t
     cudaFree(imageIn->dyOutput_small);
     
     cudaFree(d_origInput);
-    fFreeHandle(origPixelInput);
+    iFreeHandle(origPixelInput);
 
     return retStruct;
 }
@@ -254,12 +254,12 @@ void destroyImgPyramid(ImagePyramid* retStruct, int imgNum )
     assert(retStruct != 0);
     //cout << "Destroying image pyramid for frame " << imgNum << endl;
 
-    fFreeHandle(retStruct->blurredImg);
-    fFreeHandle(retStruct->resizedImg);
-    fFreeHandle(retStruct->horizEdge);
-    fFreeHandle(retStruct->vertEdge);
-    fFreeHandle(retStruct->horizEdge_small);
-    fFreeHandle(retStruct->vertEdge_small);
+    iFreeHandle(retStruct->blurredImg);
+    iFreeHandle(retStruct->resizedImg);
+    iFreeHandle(retStruct->horizEdge);
+    iFreeHandle(retStruct->vertEdge);
+    iFreeHandle(retStruct->horizEdge_small);
+    iFreeHandle(retStruct->vertEdge_small);
     free(retStruct);
 }
 

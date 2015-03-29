@@ -22,6 +22,8 @@ using std::endl;
 
 ImagePyramid* createOutputImages(I2D* imageIn,cudaTextureObject_t* texObj,int loadsToReplace)
 {
+    return NULL;
+#if 0
     int rows, cols;
     rows = imageIn->height;
     cols = imageIn->width;
@@ -201,4 +203,5 @@ ImagePyramid* createOutputImages(I2D* imageIn,cudaTextureObject_t* texObj,int lo
     fFreeHandle(origPixelInput);
 
     return retStruct;
+#endif
 }

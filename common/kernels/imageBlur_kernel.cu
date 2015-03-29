@@ -9,7 +9,7 @@
 #define RADIUS 2
 #define SINGLEDIMINDEX(i,j,width) ((i)*(width) + (j))
 
-__global__ void blurKernel_st1(int* inputPixels, float* intermediate, int* weightedKernel,float* hashes, float* threadReads,uint width, uint height,cudaTextureObject_t tref,int NUM_TEX/*, other arguments */)
+__global__ void blurKernel_st1(int* inputPixels, int* intermediate, int* weightedKernel,int* hashes, int* threadReads,uint width, uint height,cudaTextureObject_t tref,int NUM_TEX/*, other arguments */)
 {
     // assign id's
     int i = blockIdx.x * blockDim.x + threadIdx.x;
@@ -34,7 +34,7 @@ __global__ void blurKernel_st1(int* inputPixels, float* intermediate, int* weigh
     if (yScale > 1) { // same thing in y dimension
         j *= yScale;
     }
-    float kernelSum = 16.0;
+    int kernelSum = 16.0;
     
     extern __shared__ int ghb[]; // for per-thread local history
     int my_ghb_index = ((threadIdx.y * blockDim.x) + threadIdx.x) * 3;
@@ -46,7 +46,7 @@ __global__ void blurKernel_st1(int* inputPixels, float* intermediate, int* weigh
         for (int jdx = j; jdx < (j + yScale); jdx++) { // over each element to proc
             if( ((jdx == j + yScale) && ymod == 0) ||
                 ((jdx == j + yScale) && height <= totalY)) break; // same corner case
-            float tmp = 0.0;
+            int tmp = 0;
 
               if( jdx < height-2 && jdx > 1
                 && idx < width-2 && idx > 1 ){
@@ -65,7 +65,7 @@ __global__ void blurKernel_st1(int* inputPixels, float* intermediate, int* weigh
                           filterWeightLoc = RADIUS + ii;
                           // bounds check #2 for surrounding pix
                           if (location < (width*height) && location >= 0) {
-                              float loaded = inputPixels[location];
+                              int loaded = inputPixels[location];
 #if 0 // training set generation
                               hashes[scaled + filterWeightLoc] = ghb[my_ghb_index+2];
                               threadReads[scaled + filterWeightLoc] = loaded;
@@ -80,10 +80,10 @@ __global__ void blurKernel_st1(int* inputPixels, float* intermediate, int* weigh
                           filterWeightLoc = RADIUS + ii;
                           int curValueHash = hashGHB(&ghb[my_ghb_index]);
                           int texVal = tex1D<int>(tref,curValueHash);
-                          tmp += (float)(ghb[my_ghb_index+2] + texVal) * weightedKernel[filterWeightLoc];
+                          tmp += (int)(ghb[my_ghb_index+2] + texVal) * weightedKernel[filterWeightLoc];
                       }
                   }
-                float avg = (float)tmp / kernelSum;
+                int avg = (int)tmp / kernelSum;
                 intermediate[curElement] = avg;
             }
         }

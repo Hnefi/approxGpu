@@ -13,11 +13,11 @@ Author: Sravanthi Kota Venkata
 typedef struct
 {
     int* d_inputPixels;
-    float* d_outputPixels;
-    float* d_intermediate;
+    int* d_outputPixels;
+    int* d_intermediate;
     int* d_weightedKernel,*sobel_kern_1,*sobel_kern_2;
-    float* resizeInt, *dxInt, *dyInt, *dyInt_small, *dxInt_small;
-    float* resizeOutput, *dxOutput, *dyOutput, *dxOutput_small, *dyOutput_small;
+    int* resizeInt, *dxInt, *dyInt, *dyInt_small, *dxInt_small;
+    int* resizeOutput, *dxOutput, *dyOutput, *dxOutput_small, *dyOutput_small;
     int width;
     int height;
     int data[];
@@ -38,12 +38,12 @@ typedef struct
 }F2D;
 
 typedef struct {
-    F2D* blurredImg;
-    F2D* resizedImg;
-    F2D* horizEdge;
-    F2D* vertEdge;
-    F2D* horizEdge_small;
-    F2D* vertEdge_small;
+    I2D* blurredImg;
+    I2D* resizedImg;
+    I2D* horizEdge;
+    I2D* vertEdge;
+    I2D* horizEdge_small;
+    I2D* vertEdge_small;
 } ImagePyramid;
 
 typedef struct {
@@ -69,9 +69,9 @@ static void HandleError( cudaError_t err,
 /** Image read and write **/
 I2D* readImage(const char* pathName,int rgb = 1);
 F2D* readFile(unsigned char* fileName);
-void writeImgToFile(F2D* imgR,F2D* imgB, F2D* imgG,const char* inName, const char* outName,bool singlechannel=true);
+void writeImgToFile(I2D* imgR,I2D* imgB, I2D* imgG,const char* inName, const char* outName,bool singlechannel=true);
 void pixDiff(const char* gold, const char* approx);
-float arrayDiff(F2D* gold, F2D* approx);
+float arrayDiff(I2D* gold, I2D* approx);
 
 /** Memory allocation functions **/
 I2D* iMallocHandle(int rows, int cols);

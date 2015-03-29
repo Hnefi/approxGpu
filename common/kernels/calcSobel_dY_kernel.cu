@@ -9,7 +9,7 @@
 #define SINGLEDIMINDEX(i,j,width) ((i)*(width) + (j))
 #define RADIUS 1
 
-__global__ void calcSobel_dY_k1(float* inputPixels, float* intermediate, 
+__global__ void calcSobel_dY_k1(int* inputPixels, int* intermediate, 
                                     int* kernel_1,int* kernel_2, uint width, uint height,cudaTextureObject_t tref,int NUM_TEX)
 {
     int NUM_TEX_SCALED = NUM_TEX;
@@ -39,8 +39,8 @@ __global__ void calcSobel_dY_k1(float* inputPixels, float* intermediate,
     if (yScale > 1) { // same thing in y dimension
         j *= yScale;
     }
-    float kernelSum_1 = 4.0;
-    float kernelSum_2 = 2.0;
+    int kernelSum_1 = 4.0;
+    int kernelSum_2 = 2.0;
     extern __shared__ int ghb[]; // for per-thread local history
     int my_ghb_index = ((threadIdx.y * blockDim.x) + threadIdx.x) * 3;
 
@@ -54,7 +54,7 @@ __global__ void calcSobel_dY_k1(float* inputPixels, float* intermediate,
 
             if( idx > 0 && idx < width-1
                     && jdx > 0 && jdx < height-1) {
-                float tmp = 0.0;
+                int tmp = 0;
                 int curElement = SINGLEDIMINDEX(jdx,idx,width);
                 if(curElement < (width*height) && curElement >=0) {
                     for(int ii = -RADIUS;ii <= (RADIUS - NUM_TEX_SCALED);ii++) {
@@ -62,7 +62,7 @@ __global__ void calcSobel_dY_k1(float* inputPixels, float* intermediate,
                         int filterWeightLoc = RADIUS + ii;
                         // bounds check #2 for surrounding pix
                         if (location < (width*height) && location >= 0) {
-                            float loaded = inputPixels[location];
+                            int loaded = inputPixels[location];
                             tmp += loaded * kernel_2[filterWeightLoc];
                             updateGHB(&(ghb[my_ghb_index]),loaded);
                         }
@@ -73,9 +73,9 @@ __global__ void calcSobel_dY_k1(float* inputPixels, float* intermediate,
                         int filterWeightLoc = RADIUS + ii;
                         int curValueHash = hashGHB(&ghb[my_ghb_index]);
                         int texVal = tex1D<int>(tref,curValueHash);
-                        tmp += (float)(ghb[my_ghb_index+2] + texVal) * kernel_2[filterWeightLoc];
+                        tmp += (int)(ghb[my_ghb_index+2] + texVal) * kernel_2[filterWeightLoc];
                     }
-                    float avg = (float)tmp / kernelSum_2;
+                    int avg = (int)tmp / kernelSum_2;
                     intermediate[curElement] = avg;
                 }
             }
@@ -83,7 +83,7 @@ __global__ void calcSobel_dY_k1(float* inputPixels, float* intermediate,
     }
 }
 
-__global__ void calcSobel_dY_k2(float* intermediate, float* outputPixels, 
+__global__ void calcSobel_dY_k2(int* intermediate, int* outputPixels, 
                                     int* kernel_1,int* kernel_2, uint width, uint height,cudaTextureObject_t tref,int NUM_TEX)
 {
     // assign id's
@@ -113,8 +113,8 @@ __global__ void calcSobel_dY_k2(float* intermediate, float* outputPixels,
     if (yScale > 1) { // same thing in y dimension
         j *= yScale;
     }
-    float kernelSum_1 = 4;
-    float kernelSum_2 = 2;
+    int kernelSum_1 = 4;
+    int kernelSum_2 = 2;
     extern __shared__ int ghb[]; // for per-thread local history
     int my_ghb_index = ((threadIdx.y * blockDim.x) + threadIdx.x) * 3;
 
@@ -128,7 +128,7 @@ __global__ void calcSobel_dY_k2(float* intermediate, float* outputPixels,
 
             if( idx > 0 && idx < width-1
                     && jdx > 0 && jdx < height-1) {
-                float tmp = 0.0;
+                int tmp = 0;
                 int curElement = SINGLEDIMINDEX(jdx,idx,width);
                 if(curElement < (width*height) && curElement >=0) {
                     for(int ii = -RADIUS;ii <= (RADIUS - NUM_TEX_SCALED);ii++) {
@@ -136,7 +136,7 @@ __global__ void calcSobel_dY_k2(float* intermediate, float* outputPixels,
                         int filterWeightLoc = RADIUS + ii;
                         // bounds check #2 for surrounding pix
                         if (location < (width*height) && location >= 0) {
-                            float loaded = intermediate[location];
+                            int loaded = intermediate[location];
                             tmp += loaded * kernel_1[filterWeightLoc];
                             updateGHB(&(ghb[my_ghb_index]),loaded);
                         }
@@ -147,9 +147,9 @@ __global__ void calcSobel_dY_k2(float* intermediate, float* outputPixels,
                         int filterWeightLoc = RADIUS + ii;
                         int curValueHash = hashGHB(&ghb[my_ghb_index]);
                         int texVal = tex1D<int>(tref,curValueHash);
-                        tmp += (float)(ghb[my_ghb_index+2] + texVal) * kernel_1[filterWeightLoc];
+                        tmp += (int)(ghb[my_ghb_index+2] + texVal) * kernel_1[filterWeightLoc];
                     }
-                    float avg = (float)tmp / kernelSum_1;
+                    int avg = (int)tmp / kernelSum_1;
                     outputPixels[curElement] = avg;
                 }
             }

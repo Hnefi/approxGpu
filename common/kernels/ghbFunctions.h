@@ -1,6 +1,6 @@
 #ifndef _GHB_FUNC_H
 #define _GHB_FUNC_H
-__device__ __forceinline__ void updateGHB(int* mem_arr,float new_val)
+__device__ __forceinline__ void updateGHB(int* mem_arr,int new_val)
 {
     mem_arr[0] = mem_arr[1];
     mem_arr[1] = mem_arr[2];
