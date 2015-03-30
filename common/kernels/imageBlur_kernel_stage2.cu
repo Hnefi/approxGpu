@@ -66,7 +66,7 @@ __global__ void blurKernel_st2(int* outputPixels,int* intermediate, int* weighte
                   for(int ii = (RADIUS-NUM_TEX+1); ii <= RADIUS;ii++) {
                       int filterWeightLoc = RADIUS + ii;
                       int curValueHash = (ghb1 - ghb0) - NORM_MIN;
-                      int texVal = tex1D<int>(tref,curValueHash);
+                      int texVal = (int)tex1D<float>(tref,(float)curValueHash);
                       tmp += (int)(ghb1 + texVal) * weightedKernel[filterWeightLoc];
                   }
                 int avg = tmp / kernelSum;

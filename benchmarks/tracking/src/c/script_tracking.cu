@@ -129,25 +129,25 @@ int main(int argc, char* argv[])
     printf("1D texture memory limit (cudaArray): %d\n",dev_props.maxTexture1D);
 
     // read in the texture training set from the input file
-    int* big_arr = (int*)malloc( dev_props.maxTexture1D * sizeof(int)); 
+    float* big_arr = (float*)malloc( dev_props.maxTexture1D * sizeof(float)); 
     std::ifstream inputStream(inputTexFile.c_str());
     if ( !inputStream.is_open() ) return false;
     std::string raw_string;
     i = 0;
     while( !inputStream.eof() ) {
         getline(inputStream,raw_string);
-        int value = (int)((float)atof(raw_string.c_str()));
+        float value = ((float)atof(raw_string.c_str()));
         //cout << "value: " << value << endl;
         big_arr[i] = value;
         i++;
     }
     printf("Total size of training input read from file: %d\n", i-1);
 
-    cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc(32, 0, 0, 0, cudaChannelFormatKindSigned); 
+    cudaChannelFormatDesc channelDesc = cudaCreateChannelDesc(32, 0, 0, 0, cudaChannelFormatKindFloat); 
     cudaArray* cuArray; 
     cudaMallocArray(&cuArray, &channelDesc, i-1); 
     // Copy to device memory some data located at address h_data in host memory 
-    cudaMemcpyToArray(cuArray, 0, 0, big_arr,(i-1)*sizeof(int),cudaMemcpyHostToDevice); 
+    cudaMemcpyToArray(cuArray, 0, 0, big_arr,(i-1)*sizeof(float),cudaMemcpyHostToDevice); 
     // Specify texture struct 
     cudaResourceDesc resDesc; 
     memset(&resDesc, 0, sizeof(resDesc)); 
@@ -157,7 +157,7 @@ int main(int argc, char* argv[])
     struct cudaTextureDesc texDesc; 
     memset(&texDesc, 0, sizeof(texDesc)); 
     texDesc.addressMode[0] = cudaAddressModeMirror; 
-    texDesc.filterMode = cudaFilterModePoint; 
+    texDesc.filterMode = cudaFilterModeLinear; 
     texDesc.readMode = cudaReadModeElementType; 
     texDesc.normalizedCoords = 0; 
     // Create texture object 

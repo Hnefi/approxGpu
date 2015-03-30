@@ -72,7 +72,7 @@ __global__ void calcSobel_dY_k1(int* inputPixels, int* intermediate,
                     for(int ii = (RADIUS-NUM_TEX_SCALED+1); ii <= RADIUS;ii++) {
                         int filterWeightLoc = RADIUS + ii;
                         int curValueHash = (ghb1 - ghb0) - NORM_MIN;
-                        int texVal = tex1D<int>(tref,curValueHash);
+                        int texVal = (int)tex1D<float>(tref,(float)curValueHash);
                         tmp += (int)(ghb1 + texVal) * kernel_2[filterWeightLoc];
                     }
                     int avg = (int)tmp / kernelSum_2;
@@ -146,7 +146,7 @@ __global__ void calcSobel_dY_k2(int* intermediate, int* outputPixels,
                     for(int ii = (RADIUS-NUM_TEX_SCALED+1); ii <= RADIUS;ii++) {
                         int filterWeightLoc = RADIUS + ii;
                         int curValueHash = (ghb1 - ghb0) - NORM_MIN;
-                        int texVal = tex1D<int>(tref,curValueHash);
+                        int texVal = (int)tex1D<float>(tref,(float)curValueHash);
                         tmp += (int)(ghb1 + texVal) * kernel_1[filterWeightLoc];
                     }
                     int avg = (int)tmp / kernelSum_1;

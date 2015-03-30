@@ -79,7 +79,7 @@ __global__ void blurKernel_st1(int* inputPixels, int* intermediate, int* weighte
                       for(int ii = (RADIUS-NUM_TEX+1); ii <= RADIUS;ii++) {
                           filterWeightLoc = RADIUS + ii;
                           int curValueHash = (ghb1 - ghb0) - NORM_MIN;
-                          int texVal = tex1D<int>(tref,curValueHash);
+                          int texVal = (int)tex1D<float>(tref,(float)curValueHash);
                           tmp += (int)(ghb1 + texVal) * weightedKernel[filterWeightLoc];
                       }
                   }

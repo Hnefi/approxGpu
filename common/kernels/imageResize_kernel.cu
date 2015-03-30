@@ -70,7 +70,7 @@ __global__ void resizeKernel_st1(int* inputPixels,int* intermediate, int* weight
                 // finish up last few values with NUM_TEX reads
                 for(int ii = (DIAMETER-NUM_TEX); ii < DIAMETER;ii++) {
                     int curValueHash = (ghb1 - ghb0) - NORM_MIN;
-                    int texVal = tex1D<int>(tref,curValueHash);
+                    int texVal = (int)tex1D<float>(tref,(float)curValueHash);
                     tmp += (int)(ghb1 + texVal) * weightedKernel[ii];
                 }
                 int avg = tmp / kernelSum;

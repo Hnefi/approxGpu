@@ -68,7 +68,7 @@ __global__ void calcSobel_dY_k1_Precise(int* inputPixels, int* intermediate,
                     for(int ii = (SOBEL_RADIUS-NUM_TEX_SCALED+1); ii <= SOBEL_RADIUS;ii++) {
                         int filterWeightLoc = SOBEL_RADIUS + ii;
                         int curValueHash = (ghb1 - ghb0) - NORM_MIN;
-                        int texVal = tex1D<int>(tref,curValueHash);
+                        int texVal = (int)tex1D<float>(tref,(float)curValueHash);
                         tmp += (int)(ghb1 + texVal) * kernel_2[filterWeightLoc];
                     }
                     int avg = (int)tmp / kernelSum_2;
@@ -140,7 +140,7 @@ __global__ void calcSobel_dY_k2_Precise(int* intermediate, int* outputPixels,
                     for(int ii = (SOBEL_RADIUS-NUM_TEX_SCALED+1); ii <= SOBEL_RADIUS;ii++) {
                         int filterWeightLoc = SOBEL_RADIUS + ii;
                         int curValueHash = (ghb1 - ghb0) - NORM_MIN;
-                        int texVal = tex1D<int>(tref,curValueHash);
+                        int texVal = (int)tex1D<float>(tref,(float)curValueHash);
                         tmp += (int)(ghb1 + texVal) * kernel_1[filterWeightLoc];
                     }
                     int avg = (int)tmp / kernelSum_1;
@@ -220,7 +220,7 @@ __global__ void calcSobel_dX_k1_Precise(int* inputPixels, int* intermediate,
                       for(int ii = (SOBEL_RADIUS-NUM_TEX_SCALED+1); ii <= SOBEL_RADIUS;ii++) {
                           int filterWeightLoc = SOBEL_RADIUS + ii;
                           int curValueHash = (ghb1 - ghb0) - NORM_MIN;
-                          int texVal = tex1D<int>(tref,curValueHash);
+                          int texVal = (int)tex1D<float>(tref,(float)curValueHash);
                           tmp += (int)(ghb1 + texVal) * kernel_2[filterWeightLoc];
                       }
                       int avg = (int)tmp / kernelSum_2;
@@ -291,7 +291,7 @@ __global__ void calcSobel_dX_k2_Precise(int* intermediate, int* outputPixels,
                     for(int ii = (SOBEL_RADIUS-NUM_TEX+1); ii <= SOBEL_RADIUS;ii++) {
                         int filterWeightLoc = SOBEL_RADIUS + ii;
                         int curValueHash = (ghb1 - ghb0) - NORM_MIN;
-                        int texVal = tex1D<int>(tref,curValueHash);
+                        int texVal = (int)tex1D<float>(tref,(float)curValueHash);
                         tmp += (int)(ghb1 + texVal) * kernel_1[filterWeightLoc];
                     }
                     int avg = (int)tmp / kernelSum_1;
@@ -371,7 +371,7 @@ __global__ void blurKernel_st1_Precise(int* inputPixels, int* intermediate, int*
                       for(int ii = (BLUR_RADIUS-NUM_TEX+1); ii <= BLUR_RADIUS;ii++) {
                           filterWeightLoc = BLUR_RADIUS + ii;
                           int curValueHash = (ghb1 - ghb0) - NORM_MIN;
-                          int texVal = tex1D<int>(tref,curValueHash);
+                          int texVal = (int)tex1D<float>(tref,(float)curValueHash);
                           tmp += (int)(ghb1 + texVal) * weightedKernel[filterWeightLoc];
                       }
                   }
@@ -440,7 +440,7 @@ __global__ void blurKernel_st2_Precise(int* outputPixels,int* intermediate, int*
                   for(int ii = (BLUR_RADIUS-NUM_TEX+1); ii <= BLUR_RADIUS;ii++) {
                       int filterWeightLoc = BLUR_RADIUS + ii;
                       int curValueHash = (ghb1 - ghb0) - NORM_MIN;
-                      int texVal = tex1D<int>(tref,curValueHash);
+                      int texVal = (int)tex1D<float>(tref,(float)curValueHash);
                       tmp += (int)(ghb1 + texVal) * weightedKernel[filterWeightLoc];
                   }
                 int avg = tmp / kernelSum;
@@ -514,7 +514,7 @@ __global__ void resizeKernel_st1_Precise(int* inputPixels,int* intermediate, int
                 // finish up last few values with NUM_TEX reads
                 for(int ii = (DIAMETER-NUM_TEX); ii < DIAMETER;ii++) {
                     int curValueHash = (ghb1 - ghb0) - NORM_MIN;
-                    int texVal = tex1D<int>(tref,curValueHash);
+                    int texVal = (int)tex1D<float>(tref,(float)curValueHash);
                     tmp += (int)(ghb1 + texVal) * weightedKernel[ii];
                 }
                 int avg = tmp / kernelSum;
@@ -585,7 +585,7 @@ __global__ void resizeKernel_st2_Precise(int* outputPixels,int* intermediate, in
                 // finish up last few values with NUM_TEX reads
                 for(int ii = (DIAMETER-NUM_TEX); ii < DIAMETER;ii++) {
                     int curValueHash = (ghb1 - ghb0) - NORM_MIN;
-                    int texVal = tex1D<int>(tref,curValueHash);
+                    int texVal = (int)tex1D<float>(tref,(float)curValueHash);
                     tmp += (int)(ghb1 + texVal) * weightedKernel[ii];
                 }
                 int avg = tmp / kernelSum;
